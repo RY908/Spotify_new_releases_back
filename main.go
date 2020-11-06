@@ -6,36 +6,38 @@ import (
 	"os"
 	"net/http"
 	"encoding/gob"
-	"golang.org/x/oauth2"
-	"github.com/zmb3/spotify"
+	//"golang.org/x/oauth2"
+	//"github.com/zmb3/spotify"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
+	//"github.com/gorilla/sessions"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-gorp/gorp"
+	. "Spotify_new_releases/database"
+	. "Spotify_new_releases/spotify"
+	. "Spotify_new_releases/session"
 )
 
 const redirectURI = "http://localhost:8080/callback"
 
 var (
+	/*
 	clientID = os.Getenv("SPOTIFY_ID_3")
 	secretKey = os.Getenv("SPOTIFY_SECRET_3")
-	auth  = spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate)
+	auth  = spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic)
 	state = "abc123"
 	session_name = "spotify_access_token"
 	store *sessions.CookieStore
 	session *sessions.Session
+	*/
 	sqlPath = os.Getenv("SQL_PATH")
 	db, _ = sql.Open("mysql", sqlPath)
 	dbmap = &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{}}
+	mydbmap = DatabaseInit(dbmap)
 )
 
-type UserSession struct {
-	ID 		string
-	Token 	oauth2.Token
-}
-
 func main() {
+	/*
 	dbmap.AddTableWithName(ArtistInfo{}, "Artist").SetKeys(false, "ArtistId")
 	dbmap.AddTableWithName(ListenTo{}, "ListenTo").SetKeys(true, "ListenId")
 	dbmap.AddTableWithName(UserInfo{}, "User").SetKeys(false, "UserId")
@@ -46,13 +48,13 @@ func main() {
 
 	auth.SetAuthInfo(clientID, secretKey)
 
-	gob.Register(UserSession{})
-
+	*/
 	// セッション初期処理
-	sessionInit()
+	gob.Register(UserSession{})
+	SessionInit()
 
 	r := mux.NewRouter()
-	url := auth.AuthURL(state)
+	url := GetURL()
 	fmt.Println("Please log in to Spotify by visiting the following page in your browser:", url)
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

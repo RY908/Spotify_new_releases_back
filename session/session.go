@@ -1,4 +1,4 @@
-package main
+package session
 
 import (
 	"net/http"
@@ -11,14 +11,27 @@ import (
 	"fmt"
 )
 
-func getTokenFromSession(r *http.Request) (string, oauth2.Token) {
-	session, _ := store.Get(r, session_name)
-	userId :=session.Values["user"].(UserSession).ID
-	token := session.Values["user"].(UserSession).Token
-	return userId, token
+var (
+	Session_name = "spotify_access_token"
+	Store *sessions.CookieStore
+	Session *sessions.Session
+)
+
+type UserSession struct {
+	ID 			string
+	Token 		oauth2.Token
+	PlaylistId	string
 }
 
-func sessionInit(){
+func GetTokenFromSession(r *http.Request) (string, oauth2.Token, string) {
+	session, _ := Store.Get(r, Session_name)
+	userId :=session.Values["user"].(UserSession).ID
+	token := session.Values["user"].(UserSession).Token
+	playlistId := session.Values["user"].(UserSession).PlaylistId
+	return userId, token, playlistId
+}
+
+func SessionInit(){
 
 	// 乱数生成
 	b := make([]byte, 48)
@@ -29,11 +42,11 @@ func sessionInit(){
 	str := strings.TrimRight(base32.StdEncoding.EncodeToString(b), "=")
 
 	// 新しいstoreとセッションを準備
-	store = sessions.NewCookieStore([]byte(str))
-	session = sessions.NewSession(store, session_name)
+	Store = sessions.NewCookieStore([]byte(str))
+	Session = sessions.NewSession(Store, Session_name)
 
 	// セッションの有効範囲を指定
-	store.Options = &sessions.Options{
+	Store.Options = &sessions.Options{
 		Domain:     "localhost",
 		Path:       "/",
 		MaxAge:     0, // the cookie will be deleted after the browser session ends.
@@ -46,10 +59,10 @@ func sessionInit(){
 	fmt.Println(str)
 	fmt.Println("")
 	fmt.Println("store   data --")
-	fmt.Println(store)
+	fmt.Println(Store)
 	fmt.Println("")
 	fmt.Println("session data --")
-	fmt.Println(session)
+	fmt.Println(Session)
 	fmt.Println("")
 
 }
