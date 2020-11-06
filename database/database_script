@@ -21,6 +21,7 @@ CREATE TABLE ListenTo (
     userId     VARCHAR(100)    NOT NULL,
     artistId   VARCHAR(100)    NOT NULL,
     timestamp   DATETIME        NOT NULL,
+    ifFollowing BOOLEAN NOT NULL,
     PRIMARY KEY (listenId),
     FOREIGN KEY (userId) REFERENCES User(userId) ON DELETE CASCADE,
     FOREIGN KEY (artistId) REFERENCES Artist(artistId) ON DELETE CASCADE
