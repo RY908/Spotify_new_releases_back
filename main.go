@@ -18,8 +18,6 @@ import (
 	. "Spotify_new_releases/session"
 )
 
-const redirectURI = "http://localhost:8080/callback"
-
 var (
 	/*
 	clientID = os.Getenv("SPOTIFY_ID_3")
@@ -49,6 +47,8 @@ func main() {
 	auth.SetAuthInfo(clientID, secretKey)
 
 	*/
+	defer db.Close()
+	defer dbmap.Db.Close()
 	// セッション初期処理
 	gob.Register(UserSession{})
 	SessionInit()
