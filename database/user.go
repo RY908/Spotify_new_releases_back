@@ -15,7 +15,7 @@ type UserInfo struct {
 	TokenType		string 		`db:tokenType`
 	RefreshToken	string 		`db:refreshToken`
 	Expiry			time.Time 	`db:expiry`
-	PlaylistId		string `db:playlistId`
+	PlaylistId		string 		`db:playlistId`
 }
 
 func (d *MyDbMap) InsertUser(userId, playlistId string, Token *oauth2.Token) error {
@@ -37,8 +37,7 @@ func (d *MyDbMap) InsertUser(userId, playlistId string, Token *oauth2.Token) err
 
 func (d *MyDbMap) GetAllUsers() ([]UserInfo, error) {
 	var users []UserInfo
-	_, err := d.DbMap.Select(&users, "select * from users")
-	if err != nil {
+	if _, err := d.DbMap.Select(&users, "select * from user"); err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
@@ -48,9 +47,9 @@ func (d *MyDbMap) GetAllUsers() ([]UserInfo, error) {
 
 func (d *MyDbMap) UpdateUser(userId, playlistId string, Token *oauth2.Token) error {
 	user := UserInfo{userId, Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, playlistId}
-	_, err := d.DbMap.Update(&user)
-	if err != nil {
+	if _, err := d.DbMap.Update(&user); err != nil {
 		fmt.Println(err)
+		return err
 	}
-	return err
+	return nil
 }
