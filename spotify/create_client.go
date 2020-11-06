@@ -22,15 +22,17 @@ type Client struct {
 }
 
 func GetURL() string {
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic)
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead)
 	auth.SetAuthInfo(clientID, secretKey)
 	url := auth.AuthURL(state)
 
 	return url
 }
 
+// CreateMyClient creates a new client.
+// This is called when the user first logs in.
 func CreateMyClient(r *http.Request) (*Client, *oauth2.Token, *http.Request) {
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic)
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead)
 	auth.SetAuthInfo(clientID, secretKey)
 	token, err := auth.Token(state, r)
 	if err != nil {
@@ -41,8 +43,9 @@ func CreateMyClient(r *http.Request) (*Client, *oauth2.Token, *http.Request) {
 	return &Client{Client: &client}, token, r
 }
 
+// CreateMyClientFromUserInfo creates a new client from data in the database.
 func CreateMyClientFromUserInfo(user database.UserInfo) *Client {
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic)
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead)
 	auth.SetAuthInfo(clientID, secretKey)
 
 	accessToken := user.AccessToken
@@ -59,8 +62,9 @@ func CreateMyClientFromUserInfo(user database.UserInfo) *Client {
 	return &Client{Client: &client}
 }
 
+// CreateMyClientFromToken creates a new client from oauth2 token.
 func CreateMyClientFromToken(token oauth2.Token) *Client {
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic)
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead)
 	auth.SetAuthInfo(clientID, secretKey)
 	client := auth.NewClient(&token)
 
