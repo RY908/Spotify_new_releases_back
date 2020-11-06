@@ -5,96 +5,108 @@ import (
 	//"golang.org/x/oauth2"
 	"time"
 	"fmt"
-	"Spotify_new_releases/database"
-	"Spotify_new_releases/spotify"
+	. "Spotify_new_releases/database"
+	. "Spotify_new_releases/spotify"
 )
 
-// This is used every 50-60 minutes to get the users recently played tracks and insert the data into the database.
-func updateRelation() {
-	// get all users
-	users, err := GetAllUsers()
-	fmt.Println(users)
+// This is called every 50-60 minutes to get the users recently played tracks and insert the data into the database.
+func UpdateRelation(dbmap *MyDbMap) error {
+	// get all the users' information from database.
+	users, err := dbmap.GetAllUsers()
 
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
 
 	for _, user := range users {
-		// get user info 
+		var artistsToInsert []ArtistInfo
 		userId := user.UserId
 		playlistId := user.PlaylistId
 
-		client := CreateMyClientFromUserInfo(user).client
-		// get recently played artists
-		artists, newToken := GetRecentlyPlayedArtists(client)
-		fmt.Println(newToken)
+		client := CreateMyClientFromUserInfo(user)
+		// get recently played artists.
+		artists, newToken := client.GetRecentlyPlayedArtists()
 		
 		timestamp := time.Now()
 
 		for _, artist := range artists {
 			// get name, artistId, url, iconUrl 
-			name := artist.SimpleArtist.Name
-			artistId := artist.SimpleArtist.ID.String()
-			url := artist.SimpleArtist.ExternalURLs["spotify"]
-			iconUrl := artist.Images[0].URL
+			var name, artistId, url, iconUrl string
+			name, artistId, url, iconUrl = GetArtistInfo(artist)
 			
-			// insert artist into database
-			err := InsertArtist(artistId, name, url, iconUrl)
-			if err != nil {
-				fmt.Println(err)
-			}
-	
-			// insert relation into database
-			err = InsertRelation(artistId, userId, timestamp)
-			if err != nil {
-				fmt.Println(err)
-			}
-	
-	
+			artistsToInsert = append(artistsToInsert, ArtistInfo{ArtistId: artistId, Name: name, Url: url, IconUrl: iconUrl})
 		}
-		
-		err := UpdateUser(userId, playlistId, newToken)
-		if err != nil {
+
+		// update the database.
+		if err := dbmap.InsertArtists(artistsToInsert); err != nil {
 			fmt.Println(err)
+			return err
+		}
+		if err := dbmap.InsertRelations(artistsToInsert, userId, timestamp, false); err != nil {
+			fmt.Println(err)
+			return err
+		}
+		if err := dbmap.UpdateUser(userId, playlistId, newToken); err != nil {
+			fmt.Println(err)
+			return err
 		}
 	}
+	return nil
 }
 
-func updatePlaylist() {
-	// get all users
-	users, err := GetAllUsers()
+// UpdatePlaylist updates the relation in the database and change the spotify playlist.
+func UpdatePlaylist(dbmap *MyDbMap) error {
+	// get all the users' information from database.
+	users, err := dbmap.GetAllUsers()
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
+	// for each user, get new releases and delete relations some time ago and change the spotify playlist.
 	for _, user := range users {
-		newReleases := getNewReleasesAndDeleteRelation(user)
-		err := ChangePlaylist(newReleases, user)
-
+		newReleases, err := GetNewReleasesAndDeleteRelation(dbmap, user)
 		if err != nil {
 			fmt.Println(err)
+			return err
+		}
+	
+		if err := ChangePlaylist(newReleases, user); err != nil {
+			fmt.Println(err)
+			return err
 		}
 	}
+	return nil
 }
 
-func getNewReleasesAndDeleteRelation(user UserInfo) []spotify.SimpleAlbum {
+// GetNewReleasesAndDeleteRelation get artist from relation table and check if there are new tracks from the artists.
+// After that, this deletes old relations from database. (currently this deletion is not available.)
+func GetNewReleasesAndDeleteRelation(dbmap *MyDbMap, user UserInfo) ([]spotify.SimpleAlbum, error) {
 	// get user info 
 	userId := user.UserId
 
 	// create new client
-	client := CreateMyClientFromUserInfo(user).client
+	client := CreateMyClientFromUserInfo(user)
+
+	// get artists from user id
+	artists, err := dbmap.GetArtistsFromUserId(userId)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
 
 	// get new releases
-	newReleases, err := GetNewReleases(client, userId)
+	newReleases, err := client.GetNewReleases(artists, userId)
 	if err != nil {
 		fmt.Println(err)
+		return nil, err
 	}
-
-	err = DeleteRelation(userId)
-	if err != nil {
+	
+	/*
+	if err = dbmap.DeleteRelation(userId, time.Now()); err != nil {
 		fmt.Println(err)
-	}
+	}*/
 
-	return newReleases
+	return newReleases, nil
 }
