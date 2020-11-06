@@ -5,9 +5,10 @@ import (
 	"net/http"
 	//"log"
 	//"os"
-	"time"
+	//"time"
 	. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/session"
+	. "Spotify_new_releases/event"
 	//. "Spotify_new_releases/database"
 )
 
@@ -45,53 +46,20 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.Save(r, w)
 
 	mydbmap.InsertUser(userId, playlistId, token)
+	if err := GetFollowingArtistsAndInsertRelations(mydbmap, userId, token); err != nil {
+		fmt.Println(err)
+	}
 
 	http.Redirect(w, r, "/home", 301)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("home")
-
-	userId, token, playlistId := GetTokenFromSession(r)
-	fmt.Println(token)
-	
-	client := CreateMyClientFromToken(token)
-	fmt.Println(client)
-	
-	artists, newToken := client.GetRecentlyPlayedArtists()
-	fmt.Println(artists)
-
-	timestamp := time.Now()
-	fmt.Println(newToken)
-
-	for _, artist := range artists {
-		//fmt.Println(artist)
-		name := artist.SimpleArtist.Name
-		artistId := artist.SimpleArtist.ID.String()
-		url := artist.SimpleArtist.ExternalURLs["spotify"]
-		iconUrl := artist.Images[0].URL
-		
-		fmt.Println(artist)
-		err := mydbmap.InsertArtist(artistId, name, url, iconUrl)
-		if err != nil {
-			fmt.Println(62, name)
-			fmt.Println(err)
-		}
-
-		err = mydbmap.InsertRelation(artistId, userId, timestamp)
-		if err != nil {
-			fmt.Println(68, name)
-			fmt.Println(err)
-		}
-	}
-	err := mydbmap.UpdateUser(userId, playlistId, newToken)
-	if err != nil {
+	if err := UpdateRelation(mydbmap); err != nil {
 		fmt.Println(err)
 	}
-
-	newReleases, err := client.GetNewReleases(mydbmap, userId)
-	if err != nil {
+	if err := UpdatePlaylist(mydbmap); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(newReleases)
+	
 }
