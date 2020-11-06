@@ -5,10 +5,12 @@ import (
 	"golang.org/x/oauth2"
 	"time"
 	"fmt"
-	"Spotify_new_releases/database"
+	. "Spotify_new_releases/database"
 )
 
+// GetCurrentUserId returns user id of the current client.
 func (c *Client) GetCurrentUserId() (string, error) {
+	// get a current user
 	user, err := c.Client.CurrentUser()
 	if err != nil {
 		fmt.Println(err)
@@ -17,7 +19,9 @@ func (c *Client) GetCurrentUserId() (string, error) {
 	return user.ID, nil
 }
 
+// CreatePlaylistForUser makes a new spotify playlist for a user.
 func (c *Client) CreatePlaylistForUser(userId string) (*spotify.FullPlaylist, error){
+	// create a new spotify playlist
 	playlist, err := c.Client.CreatePlaylistForUser(userId, "New Releases", "", true)
 	if err != nil {
 		fmt.Println(err)
@@ -25,7 +29,9 @@ func (c *Client) CreatePlaylistForUser(userId string) (*spotify.FullPlaylist, er
 	return playlist, err
 }
 
+// GetRecentlyPlayedArtists returns a list of artists who the user played recently.
 func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, *oauth2.Token) {
+	// get tracks which are played within 50 minutes 
 	t := time.Now().UTC() // present time
 	t = t.Add(-50 * time.Minute) // 50 minutes before present time 
 	afterTime := t.UnixNano() / int64(time.Millisecond) // convert to milliseconds
@@ -33,7 +39,7 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 
 	artistsSet := make(map[spotify.ID]spotify.FullArtist) // set of artists
 	
-	// add artist to artistsSet if not existed
+	// add an artist to artistsSet if the artist is not existed in artistsSet
 	for _, item := range recentlyPlayedItems {
 		for _, artist := range item.Track.Artists {
 			if _, ok := artistsSet[artist.ID]; !ok {
@@ -43,19 +49,16 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 		}
 	}
 
+	// get new token
 	token, _ := c.Client.Token()
 
 	return artistsSet, token
 
 }
 
-func (c *Client) GetNewReleases(dbmap *database.MyDbMap, userId string) ([]spotify.SimpleAlbum, error) {
+// GetNewReleases returns new releases based on the user's interests.
+func (c *Client) GetNewReleases(artists []ArtistInfo, userId string) ([]spotify.SimpleAlbum, error) {
 	var newReleases []spotify.SimpleAlbum
-	// get artists from user id
-	artists, err := dbmap.GetArtistsFromUserId(userId)
-	if err != nil {
-		fmt.Println(err)
-	}
 
 	// present UTC time
 	now := time.Now().UTC()
@@ -73,6 +76,7 @@ func (c *Client) GetNewReleases(dbmap *database.MyDbMap, userId string) ([]spoti
 		albums, err := c.Client.GetArtistAlbumsOpt(spotify.ID(artistId), &opt, 2) // get albums
 		if err != nil {
 			fmt.Println(err)
+			return nil, err
 		}
 		// if the album or single is released this week, add the track to newReleases
 		for _, album := range albums.Albums {
@@ -86,20 +90,62 @@ func (c *Client) GetNewReleases(dbmap *database.MyDbMap, userId string) ([]spoti
 	return newReleases, nil
 }
 
-func ChangePlaylist(newReleases []spotify.SimpleAlbum, user database.UserInfo) error {
-	// get user info 
+// GetFollowingArtists returns artists' information a user follows.
+func (c *Client) GetFollowingArtists(userId string) ([]ArtistInfo, error) {
+	lastId := ""
+	var artists []ArtistInfo
+
+	// By specifying lastId, CurrentUsersFollowedArtistsOpt returns the next 50 artists the user follows.
+	for {
+		following, err := c.Client.CurrentUsersFollowedArtistsOpt(50, lastId)
+		if err != nil {
+			fmt.Println(err)
+		}
+		for _, following := range following.Artists {
+			var name, artistId, url, iconUrl string
+			name, artistId, url, iconUrl = GetArtistInfo(following)
+			lastId = artistId
+			artists = append(artists, ArtistInfo{ArtistId: artistId, Name:name, Url:url, IconUrl:iconUrl})
+		}
+
+		if len(following.Artists) < 50 {
+			break
+		}
+	}
+	return artists, nil
+}
+
+// GetArtistInfo retrieves artist's name, id, url, iconUrl and returns them.
+func GetArtistInfo(artist spotify.FullArtist) (string, string, string, string) {
+	var name, artistId, url, iconUrl string
+	name = artist.SimpleArtist.Name
+	artistId = artist.SimpleArtist.ID.String()
+	url = artist.SimpleArtist.ExternalURLs["spotify"]
+	if len(artist.Images) > 0 {
+		iconUrl = artist.Images[0].URL
+	} else {
+		iconUrl = ""
+	}
+
+	return name, artistId, url, iconUrl
+}
+
+// ChangePlaylist change tracks in the playlist "new releases".
+func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 	playlistId := user.PlaylistId
 	client := CreateMyClientFromUserInfo(user).Client
 
 	var addTracks []spotify.ID
 
-	// ReplacePlaylistTracks
+	// retrieves track ids from newReleases. If album type is album, the first song in the album will
+	// be in the playlist.
 	for _, album := range newReleases {
 		albumId := album.ID
 		albumTracks, err := client.GetAlbumTracks(albumId)
 		if err != nil {
 			fmt.Println(err)
 		}
+		fmt.Println(albumTracks.Tracks)
 		track := albumTracks.Tracks[0]
 
 		trackId := track.ID
@@ -107,6 +153,7 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user database.UserInfo) e
 		addTracks = append(addTracks, trackId)
 	}
 
+	// change the tracks in the playlist.
 	err := client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks...)
 	if err != nil {
 		fmt.Println(err)
