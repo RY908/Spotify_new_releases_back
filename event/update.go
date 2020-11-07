@@ -102,11 +102,15 @@ func GetNewReleasesAndDeleteRelation(dbmap *MyDbMap, user UserInfo) ([]spotify.S
 		fmt.Println(err)
 		return nil, err
 	}
+
+	// present UTC time
+	now := time.Now().UTC()
+	// 7 days ago from present time
+	monthAgo := now.AddDate(0, -1, 0)
 	
-	/*
-	if err = dbmap.DeleteRelation(userId, time.Now()); err != nil {
+	if err = dbmap.DeleteRelation(userId, monthAgo); err != nil {
 		fmt.Println(err)
-	}*/
+	}
 
 	return newReleases, nil
 }

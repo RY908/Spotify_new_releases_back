@@ -58,7 +58,7 @@ func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp
 }
 
 func (d *MyDbMap) DeleteRelation(userId string, timestamp time.Time) error {
-	res, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp <> ? and ifFollowing <> false", userId, timestamp)
+	res, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp < ? and ifFollowing = false", userId, timestamp)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -100,7 +100,7 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 }
 
 func (d *MyDbMap) DeleteFollowingRelations(userId string, timestamp time.Time) error {
-	if _, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp = ? and ifFollowing = true", userId, timestamp); err != nil {
+	if _, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp <> ? and ifFollowing = true", userId, timestamp); err != nil {
 		return err
 	}
 
