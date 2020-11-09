@@ -3,52 +3,22 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"net/http"
 	"encoding/gob"
-	//"golang.org/x/oauth2"
-	//"github.com/zmb3/spotify"
 	"github.com/gorilla/mux"
-	//"github.com/gorilla/sessions"
-	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-gorp/gorp"
 	. "Spotify_new_releases/database"
 	. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/session"
+	. "Spotify_new_releases/event"
+	"github.com/robfig/cron/v3"
 )
 
 var (
-	/*
-	clientID = os.Getenv("SPOTIFY_ID_3")
-	secretKey = os.Getenv("SPOTIFY_SECRET_3")
-	auth  = spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic)
-	state = "abc123"
-	session_name = "spotify_access_token"
-	store *sessions.CookieStore
-	session *sessions.Session
-	*/
-	sqlPath = os.Getenv("SQL_PATH")
-	db, _ = sql.Open("mysql", sqlPath)
-	dbmap = &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{}}
-	mydbmap = DatabaseInit(dbmap)
+	mydbmap = DatabaseInit()
 )
 
 func main() {
-	/*
-	dbmap.AddTableWithName(ArtistInfo{}, "Artist").SetKeys(false, "ArtistId")
-	dbmap.AddTableWithName(ListenTo{}, "ListenTo").SetKeys(true, "ListenId")
-	dbmap.AddTableWithName(UserInfo{}, "User").SetKeys(false, "UserId")
-	//dbmap.CreateTablesIfNotExists()
-	fmt.Printf("dbmap: %T", dbmap)
-	defer db.Close()
-	defer dbmap.Db.Close()
-
-	auth.SetAuthInfo(clientID, secretKey)
-
-	*/
-	defer db.Close()
-	defer dbmap.Db.Close()
 	// セッション初期処理
 	gob.Register(UserSession{})
 	SessionInit()
@@ -56,6 +26,14 @@ func main() {
 	r := mux.NewRouter()
 	url := GetURL()
 	fmt.Println("Please log in to Spotify by visiting the following page in your browser:", url)
+	
+	// cron
+	c := cron.New()
+	c.AddFunc("@every 30m", func() {
+		UpdateRelation(mydbmap)
+	})
+	c.Start()
+	defer c.Stop()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Got request for:", r.URL.String())
