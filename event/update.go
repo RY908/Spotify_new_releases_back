@@ -11,7 +11,7 @@ import (
 
 // This is called every 50-60 minutes to get the users recently played tracks and insert the data into the database.
 func UpdateRelation(dbmap *MyDbMap) error {
-	fmt.Println("UpdateRelation")
+	fmt.Println("UpdateRelation: ", time.Now())
 	// get all the users' information from database.
 	users, err := dbmap.GetAllUsers()
 
