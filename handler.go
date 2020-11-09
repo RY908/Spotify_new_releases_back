@@ -5,12 +5,22 @@ import (
 	"net/http"
 	//"log"
 	//"os"
-	//"time"
+	"time"
+	"html/template"
 	. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/session"
 	. "Spotify_new_releases/event"
 	//. "Spotify_new_releases/database"
 )
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("login")
+	url := GetURL()
+	t := template.Must(template.ParseFiles("templates/index.html"))
+	if err := t.Execute(w, url); err != nil {
+		fmt.Println(err)
+	}
+}
 
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +65,10 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("home")
+	t := template.Must(template.ParseFiles("templates/home.html"))
+	if err := t.Execute(w, time.Now()); err != nil {
+		fmt.Println(err)
+	}
 	if err := UpdateRelation(mydbmap); err != nil {
 		fmt.Println(err)
 	}
