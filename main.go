@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"encoding/gob"
 	"github.com/gorilla/mux"
@@ -35,9 +34,7 @@ func main() {
 	c.Start()
 	defer c.Stop()
 
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Got request for:", r.URL.String())
-	})
+	r.HandleFunc("/", loginHandler)
 	r.HandleFunc("/callback", redirectHandler)
 	r.HandleFunc("/home", homeHandler).Methods("GET")
 	//r.HandleFunc("/result", resultHander).Methods("POST")
