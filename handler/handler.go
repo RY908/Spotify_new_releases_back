@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"fmt"
@@ -10,10 +10,10 @@ import (
 	. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/session"
 	. "Spotify_new_releases/event"
-	//. "Spotify_new_releases/database"
+	. "Spotify_new_releases/database"
 )
 
-func loginHandler(w http.ResponseWriter, r *http.Request) {
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login")
 	url := GetURL()
 	t := template.Must(template.ParseFiles("templates/index.html"))
@@ -23,7 +23,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func redirectHandler(w http.ResponseWriter, r *http.Request) {
+func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	// use the same state string here that you used to generate the URL
 	fmt.Println("/handle")
 	/*
@@ -63,7 +63,7 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/home", 301)
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func HomeHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	fmt.Println("home")
 	t := template.Must(template.ParseFiles("templates/home.html"))
 	if err := t.Execute(w, time.Now()); err != nil {

@@ -10,6 +10,7 @@ import (
 	. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/session"
 	. "Spotify_new_releases/event"
+	. "Spotify_new_releases/handler"
 	"github.com/robfig/cron/v3"
 )
 
@@ -34,9 +35,15 @@ func main() {
 	c.Start()
 	defer c.Stop()
 
-	r.HandleFunc("/", loginHandler)
-	r.HandleFunc("/callback", redirectHandler)
-	r.HandleFunc("/home", homeHandler).Methods("GET")
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		LoginHandler(w, r)
+	})
+	r.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		RedirectHandler(w, r, mydbmap)
+	})
+	r.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
+		HomeHandler(w, r, mydbmap)
+	}).Methods("GET")
 	//r.HandleFunc("/result", resultHander).Methods("POST")
 	//.HandleFunc("/logout", logoutHandler)
 	// rを割当
