@@ -72,8 +72,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	if err := UpdateRelation(mydbmap); err != nil {
 		fmt.Println(err)
 	}
-	if err := UpdatePlaylist(mydbmap); err != nil {
+	/*if err := UpdatePlaylist(mydbmap); err != nil {
 		fmt.Println(err)
-	}
+	}*/
 	
 }
