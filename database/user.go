@@ -37,7 +37,7 @@ func (d *MyDbMap) InsertUser(userId, playlistId string, Token *oauth2.Token) err
 
 func (d *MyDbMap) GetAllUsers() ([]UserInfo, error) {
 	var users []UserInfo
-	if _, err := d.DbMap.Select(&users, "select * from user"); err != nil {
+	if _, err := d.DbMap.Select(&users, "select * from User"); err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
