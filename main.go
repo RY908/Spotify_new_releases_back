@@ -26,7 +26,7 @@ func main() {
 	r := mux.NewRouter()
 	url := GetURL()
 	fmt.Println("Please log in to Spotify by visiting the following page in your browser:", url)
-	
+
 	// cron
 	c := cron.New()
 	c.AddFunc("@every 30m", func() {
@@ -48,6 +48,6 @@ func main() {
 	//.HandleFunc("/logout", logoutHandler)
 	// rを割当
 	//http.Handle("/", r)
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":9990", r)
 }
 
