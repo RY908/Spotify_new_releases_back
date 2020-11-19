@@ -32,8 +32,11 @@ func main() {
 	c.AddFunc("@every 30m", func() {
 		UpdateRelation(mydbmap)
 	})
+	c.AddFunc("@every 5s", func() {
+		fmt.Println("5s")
+	})
 	c.Start()
-	defer c.Stop()
+	//defer c.Stop()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		LoginHandler(w, r)
