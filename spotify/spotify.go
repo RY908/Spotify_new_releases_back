@@ -70,7 +70,7 @@ func (c *Client) GetNewReleases(artists []ArtistInfo, userId string) ([]spotify.
 	for _, artist := range artists {
 		artistId := artist.ArtistId // artist id to search
 		offset := 0
-		limit := 50 
+		limit := 10 
 		
 		opt := spotify.Options{Country:&user.Country, Limit:&limit, Offset:&offset}
 		albums, err := c.Client.GetArtistAlbumsOpt(spotify.ID(artistId), &opt, 2) // get albums

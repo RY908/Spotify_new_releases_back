@@ -9,13 +9,14 @@ import (
 	"Spotify_new_releases/database"
 )
 
-const redirectURI = "http://localhost:8080/callback"
+const redirectURI = os.Getenv("REDIRECT_URI")
 
 var (
 	clientID = os.Getenv("SPOTIFY_ID_3")
 	secretKey = os.Getenv("SPOTIFY_SECRET_3")
 	state = "abc123"
 )
+
 
 type Client struct {
 	Client *spotify.Client
