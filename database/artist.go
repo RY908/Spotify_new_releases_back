@@ -1,10 +1,7 @@
 package database
 
 import (
-	//"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	//"github.com/go-gorp/gorp"
-	"fmt"
 )
 
 type ArtistInfo struct {
@@ -17,7 +14,6 @@ type ArtistInfo struct {
 func (d *MyDbMap) InsertArtist(artistId, name, url, iconUrl string) error {
 	count, err := d.DbMap.SelectInt("select count(*) from Artist where artistId = ?", artistId) // check if artist already exists in database
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -27,7 +23,6 @@ func (d *MyDbMap) InsertArtist(artistId, name, url, iconUrl string) error {
 	}
 	
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -36,7 +31,6 @@ func (d *MyDbMap) InsertArtist(artistId, name, url, iconUrl string) error {
 func (d *MyDbMap) InsertArtists(artists []ArtistInfo) error {
 	trans, err := d.DbMap.Begin()
 	if err != nil {
-		fmt.Println(err)
 		return err	
 	}
 	
@@ -44,7 +38,6 @@ func (d *MyDbMap) InsertArtists(artists []ArtistInfo) error {
 		artistId := artist.ArtistId
 		count, err := trans.SelectInt("select count(*) from Artist where artistId = ?", artistId) // check if artist already exists in database
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
 
@@ -54,7 +47,6 @@ func (d *MyDbMap) InsertArtists(artists []ArtistInfo) error {
 		}
 		
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
 	}
@@ -67,7 +59,6 @@ func (d *MyDbMap) GetArtistsFromUserId(userId string) ([]ArtistInfo, error) {
 	cmd := "select Artist.artistId, Artist.name, Artist.url, Artist.iconUrl from Artist inner join ListenTo on Artist.artistId = ListenTo.artistId where ListenTo.userId = ?"
 	_, err := d.DbMap.Select(&artists, cmd, userId)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err  
 	}
 	return artists, nil

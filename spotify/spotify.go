@@ -13,7 +13,6 @@ func (c *Client) GetCurrentUserId() (string, error) {
 	// get a current user
 	user, err := c.Client.CurrentUser()
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	return user.ID, nil
@@ -24,7 +23,7 @@ func (c *Client) CreatePlaylistForUser(userId string) (*spotify.FullPlaylist, er
 	// create a new spotify playlist
 	playlist, err := c.Client.CreatePlaylistForUser(userId, "New Releases", "", true)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 	return playlist, err
 }
@@ -75,14 +74,13 @@ func (c *Client) GetNewReleases(artists []ArtistInfo, userId string) ([]spotify.
 		opt := spotify.Options{Country:&user.Country, Limit:&limit, Offset:&offset}
 		albums, err := c.Client.GetArtistAlbumsOpt(spotify.ID(artistId), &opt, 2) // get albums
 		if err != nil {
-			fmt.Println(err)
 			return nil, err
 		}
 		// if the album or single is released this week, add the track to newReleases
 		for _, album := range albums.Albums {
 			if album.ReleaseDateTime().After(after) {
 				newReleases = append(newReleases, album)
-				fmt.Println(album.Name)
+				//fmt.Println(album.Name)
 			}
 		}
 
@@ -99,7 +97,7 @@ func (c *Client) GetFollowingArtists(userId string) ([]ArtistInfo, error) {
 	for {
 		following, err := c.Client.CurrentUsersFollowedArtistsOpt(50, lastId)
 		if err != nil {
-			fmt.Println(err)
+			return nil, err
 		}
 		for _, following := range following.Artists {
 			var name, artistId, url, iconUrl string
@@ -156,7 +154,7 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 	// change the tracks in the playlist.
 	err := client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks...)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
 	return nil

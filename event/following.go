@@ -16,18 +16,18 @@ func GetFollowingArtistsAndInsertRelations(dbmap *MyDbMap, userId string, token 
 	// get user's following artists
 	artists, err := client.GetFollowingArtists(userId)
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to get following artists: %w", err)
 		return err
 	}
 
 	// insert the artists' data and relation between the artists and the user into the database.
 	if err := dbmap.InsertArtists(artists); err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to insert artists: %w", err)
 		return err
 	}
 	timestamp := time.Now()
 	if err := dbmap.InsertRelations(artists, userId, timestamp, true); err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to insert relations: %w", err)
 		return err
 	}
 
@@ -45,19 +45,19 @@ func UpdateFollowingArtists(dbmap *MyDbMap, user UserInfo) error {
 	// get user's following artists
 	artists, err := client.GetFollowingArtists(userId)
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to get following artists: %w", err)
 		return err
 	}
 
 	timestamp := time.Now()
 
 	if err := dbmap.UpdateFollowingRelation(artists, userId, timestamp); err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to update following relation: %w", err)
 		return err
 	}
 
 	if err := dbmap.DeleteFollowingRelations(userId, timestamp); err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to delete following relation: %w", err)
 		return err
 	}
 	return nil

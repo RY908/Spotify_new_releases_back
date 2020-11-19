@@ -11,12 +11,11 @@ import (
 
 // This is called every 50-60 minutes to get the users recently played tracks and insert the data into the database.
 func UpdateRelation(dbmap *MyDbMap) error {
-	fmt.Println("UpdateRelation: ", time.Now())
 	// get all the users' information from database.
 	users, err := dbmap.GetAllUsers()
 
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to get users: %w", err)
 		return err
 	}
 
@@ -41,15 +40,15 @@ func UpdateRelation(dbmap *MyDbMap) error {
 
 		// update the database.
 		if err := dbmap.InsertArtists(artistsToInsert); err != nil {
-			fmt.Println(err)
+			err = fmt.Errorf("unable to insert artists: %w", err)
 			return err
 		}
 		if err := dbmap.InsertRelations(artistsToInsert, userId, timestamp, false); err != nil {
-			fmt.Println(err)
+			err = fmt.Errorf("unable to insert artists: %w", err)
 			return err
 		}
 		if err := dbmap.UpdateUser(userId, playlistId, newToken); err != nil {
-			fmt.Println(err)
+			err = fmt.Errorf("unable to update user: %w", err)
 			return err
 		}
 	}
@@ -62,19 +61,20 @@ func UpdatePlaylist(dbmap *MyDbMap) error {
 	users, err := dbmap.GetAllUsers()
 
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to get users: %w", err)
+		return err
 	}
 
 	// for each user, get new releases and delete relations some time ago and change the spotify playlist.
 	for _, user := range users {
 		newReleases, err := GetNewReleasesAndDeleteRelation(dbmap, user)
 		if err != nil {
-			fmt.Println(err)
+			err = fmt.Errorf("unable to get new releases: %w", err)
 			return err
 		}
 	
 		if err := ChangePlaylist(newReleases, user); err != nil {
-			fmt.Println(err)
+			err = fmt.Errorf("unable to change playlist: %w", err)
 			return err
 		}
 	}
@@ -93,14 +93,14 @@ func GetNewReleasesAndDeleteRelation(dbmap *MyDbMap, user UserInfo) ([]spotify.S
 	// get artists from user id
 	artists, err := dbmap.GetArtistsFromUserId(userId)
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to get artists from user id: %w", err)
 		return nil, err
 	}
 
 	// get new releases
 	newReleases, err := client.GetNewReleases(artists, userId)
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to get new releases: %w", err)
 		return nil, err
 	}
 
@@ -110,7 +110,8 @@ func GetNewReleasesAndDeleteRelation(dbmap *MyDbMap, user UserInfo) ([]spotify.S
 	monthAgo := now.AddDate(0, -1, 0)
 	
 	if err = dbmap.DeleteRelation(userId, monthAgo); err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to delete relation: %w", err)
+		return nil, err
 	}
 
 	return newReleases, nil

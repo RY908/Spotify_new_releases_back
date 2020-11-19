@@ -4,7 +4,6 @@ import (
 	//"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	//"github.com/go-gorp/gorp"
-	"fmt"
 	"time"
 )
 
@@ -19,14 +18,12 @@ type ListenTo struct {
 func (d *MyDbMap) InsertRelation(artistId, userId string, timestamp time.Time, ifFollowing bool) error {
 	count, err := d.DbMap.SelectInt("select count(*) from ListenTo where artistId = ? and userId = ?", artistId, userId)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	if count == 0 {
 		err = d.DbMap.Insert(&ListenTo{ArtistId:artistId, UserId: userId, Timestamp:timestamp, IfFollowing: ifFollowing})
 	}
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -35,7 +32,6 @@ func (d *MyDbMap) InsertRelation(artistId, userId string, timestamp time.Time, i
 func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp time.Time, ifFollowing bool) error {
 	trans, err := d.DbMap.Begin()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -43,14 +39,12 @@ func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp
 		artistId := artist.ArtistId
 		count, err := trans.SelectInt("select count(*) from ListenTo where artistId = ? and userId = ?", artistId, userId)
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
 		if count == 0 {
 			err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, Timestamp:timestamp, IfFollowing: ifFollowing})
 		}
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
 	}
@@ -58,19 +52,16 @@ func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp
 }
 
 func (d *MyDbMap) DeleteRelation(userId string, timestamp time.Time) error {
-	res, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp < ? and ifFollowing = false", userId, timestamp)
+	_, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp < ? and ifFollowing = false", userId, timestamp)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
-	fmt.Println(res)
 	return nil
 }
 
 func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, timestamp time.Time) error {
 	trans, err := d.DbMap.Begin()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -78,7 +69,6 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 		artistId := artist.ArtistId
 		count, err := trans.SelectInt("select count(*) from ListenTo where artistId = ? and userId = ? and ifFollowing = true", artistId, userId)
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
 		if count == 0 {

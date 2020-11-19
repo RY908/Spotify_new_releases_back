@@ -32,16 +32,17 @@ func GetURL() string {
 
 // CreateMyClient creates a new client.
 // This is called when the user first logs in.
-func CreateMyClient(r *http.Request) (*Client, *oauth2.Token, *http.Request) {
+func CreateMyClient(r *http.Request) (*Client, *oauth2.Token, *http.Request, error) {
 	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead)
 	auth.SetAuthInfo(clientID, secretKey)
 	token, err := auth.Token(state, r)
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("unable to get token: %w", err)
+		return nil, nil, r, err
 	}
 	client := auth.NewClient(token)
 
-	return &Client{Client: &client}, token, r
+	return &Client{Client: &client}, token, r, nil
 }
 
 // CreateMyClientFromUserInfo creates a new client from data in the database.
