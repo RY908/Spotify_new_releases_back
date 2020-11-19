@@ -38,27 +38,34 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	}
 
 	client := auth.NewClient(token)*/
+
+	// create client and get token
 	client, token, r := CreateMyClient(r)
-	//client = client.Client
+	
 	userId, err := client.GetCurrentUserId()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	playlist, err := client.CreatePlaylistForUser(userId)
-	if err != nil {
-		fmt.Println(err)
+	var playlistId string
+	ifExists, user, err := mydbmap.ExistUser(userId)
+	if !ifExists {
+		playlist, err := client.CreatePlaylistForUser(userId)
+		if err != nil {
+			fmt.Println(err)
+		}
+		playlistId = string(playlist.ID)
+		mydbmap.InsertUser(userId, playlistId, token)
+		if err := GetFollowingArtistsAndInsertRelations(mydbmap, userId, token); err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		playlistId = user.PlaylistId
 	}
-	playlistId := string(playlist.ID)
 	
 	session, _ := Store.Get(r, Session_name)
 	session.Values["user"] = UserSession{ID: userId, Token:*token, PlaylistId: playlistId}
 	err = session.Save(r, w)
-
-	mydbmap.InsertUser(userId, playlistId, token)
-	if err := GetFollowingArtistsAndInsertRelations(mydbmap, userId, token); err != nil {
-		fmt.Println(err)
-	}
 
 	http.Redirect(w, r, "/home", 301)
 }

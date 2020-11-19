@@ -18,6 +18,16 @@ type UserInfo struct {
 	PlaylistId		string 		`db:playlistId`
 }
 
+func (d *MyDbMap) ExistUser(userId string) (bool, UserInfo, error) {
+	var user UserInfo
+	err := dbmap.SelectOne(&user, "select * from User where userId=?", userId)
+	if err != nil {
+		fmt.Println(err)
+		return false, user, err
+	}
+	return true, user, nil
+}
+
 func (d *MyDbMap) InsertUser(userId, playlistId string, Token *oauth2.Token) error {
 	count, err := d.DbMap.SelectInt("select count(*) from User where userId = ?", userId)
 	if err != nil {
