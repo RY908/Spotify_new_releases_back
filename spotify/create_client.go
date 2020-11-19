@@ -9,7 +9,7 @@ import (
 	"Spotify_new_releases/database"
 )
 
-const redirectURI = os.Getenv("REDIRECT_URI")
+var redirectURI = os.Getenv("REDIRECT_URI")
 
 var (
 	clientID = os.Getenv("SPOTIFY_ID_3")
