@@ -132,7 +132,7 @@ func GetArtistInfo(artist spotify.FullArtist) (string, string, string, string) {
 func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 	playlistId := user.PlaylistId
 	client := CreateMyClientFromUserInfo(user).Client
-
+	idSet := make(map[spotify.ID]struct{})
 	var addTracks []spotify.ID
 
 	// retrieves track ids from newReleases. If album type is album, the first song in the album will
@@ -147,8 +147,12 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 		track := albumTracks.Tracks[0]
 
 		trackId := track.ID
-
-		addTracks = append(addTracks, trackId)
+		
+		if _, ok := idSet[trackId]; !ok {
+			idSet[trackId] = struct{}{}
+			addTracks = append(addTracks, trackId)
+		}
+		//addTracks = append(addTracks, trackId)
 	}
 
 	// change the tracks in the playlist.
