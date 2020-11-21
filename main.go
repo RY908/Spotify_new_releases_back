@@ -29,11 +29,11 @@ func main() {
 
 	// cron
 	c := cron.New()
-	c.AddFunc("@every 30m", func() {
+	c.AddFunc("@every 20m", func() {
 		UpdateRelation(mydbmap)
 	})
 	c.Start()
-	defer c.Stop()
+	//defer c.Stop()
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		LoginHandler(w, r)
