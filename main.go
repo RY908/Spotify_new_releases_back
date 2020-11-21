@@ -29,11 +29,8 @@ func main() {
 
 	// cron
 	c := cron.New()
-	c.AddFunc("@every 30m", func() {
+	c.AddFunc("@every 20m", func() {
 		UpdateRelation(mydbmap)
-	})
-	c.AddFunc("@every 5s", func() {
-		fmt.Println("5s")
 	})
 	c.Start()
 	//defer c.Stop()
