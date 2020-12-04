@@ -30,10 +30,14 @@ func main() {
 	// cron
 	c := cron.New()
 	c.AddFunc("@every 20m", func() {
-		UpdateRelation(mydbmap)
+		if err := UpdateRelation(mydbmap); err != nil {
+			fmt.Println(err)
+		}
 	})
-	c.AddFunc("41 15 * * 5", func() {
-		fmt.Println(UpdatePlaylist(mydbmap))
+	c.AddFunc("10 00 * * 5", func() {
+		if err := UpdatePlaylist(mydbmap); err != nil {
+			fmt.Println(err)
+		}
 	})
 	c.Start()
 	//defer c.Stop()
