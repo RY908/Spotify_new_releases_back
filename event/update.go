@@ -11,7 +11,7 @@ import (
 
 // This is called every 50-60 minutes to get the users recently played tracks and insert the data into the database.
 func UpdateRelation(dbmap *MyDbMap) error {
-	fmt.Println("Update Relation")
+	fmt.Println("Update Relation!")
 	// get all the users' information from database.
 	users, err := dbmap.GetAllUsers()
 
@@ -58,6 +58,7 @@ func UpdateRelation(dbmap *MyDbMap) error {
 
 // UpdatePlaylist updates the relation in the database and change the spotify playlist.
 func UpdatePlaylist(dbmap *MyDbMap) error {
+	fmt.Println("Update Playlist!")
 	// get all the users' information from database.
 	users, err := dbmap.GetAllUsers()
 
@@ -79,6 +80,7 @@ func UpdatePlaylist(dbmap *MyDbMap) error {
 			return err
 		}
 	}
+	fmt.Println("Updated")
 	return nil
 }
 

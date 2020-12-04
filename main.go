@@ -32,8 +32,8 @@ func main() {
 	c.AddFunc("@every 20m", func() {
 		UpdateRelation(mydbmap)
 	})
-	c.AddFunc("CRON_TZ=Asia/Tokyo 10 00 * * * 5", func() {
-		UpdatePlaylist(mydbmap)
+	c.AddFunc("32 14 * * 5", func() {
+		fmt.Println(UpdatePlaylist(mydbmap))
 	})
 	c.Start()
 	//defer c.Stop()
