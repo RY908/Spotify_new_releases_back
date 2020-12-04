@@ -32,7 +32,7 @@ func main() {
 	c.AddFunc("@every 20m", func() {
 		UpdateRelation(mydbmap)
 	})
-	c.AddFunc("32 14 * * 5", func() {
+	c.AddFunc("41 15 * * 5", func() {
 		fmt.Println(UpdatePlaylist(mydbmap))
 	})
 	c.Start()

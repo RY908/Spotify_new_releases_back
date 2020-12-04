@@ -83,6 +83,7 @@ func (c *Client) GetNewReleases(artists []ArtistInfo, userId string) ([]spotify.
 				//fmt.Println(album.Name)
 			}
 		}
+		time.Sleep(time.Millisecond * 500)
 
 	}
 	return newReleases, nil
@@ -153,6 +154,7 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 			addTracks = append(addTracks, trackId)
 		}
 		//addTracks = append(addTracks, trackId)
+		 time.Sleep(time.Millisecond * 500)
 	}
 
 	// change the tracks in the playlist.
