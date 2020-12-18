@@ -155,15 +155,23 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 		}
 		//addTracks = append(addTracks, trackId)
 		 time.Sleep(time.Millisecond * 500)
-	}
-
+	}	
+	fmt.Println(len(addTracks))
 	// change the tracks in the playlist.
 	change_num := (len(addTracks)-1) / 100 
-	if err := client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks[0:100]...); err != nil {
-		return err
+	if change_num == 0 {
+		if err := client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks...); err != nil {
+			return err
+		}
+	}	else {
+		if err := client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks[0:100]...); err != nil {
+			return err
+		}
 	}
+	
 	for i := 0; i < change_num; i++ {
 		var add []spotify.ID
+		fmt.Println(i)
 		if i == change_num-1 {
 			add = addTracks[(i+1)*100:]
 		} else {
@@ -173,6 +181,6 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 			return err
 		}
 	}
-	
+
 	return nil
 }
