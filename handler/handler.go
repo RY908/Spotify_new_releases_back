@@ -40,7 +40,8 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	client := auth.NewClient(token)*/
 
 	// create client and get token
-	client, token, r, err := CreateMyClient(r)
+	//client, token, r, err := CreateMyClient(r)
+	client, token, r, err := CreateMyClientFromCode(r)
 	if err != nil {
 		fmt.Println(err)
 	}
