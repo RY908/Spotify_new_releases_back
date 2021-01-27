@@ -5,11 +5,11 @@ import (
 	"net/http"
 	//"log"
 	//"os"
-	"golang.org/x/oauth2"
-	"io/ioutil"
+	//"golang.org/x/oauth2"
+	//"io/ioutil"
 	//"time"
 	"encoding/json"
-	"html/template"
+	//"html/template"
 	. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/session"
 	. "Spotify_new_releases/event"
@@ -17,7 +17,7 @@ import (
 )
 
 type Request struct {
-	Token *oauth2.Token `json:token`
+	Token string `json:token`
 }
 
 type Response struct {
@@ -27,11 +27,24 @@ type Response struct {
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login")
+	fmt.Println(r.Header["Referer"])
 	url := GetURL()
-	t := template.Must(template.ParseFiles("templates/index.html"))
+	fmt.Println(url)
+	/*t := template.Must(template.ParseFiles("templates/index.html"))
 	if err := t.Execute(w, url); err != nil {
 		fmt.Println(err)
-	}
+	}*/
+	/*response := Response{200, "ok"}
+        res, err := json.Marshal(response)
+        if err != nil {
+                fmt.Println(err)
+        }
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	w.Write(res)
+	fmt.Println(res)*/
+	http.Redirect(w, r, url, 301)
 }
 
 
@@ -39,7 +52,7 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	// use the same state string here that you used to generate the URL
 	fmt.Println("/handle")
 
-	body, err := ioutil.ReadAll(r.Body)
+	/*body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -49,12 +62,13 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	
 	token := request.Token
 	fmt.Println(token)
+	*/
 	// token = oauth2.Token(token)
 
 	// create client and get token
-	//client, token, r, err := CreateMyClient(r)
+	client, token, r, err := CreateMyClient(r)
 	// client, token, r, err := CreateMyClientFromCode(r)
-	client := CreateMyClientFromToken(*token)
+	//client := CreateMyClientFromToken(*token)
 	
 	userId, err := client.GetCurrentUserId()
 	if err != nil {
@@ -80,14 +94,23 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	session, _ := Store.Get(r, Session_name)
 	session.Values["user"] = UserSession{ID: userId, Token:*token, PlaylistId: playlistId}
 	err = session.Save(r, w)
-
+	
 	// http.Redirect(w, r, "/home", 301)
 	response := Response{200, "ok"}
 	res, err := json.Marshal(response)
 	if err != nil {
 		fmt.Println(err)
 	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	fmt.Println(res)
+	cookie := &http.Cookie{
+          Name: "hoge",
+          Value: "bar",
+     	}
+     	http.SetCookie(w, cookie)
+	http.Redirect(w, r, "http://localhost:8080/callback"+userId, 301)
 	w.Write(res)
 }
 
