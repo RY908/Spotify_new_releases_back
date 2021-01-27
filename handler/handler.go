@@ -5,13 +5,25 @@ import (
 	"net/http"
 	//"log"
 	//"os"
-	"time"
+	"golang.org/x/oauth2"
+	"io/ioutil"
+	//"time"
+	"encoding/json"
 	"html/template"
 	. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/session"
 	. "Spotify_new_releases/event"
 	. "Spotify_new_releases/database"
 )
+
+type Request struct {
+	Token *oauth2.Token `json:token`
+}
+
+type Response struct {
+	Status int 		`json:status`
+	Result string 	`json:result`
+}
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login")
@@ -26,25 +38,23 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	// use the same state string here that you used to generate the URL
 	fmt.Println("/handle")
-	/*
-	token, err := auth.Token(state, r)
-	if err != nil {
-		http.Error(w, "Couldn't get token", http.StatusNotFound)
-		return
-	}
-	if st := r.FormValue("state"); st != state {
-		http.NotFound(w, r)
-		log.Fatalf("State mismatch: %s != %s\n", st, state)
-	}
 
-	client := auth.NewClient(token)*/
-
-	// create client and get token
-	//client, token, r, err := CreateMyClient(r)
-	client, token, r, err := CreateMyClientFromCode(r)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Println(err)
 	}
+	bytes := []byte(body)
+	var request Request
+	json.Unmarshal(bytes, &request)
+	
+	token := request.Token
+	fmt.Println(token)
+	// token = oauth2.Token(token)
+
+	// create client and get token
+	//client, token, r, err := CreateMyClient(r)
+	// client, token, r, err := CreateMyClientFromCode(r)
+	client := CreateMyClientFromToken(*token)
 	
 	userId, err := client.GetCurrentUserId()
 	if err != nil {
@@ -71,18 +81,34 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	session.Values["user"] = UserSession{ID: userId, Token:*token, PlaylistId: playlistId}
 	err = session.Save(r, w)
 
-	http.Redirect(w, r, "/home", 301)
+	// http.Redirect(w, r, "/home", 301)
+	response := Response{200, "ok"}
+	res, err := json.Marshal(response)
+	if err != nil {
+		fmt.Println(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	fmt.Println("home")
-	t := template.Must(template.ParseFiles("templates/home.html"))
+	fmt.Println(r)
+
+	response := Response{200, "ok"}
+	res, err := json.Marshal(response)
+	if err != nil {
+		fmt.Println(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
+	/*t := template.Must(template.ParseFiles("templates/home.html"))
 	if err := t.Execute(w, time.Now()); err != nil {
 		fmt.Println(err)
 	}
 	if err := UpdateRelation(mydbmap); err != nil {
 		fmt.Println(err)
-	}
+	}*/
 	/*if err := UpdatePlaylist(mydbmap); err != nil {
 		fmt.Println(err)
 	}*/
