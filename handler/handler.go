@@ -30,6 +30,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.Header["Referer"])
 	url := GetURL()
 	fmt.Println(url)
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+        w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+        w.Header().Set("Access-Control-Allow-Credentials", "true")
 	/*t := template.Must(template.ParseFiles("templates/index.html"))
 	if err := t.Execute(w, url); err != nil {
 		fmt.Println(err)
@@ -44,7 +48,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Access-Control-Allow-Headers","Content-Type")
 	w.Write(res)
 	fmt.Println(res)*/
-	http.Redirect(w, r, url, 301)
+	http.Redirect(w, r, url, 302)
 }
 
 
@@ -101,17 +105,20 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	fmt.Println(res)
 	cookie := &http.Cookie{
           Name: "hoge",
           Value: "bar",
-     	}
+     	  Path: "/",
+	}
      	http.SetCookie(w, cookie)
-	http.Redirect(w, r, "http://localhost:8080/callback"+userId, 301)
-	w.Write(res)
+	fmt.Println(w)
+	fmt.Println("w")
+	http.Redirect(w, r, "http://localhost:8080/callback", 302)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
@@ -123,7 +130,11 @@ func HomeHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+        w.Header().Set("Access-Control-Allow-Credentials", "true")
+
 	w.Write(res)
 	/*t := template.Must(template.ParseFiles("templates/home.html"))
 	if err := t.Execute(w, time.Now()); err != nil {
