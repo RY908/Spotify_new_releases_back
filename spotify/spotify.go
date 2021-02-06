@@ -134,7 +134,19 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 	playlistId := user.PlaylistId
 	client := CreateMyClientFromUserInfo(user).Client
 	idSet := make(map[spotify.ID]struct{})
+	pastTrackSet := make(map[spotify.ID]struct{})
+	trackSet := make(map[string]struct{})
 	var addTracks []spotify.ID
+
+	// get all the tracks in the playlist and put them in pastTrackSet
+	playlistTrackPage, err := client.GetPlaylistTracks(spotify.ID(playlistId))
+	if err != nil {
+		return err
+	}
+	playlistTracks := playlistTrackPage.Tracks
+	for _, track := range playlistTracks {
+		pastTrackSet[track.Track.ID] = struct{}{}
+	}
 
 	// retrieves track ids from newReleases. If album type is album, the first song in the album will
 	// be in the playlist.
@@ -143,15 +155,25 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 		albumTracks, err := client.GetAlbumTracks(albumId)
 		if err != nil {
 			fmt.Println(err)
+			return err
 		}
 		fmt.Println(albumTracks.Tracks)
 		track := albumTracks.Tracks[0]
+
+		artist := track.Artists[0].Name
+		trackName := track.Name
+		identifier := artist + trackName
 
 		trackId := track.ID
 		
 		if _, ok := idSet[trackId]; !ok {
 			idSet[trackId] = struct{}{}
-			addTracks = append(addTracks, trackId)
+			if _, ok := pastTrackSet[trackId]; !ok {
+				if _, ok := trackSet[identifier]; !ok {
+					trackSet[identifier] = struct{}{}
+					addTracks = append(addTracks, trackId)
+				}
+			}
 		}
 		//addTracks = append(addTracks, trackId)
 		 time.Sleep(time.Millisecond * 500)
