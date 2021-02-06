@@ -5,10 +5,10 @@ import (
 )
 
 type ArtistInfo struct {
-    ArtistId	string 		`db:"artistId"`
-	Name 		string 		`db:"name"`
-	Url 		string 		`db:"url"`
-	IconUrl		string 		`db:iconUrl`
+    ArtistId	string 		`db:"artistId" 	json:"artistId"`
+	Name 		string 		`db:"name" 		json:"name"`
+	Url 		string 		`db:"url" 		json:"url"`
+	IconUrl		string 		`db:iconUrl 	json:"iconUrl"`
 }
 
 func (d *MyDbMap) InsertArtist(artistId, name, url, iconUrl string) error {
