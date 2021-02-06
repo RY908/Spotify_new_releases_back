@@ -48,9 +48,6 @@ func main() {
 	r.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		RedirectHandler(w, r, mydbmap)
 	})
-	r.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
-		HomeHandler(w, r, mydbmap)
-	}).Methods("GET")
 	r.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
 		UserHandler(w, r, mydbmap)
 	}).Methods("GET")
