@@ -70,3 +70,16 @@ func CreateMyClientFromToken(token oauth2.Token) *Client {
 
 	return &Client{Client: &client}
 }
+
+func CreateMyClientFromCode(r *http.Request) (*Client, *oauth2.Token, *http.Request, error) {
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead)
+	code := r.FormValue("code")
+	token, err := auth.Exchange(code)
+	if err != nil {
+		err = fmt.Errorf("unable to get token from code: %w", err)
+		return nil, nil, r, err
+	}
+	client := auth.NewClient(token)
+
+	return &Client{Client: &client}, token, r, nil
+}

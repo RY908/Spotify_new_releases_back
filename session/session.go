@@ -25,6 +25,7 @@ type UserSession struct {
 
 func GetTokenFromSession(r *http.Request) (string, oauth2.Token, string) {
 	session, _ := Store.Get(r, Session_name)
+	fmt.Println("---------", session, "----------")
 	userId :=session.Values["user"].(UserSession).ID
 	token := session.Values["user"].(UserSession).Token
 	playlistId := session.Values["user"].(UserSession).PlaylistId

@@ -5,51 +5,71 @@ import (
 	"net/http"
 	//"log"
 	//"os"
+	"golang.org/x/oauth2"
+	//"io/ioutil"
 	"time"
-	"html/template"
+	"encoding/json"
+	//"html/template"
 	. "Spotify_new_releases/spotify"
-	. "Spotify_new_releases/session"
+	//. "Spotify_new_releases/session"
 	. "Spotify_new_releases/event"
 	. "Spotify_new_releases/database"
 )
 
+var layout = "2006-01-02 15:04:05"
+
+type Request struct {
+	Token string `json:token`
+}
+
+type Response struct {
+	Status 	int 			`json:"status"`
+	Result 	string 			`json:"result"`
+	Artists []ArtistInfo 	`json:"artists"`
+}
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login")
+	fmt.Println(r.Header["Referer"])
 	url := GetURL()
-	t := template.Must(template.ParseFiles("templates/index.html"))
+	fmt.Println(url)
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+ 	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	/*t := template.Must(template.ParseFiles("templates/index.html"))
 	if err := t.Execute(w, url); err != nil {
 		fmt.Println(err)
-	}
+	}*/
+	/*response := Response{200, "ok"}
+        res, err := json.Marshal(response)
+        if err != nil {
+                fmt.Println(err)
+        }
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Content-Type", "application/json")
+        w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	w.Write(res)
+	fmt.Println(res)*/
+	http.Redirect(w, r, url, 302)
 }
 
 
 func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	// use the same state string here that you used to generate the URL
 	fmt.Println("/handle")
-	/*
-	token, err := auth.Token(state, r)
-	if err != nil {
-		http.Error(w, "Couldn't get token", http.StatusNotFound)
-		return
-	}
-	if st := r.FormValue("state"); st != state {
-		http.NotFound(w, r)
-		log.Fatalf("State mismatch: %s != %s\n", st, state)
-	}
-
-	client := auth.NewClient(token)*/
 
 	// create client and get token
 	client, token, r, err := CreateMyClient(r)
-	if err != nil {
-		fmt.Println(err)
-	}
 	
+	// get user id from client
 	userId, err := client.GetCurrentUserId()
 	if err != nil {
 		fmt.Println(err)
 	}
 
+	// check if the client is already in database.
+	// if not, then create a playlist id and insert user info into database
 	var playlistId string
 	ifExists, user, err := mydbmap.ExistUser(userId)
 	if !ifExists {
@@ -65,25 +85,99 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	} else {
 		playlistId = user.PlaylistId
 	}
-	
-	session, _ := Store.Get(r, Session_name)
-	session.Values["user"] = UserSession{ID: userId, Token:*token, PlaylistId: playlistId}
-	err = session.Save(r, w)
 
-	http.Redirect(w, r, "/home", 301)
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+	// set cookies
+	http.SetCookie(w, &http.Cookie{
+        Name: "token",
+        Value: token.AccessToken,
+     	Path: "/",
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name: "tokenType",
+		Value: token.TokenType,
+		Path: "/",
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name: "refreshToken",
+		Value: token.RefreshToken,
+		Path: "/",
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name: "expiry",
+		Value: (token.Expiry).Format(layout),
+		Path: "/",
+	})
+	fmt.Println(w)
+	//http.Redirect(w, r, "http://localhost:8080/callback/"+token.RefreshToken, 302)
+	http.Redirect(w, r, "https://newreleases.tk/user/"+token.AccessToken, 302)
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
-	fmt.Println("home")
-	t := template.Must(template.ParseFiles("templates/home.html"))
-	if err := t.Execute(w, time.Now()); err != nil {
+func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	fmt.Println(r)
+	// get cookies
+	tokenCookie, err := r.Cookie("token")
+	if err != nil {
 		fmt.Println(err)
 	}
-	if err := UpdateRelation(mydbmap); err != nil {
+	refreshTokenCookie, err := r.Cookie("refreshToken")
+	if err != nil {
 		fmt.Println(err)
 	}
-	/*if err := UpdatePlaylist(mydbmap); err != nil {
+	tokenTypeCookie, err := r.Cookie("tokenType")
+    if err != nil {
 		fmt.Println(err)
-	}*/
-	
-}
+	}
+	expiryCookie, err := r.Cookie("expiry")
+	if err != nil {
+		fmt.Println(err)
+	}
+	accessToken := tokenCookie.Value
+	refreshToken := refreshTokenCookie.Value
+	tokenType := tokenTypeCookie.Value
+	expiryString := expiryCookie.Value
+	expiry, _ := time.Parse(layout, expiryString)
+
+	// get token, client and user id
+	token := oauth2.Token{AccessToken:accessToken, TokenType:tokenType, RefreshToken:refreshToken, Expiry:expiry}
+	client := CreateMyClientFromToken(token)
+	userId, err := client.GetCurrentUserId()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// check if the user is in database.
+	// if not, then set status as redirect
+	// if existed, then get all the artists and send them to frontend.
+	exists, user, err := mydbmap.ExistUser(userId)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if exists == false {
+		response := Response{200, "redirect", []ArtistInfo{}}
+		res, err := json.Marshal(response)
+		if err != nil {
+			fmt.Println(err)
+		}
+		w.Write(res)
+	} else {
+		artists, err := mydbmap.GetArtistsFromUserId(user.UserId)
+		if err != nil {
+			fmt.Println(err)
+		}
+		response := Response{200, "success", artists}
+		res, err := json.Marshal(response)
+		if err != nil {
+			fmt.Println(err)
+		}
+		w.Write(res)
+	}
+}	
