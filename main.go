@@ -42,13 +42,13 @@ func main() {
 	c.Start()
 	//defer c.Stop()
 
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		LoginHandler(w, r)
 	}).Methods("GET")
 	r.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		RedirectHandler(w, r, mydbmap)
 	})
-	r.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/user_artist", func(w http.ResponseWriter, r *http.Request) {
 		UserHandler(w, r, mydbmap)
 	}).Methods("GET")
 	//r.HandleFunc("/result", resultHander).Methods("POST")

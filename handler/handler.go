@@ -34,9 +34,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	url := GetURL()
 	fmt.Println(url)
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
-    w.Header().Set("Content-Type", "application/json")
-    w.Header().Set("Access-Control-Allow-Headers","Content-Type")
-    w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+ 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	/*t := template.Must(template.ParseFiles("templates/index.html"))
 	if err := t.Execute(w, url); err != nil {
 		fmt.Println(err)
@@ -92,7 +92,7 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	// set cookies
-    http.SetCookie(w, &http.Cookie{
+	http.SetCookie(w, &http.Cookie{
         Name: "token",
         Value: token.AccessToken,
      	Path: "/",
@@ -112,8 +112,9 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 		Value: (token.Expiry).Format(layout),
 		Path: "/",
 	})
-
-	http.Redirect(w, r, "http://localhost:8080/callback/"+token.RefreshToken, 302)
+	fmt.Println(w)
+	//http.Redirect(w, r, "http://localhost:8080/callback/"+token.RefreshToken, 302)
+	http.Redirect(w, r, "https://newreleases.tk/user/"+token.AccessToken, 302)
 }
 
 func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
@@ -121,7 +122,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-
+	fmt.Println(r)
 	// get cookies
 	tokenCookie, err := r.Cookie("token")
 	if err != nil {
