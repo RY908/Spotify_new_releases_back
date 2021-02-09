@@ -61,8 +61,10 @@ func (c *Client) GetNewReleases(artists []ArtistInfo, userId string) ([]spotify.
 
 	// present UTC time
 	now := time.Now().UTC()
+
 	// 7 days from present time
 	after := now.AddDate(0, 0, -7)
+
 	// get current user information
 	user, _ := c.Client.CurrentUser()
 
