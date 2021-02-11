@@ -42,19 +42,19 @@ func main() {
 	c.Start()
 	//defer c.Stop()
 
-	r.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
 		LoginHandler(w, r)
 	}).Methods("GET")
-	r.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/api/callback", func(w http.ResponseWriter, r *http.Request) {
 		RedirectHandler(w, r, mydbmap)
 	})
-	r.HandleFunc("/user_artist", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/api/user", func(w http.ResponseWriter, r *http.Request) {
 		UserHandler(w, r, mydbmap)
 	}).Methods("GET")
-	//r.HandleFunc("/result", resultHander).Methods("POST")
-	//.HandleFunc("/logout", logoutHandler)
-	// rを割当
-	//http.Handle("/", r)
+	r.HandleFunc("/api/delete", func(w http.ResponseWriter, r *http.Request) {
+		DeleteHandler(w, r, mydbmap)
+	}).Methods("POST")
+
 	http.ListenAndServe(":9990", r)
 }
 
