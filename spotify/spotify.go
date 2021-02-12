@@ -139,15 +139,22 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 	pastTrackSet := make(map[spotify.ID]struct{})
 	trackSet := make(map[string]struct{})
 	var addTracks []spotify.ID
+	var pastTracks []spotify.ID
 
 	// get all the tracks in the playlist and put them in pastTrackSet
 	playlistTrackPage, err := client.GetPlaylistTracks(spotify.ID(playlistId))
 	if err != nil {
 		return err
 	}
+
+	// keep records of the tracks already in the playlist and delete them all
 	playlistTracks := playlistTrackPage.Tracks
 	for _, track := range playlistTracks {
 		pastTrackSet[track.Track.ID] = struct{}{}
+		pastTracks = append(pastTracks, track.Track.ID)
+	}
+	if _, err := client.RemoveTracksFromPlaylist(spotify.ID(playlistId), pastTracks...); err != nil {
+		return err
 	}
 
 	// retrieves track ids from newReleases. If album type is album, the first song in the album will
@@ -156,7 +163,6 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 		albumId := album.ID
 		albumTracks, err := client.GetAlbumTracks(albumId)
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
 		fmt.Println(albumTracks.Tracks)
@@ -177,8 +183,8 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 				}
 			}
 		}
-		//addTracks = append(addTracks, trackId)
-		 time.Sleep(time.Millisecond * 500)
+		// time sleep is nessesary in order not to exceed spotify api limit
+		time.Sleep(time.Millisecond * 500)
 	}	
 	fmt.Println(len(addTracks))
 	// change the tracks in the playlist.
