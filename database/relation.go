@@ -96,3 +96,22 @@ func (d *MyDbMap) DeleteFollowingRelations(userId string, timestamp time.Time) e
 
 	return nil
 }
+
+func (d *MyDbMap) DeleteRelationFromRequest(userId string, artistIds []string) error {
+	trans, err := d.DbMap.Begin()
+	if err != nil {
+		return err
+	}
+
+	for _, artistId := range artistIds {
+		if _, err := d.DbMap.Exec("delete from ListenTo where userId = ? and artistId = ?", userId, artistId); err != nil {
+			return err
+		}
+	}
+
+	if err := trans.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
