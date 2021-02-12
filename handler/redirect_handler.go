@@ -58,5 +58,5 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	}
 	fmt.Println(w)
 	// http.Redirect(w, r, "http://localhost:8080/user/"+token.RefreshToken, 301)
-	http.Redirect(w, r, "https://newreleases.tk/api/user/"+token.AccessToken, 301)
+	http.Redirect(w, r, "https://newreleases.tk/user/"+token.AccessToken, 301)
 }

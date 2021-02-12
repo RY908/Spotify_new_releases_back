@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	redirectURI = os.Getenv("REDIRECT_URI")
+	redirectURI = "https://newreleases.tk/api/callback" //os.Getenv("REDIRECT_URI")
 	clientID = os.Getenv("SPOTIFY_ID_3")
 	secretKey = os.Getenv("SPOTIFY_SECRET_3")
 	state = "abc123"
@@ -21,6 +21,7 @@ type Client struct {
 }
 
 func GetURL() string {
+	fmt.Println(redirectURI)
 	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead)
 	auth.SetAuthInfo(clientID, secretKey)
 	url := auth.AuthURL(state)
