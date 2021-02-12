@@ -39,6 +39,11 @@ func main() {
 			fmt.Println(err)
 		}
 	})
+	c.AddFunc("@monthly", func() {
+		if err := UpdateFollowingArtists(mydbmap); err != nil {
+			fmt.Println(err)
+		}
+	})
 	c.Start()
 	//defer c.Stop()
 

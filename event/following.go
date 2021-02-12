@@ -35,30 +35,39 @@ func GetFollowingArtistsAndInsertRelations(dbmap *MyDbMap, userId string, token 
 }	
 
 // UpdateFollowingArtists is called regularly and update the relations between artists and users.
-func UpdateFollowingArtists(dbmap *MyDbMap, user UserInfo) error {
-	// get user info 
-	userId := user.UserId
+func UpdateFollowingArtists(dbmap *MyDbMap) error {
 
-	// create new client
-	client := CreateMyClientFromUserInfo(user)
+	users, err := dbmap.GetAllUsers()
 
-	// get user's following artists
-	artists, err := client.GetFollowingArtists(userId)
 	if err != nil {
-		err = fmt.Errorf("unable to get following artists: %w", err)
+		err = fmt.Errorf("unable to get users: %w", err)
 		return err
 	}
+	for _, user := range users {
+		// get user info 
+		userId := user.UserId
 
-	timestamp := time.Now()
+		// create new client
+		client := CreateMyClientFromUserInfo(user)
 
-	if err := dbmap.UpdateFollowingRelation(artists, userId, timestamp); err != nil {
-		err = fmt.Errorf("unable to update following relation: %w", err)
-		return err
-	}
+		// get user's following artists
+		artists, err := client.GetFollowingArtists(userId)
+		if err != nil {
+			err = fmt.Errorf("unable to get following artists: %w", err)
+			return err
+		}
 
-	if err := dbmap.DeleteFollowingRelations(userId, timestamp); err != nil {
-		err = fmt.Errorf("unable to delete following relation: %w", err)
-		return err
+		timestamp := time.Now()
+
+		if err := dbmap.UpdateFollowingRelation(artists, userId, timestamp); err != nil {
+			err = fmt.Errorf("unable to update following relation: %w", err)
+			return err
+		}
+
+		if err := dbmap.DeleteFollowingRelations(userId, timestamp); err != nil {
+			err = fmt.Errorf("unable to delete following relation: %w", err)
+			return err
+		}
 	}
 	return nil
 }
