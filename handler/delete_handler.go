@@ -27,6 +27,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 
 	fmt.Println("delete")
 
+	// get user from cookie
 	exists, user, err := GetUser(r, mydbmap)
 	if err != nil {
 		response := UserResponse{400, "failed", []ArtistInfo{}}
@@ -34,6 +35,9 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 		fmt.Println(err)
 		w.Write(res)
 	}
+
+	// if the user is not in database then return response without artist information
+	// if the user is in database then delete the artists the user requests and return artists
 	if exists == false {
 		response := DeleteResponse{200, "redirect", []ArtistInfo{}}
 		res, err := json.Marshal(response)

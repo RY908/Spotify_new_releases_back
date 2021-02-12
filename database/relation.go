@@ -15,6 +15,7 @@ type ListenTo struct {
 	IfFollowing bool 		`db:"ifFollowing"`
 }
 
+// insert relation
 func (d *MyDbMap) InsertRelation(artistId, userId string, timestamp time.Time, ifFollowing bool) error {
 	count, err := d.DbMap.SelectInt("select count(*) from ListenTo where artistId = ? and userId = ?", artistId, userId)
 	if err != nil {
@@ -29,6 +30,7 @@ func (d *MyDbMap) InsertRelation(artistId, userId string, timestamp time.Time, i
 	return nil
 }
 
+// insert multiple relations
 func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp time.Time, ifFollowing bool) error {
 	trans, err := d.DbMap.Begin()
 	if err != nil {
@@ -51,6 +53,7 @@ func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp
 	return trans.Commit()
 }
 
+// delete relation
 func (d *MyDbMap) DeleteRelation(userId string, timestamp time.Time) error {
 	_, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp < ? and ifFollowing = false", userId, timestamp)
 	if err != nil {
@@ -59,6 +62,7 @@ func (d *MyDbMap) DeleteRelation(userId string, timestamp time.Time) error {
 	return nil
 }
 
+// update the user's following artists
 func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, timestamp time.Time) error {
 	trans, err := d.DbMap.Begin()
 	if err != nil {

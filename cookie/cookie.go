@@ -11,6 +11,7 @@ import (
 
 var layout = "2006-01-02 15:04:05"
 
+// set oauth token in cookie
 func SetCookie(w http.ResponseWriter, token *oauth2.Token) (http.ResponseWriter, error) {
 	http.SetCookie(w, &http.Cookie{
         Name: "token",
@@ -35,6 +36,7 @@ func SetCookie(w http.ResponseWriter, token *oauth2.Token) (http.ResponseWriter,
 	return w, nil
 }
 
+// get access token from cookie
 func GetToken(r *http.Request) (oauth2.Token, error) {
 	tokenCookie, err := r.Cookie("token")
 	if err != nil {
@@ -67,6 +69,7 @@ func GetToken(r *http.Request) (oauth2.Token, error) {
 	return token, nil
 }
 
+// get access token and create client then check if the client is already in database
 func GetUser(r *http.Request, mydbmap *MyDbMap) (bool, UserInfo, error) {
 	token, err := GetToken(r)
 	if err != nil {
