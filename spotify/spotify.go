@@ -5,6 +5,7 @@ import (
 	"golang.org/x/oauth2"
 	"time"
 	"fmt"
+	"os"
 	. "Spotify_new_releases/database"
 )
 
@@ -116,6 +117,14 @@ func (c *Client) GetFollowingArtists(userId string) ([]ArtistInfo, error) {
 	return artists, nil
 }
 
+func (c *Client) SetImage(playlistId spotify.ID) error {
+	img, _ := os.Open("./img/logo.png")
+	if err := c.Client.SetPlaylistImage(playlistId, img); err != nil {
+		return err
+	}
+	return nil
+}
+ 
 // GetArtistInfo retrieves artist's name, id, url, iconUrl and returns them.
 func GetArtistInfo(artist spotify.FullArtist) (string, string, string, string) {
 	var name, artistId, url, iconUrl string
