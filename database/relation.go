@@ -11,7 +11,7 @@ type ListenTo struct {
 	ListenId	int64 		`db:listenId`
 	ArtistId	string 		`db:artistId`
 	UserId		string 		`db:userId`
-	Count		int64 		`db:listenCount`
+	ListenCount	int64 		`db:listenCount`
 	Timestamp	time.Time	`db:"timestamp"`
 	IfFollowing bool 		`db:"ifFollowing"`
 }
@@ -32,7 +32,7 @@ func (d *MyDbMap) InsertRelation(artistId, userId string, timestamp time.Time, i
 }
 
 // insert multiple relations
-func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp time.Time, ifFollowing bool) error {
+func (d *MyDbMap) InsertRelations(artists []ArtistInfo, counter map[string]int, userId string, timestamp time.Time, ifFollowing bool) error {
 	trans, err := d.DbMap.Begin()
 	if err != nil {
 		return err
@@ -45,9 +45,13 @@ func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp
 			return err
 		}
 		if count == 0 {
-			err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, Count: 0, Timestamp:timestamp, IfFollowing: ifFollowing})
+			if ifFollowing {
+				err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: 1000, Timestamp:timestamp, IfFollowing: ifFollowing})
+			} else {
+				err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: int64(counter[artistId]), Timestamp:timestamp, IfFollowing: ifFollowing})
+			}
 		} else {
-			_, err = dbmap.Exec("update ListenTo set listenCount = listenCount+1, timestamp = ? where artistId = ? and userId = ?", timestamp, artistId, userId)
+			_, err = dbmap.Exec("update ListenTo set listenCount = listenCount+?, timestamp = ? where artistId = ? and userId = ?", counter[artistId], timestamp, artistId, userId)
 		}
 		if err != nil {
 			return err
@@ -79,11 +83,14 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 			return err
 		}
 		if count == 0 {
-			if err := trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, Timestamp:timestamp, IfFollowing: true}); err != nil {
+			if err := trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: 0, Timestamp:timestamp, IfFollowing: true}); err != nil {
 				return err
 			}
 		} else {
-			if _, err := trans.Update(&ListenTo{ArtistId:artistId, UserId: userId, Timestamp:timestamp, IfFollowing: true}); err != nil {
+			// if _, err := trans.Update(&ListenTo{ArtistId:artistId, UserId: userId, Timestamp:timestamp, IfFollowing: true}); err != nil {
+			// 	return err
+			// }
+			if _, err := trans.Exec("update ListenTo set timestamp = ? where artistId = ? and userId = ?", timestamp, artistId, userId); err != nil {
 				return err
 			}
 		}
@@ -96,6 +103,7 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 	return nil
 }
 
+// delete following relation if the user unfollowrd artists
 func (d *MyDbMap) DeleteFollowingRelations(userId string, timestamp time.Time) error {
 	if _, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp <> ? and ifFollowing = true", userId, timestamp); err != nil {
 		return err

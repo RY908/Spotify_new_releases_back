@@ -30,14 +30,15 @@ func (c *Client) CreatePlaylistForUser(userId string) (*spotify.FullPlaylist, er
 }
 
 // GetRecentlyPlayedArtists returns a list of artists who the user played recently.
-func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, *oauth2.Token) {
+func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, map[string]int, *oauth2.Token) {
 	// get tracks which are played within 50 minutes 
 	t := time.Now().UTC() // present time
-	t = t.Add(-50 * time.Minute) // 50 minutes before present time 
+	t = t.Add(-20 * time.Minute) // 50 minutes before present time 
 	afterTime := t.UnixNano() / int64(time.Millisecond) // convert to milliseconds
 	recentlyPlayedItems, _ := c.Client.PlayerRecentlyPlayedOpt(&spotify.RecentlyPlayedOptions{Limit: 50, AfterEpochMs: afterTime}) // get recentlyPlayedItems
 
 	artistsSet := make(map[spotify.ID]spotify.FullArtist) // set of artists
+	artistsCount := make(map[string]int) // counter
 	
 	// add an artist to artistsSet if the artist is not existed in artistsSet
 	for _, item := range recentlyPlayedItems {
@@ -45,6 +46,9 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 			if _, ok := artistsSet[artist.ID]; !ok {
 				fullArtist, _ := c.Client.GetArtist(spotify.ID(artist.ID))
 				artistsSet[artist.ID] = *fullArtist
+				artistsCount[string(artist.ID)] = 0
+			} else {
+				artistsCount[string(artist.ID)] += 1
 			}
 		}
 	}
@@ -52,7 +56,7 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 	// get new token
 	token, _ := c.Client.Token()
 
-	return artistsSet, token
+	return artistsSet, artistsCount, token
 
 }
 

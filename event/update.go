@@ -27,7 +27,7 @@ func UpdateRelation(dbmap *MyDbMap) error {
 
 		client := CreateMyClientFromUserInfo(user)
 		// get recently played artists.
-		artists, newToken := client.GetRecentlyPlayedArtists()
+		artists, counter, newToken := client.GetRecentlyPlayedArtists()
 		
 		timestamp := time.Now()
 
@@ -44,7 +44,7 @@ func UpdateRelation(dbmap *MyDbMap) error {
 			err = fmt.Errorf("unable to insert artists: %w", err)
 			return err
 		}
-		if err := dbmap.InsertRelations(artistsToInsert, userId, timestamp, false); err != nil {
+		if err := dbmap.InsertRelations(artistsToInsert, counter, userId, timestamp, false); err != nil {
 			err = fmt.Errorf("unable to insert artists: %w", err)
 			return err
 		}

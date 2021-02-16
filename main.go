@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/go-sql-driver/mysql"
 	. "Spotify_new_releases/database"
-	. "Spotify_new_releases/spotify"
+	// . "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/session"
 	. "Spotify_new_releases/event"
 	. "Spotify_new_releases/handler"
@@ -24,8 +24,8 @@ func main() {
 	SessionInit()
 
 	r := mux.NewRouter()
-	url := GetURL()
-	fmt.Println("Please log in to Spotify by visiting the following page in your browser:", url)
+	// url := GetURL()
+	// fmt.Println("Please log in to Spotify by visiting the following page in your browser:", url)
 
 	// cron
 	c := cron.New()
