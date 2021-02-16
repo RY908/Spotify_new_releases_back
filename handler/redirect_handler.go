@@ -46,7 +46,7 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 			fmt.Println(err)
 			http.Redirect(w, r, errURI, 302)
 		}
-		if err := client.SetImage(playlist.ID); err != nil {
+		if err := client.SetConfig(playlist.ID); err != nil {
 			fmt.Println(err)
 			http.Redirect(w, r, errURI, 302)
 		}

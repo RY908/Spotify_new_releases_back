@@ -117,12 +117,17 @@ func (c *Client) GetFollowingArtists(userId string) ([]ArtistInfo, error) {
 	return artists, nil
 }
 
-func (c *Client) SetImage(playlistId spotify.ID) error {
+func (c *Client) SetConfig(playlistId spotify.ID) error {
 	img, _ := os.Open("./img/logo.png")
+	description := "playlist made by https://newreleases.tk"
 	if err := c.Client.SetPlaylistImage(playlistId, img); err != nil {
 		return err
 	}
+	if err := c.Client.ChangePlaylistDescription(playlistId, description); err != nil {
+		return err
+	}
 	return nil
+
 }
  
 // GetArtistInfo retrieves artist's name, id, url, iconUrl and returns them.
