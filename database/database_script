@@ -17,9 +17,10 @@ CREATE TABLE User (
 );
 
 CREATE TABLE ListenTo (
-    listenId   INT             NOT NULL AUTO_INCREMENT,
-    userId     VARCHAR(100)    NOT NULL,
-    artistId   VARCHAR(100)    NOT NULL,
+    listenId    INT             NOT NULL AUTO_INCREMENT,
+    userId      VARCHAR(100)    NOT NULL,
+    artistId    VARCHAR(100)    NOT NULL,
+    listenCount INT             NOT NULL,
     timestamp   DATETIME        NOT NULL,
     ifFollowing BOOLEAN NOT NULL,
     PRIMARY KEY (listenId),

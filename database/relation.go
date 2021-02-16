@@ -11,6 +11,7 @@ type ListenTo struct {
 	ListenId	int64 		`db:listenId`
 	ArtistId	string 		`db:artistId`
 	UserId		string 		`db:userId`
+	Count		int64 		`db:listenCount`
 	Timestamp	time.Time	`db:"timestamp"`
 	IfFollowing bool 		`db:"ifFollowing"`
 }
@@ -44,7 +45,9 @@ func (d *MyDbMap) InsertRelations(artists []ArtistInfo, userId string, timestamp
 			return err
 		}
 		if count == 0 {
-			err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, Timestamp:timestamp, IfFollowing: ifFollowing})
+			err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, Count: 0, Timestamp:timestamp, IfFollowing: ifFollowing})
+		} else {
+			_, err = dbmap.Exec("update ListenTo set listenCount = listenCount+1, timestamp = ? where artistId = ? and userId = ?", timestamp, artistId, userId)
 		}
 		if err != nil {
 			return err
