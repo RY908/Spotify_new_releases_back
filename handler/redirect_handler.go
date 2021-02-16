@@ -2,12 +2,18 @@ package handler
 
 import (
 	"fmt"
+	"os"
 	"net/http"
 	. "Spotify_new_releases/spotify"
 	//. "Spotify_new_releases/session"
 	. "Spotify_new_releases/event"
 	. "Spotify_new_releases/database"
 	. "Spotify_new_releases/cookie"
+)
+
+var (
+	errURI = os.Getenv("ERR_URI")
+	sucURI = os.Getenv("SUC_URI")
 )
 
 
@@ -27,7 +33,7 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	userId, err := client.GetCurrentUserId()
 	if err != nil {
 		fmt.Println(err)
-		http.Redirect(w, r, "https://newreleases.tk/api/callback", 302)
+		http.Redirect(w, r, errURI, 302)
 	}
 
 	// check if the client is already in database.
@@ -38,13 +44,17 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 		playlist, err := client.CreatePlaylistForUser(userId)
 		if err != nil {
 			fmt.Println(err)
-			http.Redirect(w, r, "https://newreleases.tk/api/callback", 302)
+			http.Redirect(w, r, errURI, 302)
+		}
+		if err := client.SetImage(playlist.ID); err != nil {
+			fmt.Println(err)
+			http.Redirect(w, r, errURI, 302)
 		}
 		playlistId = string(playlist.ID)
 		mydbmap.InsertUser(userId, playlistId, token)
 		if err := GetFollowingArtistsAndInsertRelations(mydbmap, userId, token); err != nil {
 			fmt.Println(err)
-			http.Redirect(w, r, "https://newreleases.tk/api/callback", 302)
+			http.Redirect(w, r, errURI, 302)
 		}
 	} else {
 		playlistId = user.PlaylistId
@@ -54,9 +64,9 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	w, err = SetCookie(w, token)
 	if err != nil {
 		fmt.Println(err)
-		http.Redirect(w, r, "https://newreleases.tk/api/callback", 302)
+		http.Redirect(w, r, errURI, 302)
 	}
 	fmt.Println(w)
 	// http.Redirect(w, r, "http://localhost:8080/user/"+token.RefreshToken, 301)
-	http.Redirect(w, r, "https://newreleases.tk/user/"+token.AccessToken, 301)
+	http.Redirect(w, r, sucURI+token.AccessToken, 301)
 }
