@@ -192,10 +192,10 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 
 		trackId := track.ID
 		
-		if _, ok := idSet[trackId]; !ok {
+		if _, ok := idSet[trackId]; !ok { // prevent dupulicate tracks
 			idSet[trackId] = struct{}{}
-			if _, ok := pastTrackSet[trackId]; !ok {
-				if _, ok := trackSet[identifier]; !ok {
+			if _, ok := pastTrackSet[trackId]; !ok { // prevent adding tracks which were added last week
+				if _, ok := trackSet[identifier]; !ok { // prevent adding both explicit and non explicit track
 					trackSet[identifier] = struct{}{}
 					addTracks = append(addTracks, trackId)
 				}
