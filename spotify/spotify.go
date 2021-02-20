@@ -6,6 +6,7 @@ import (
 	"time"
 	"fmt"
 	"os"
+	"strings"
 	. "Spotify_new_releases/database"
 )
 
@@ -197,7 +198,9 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 			if _, ok := pastTrackSet[trackId]; !ok { // prevent adding tracks which were added last week
 				if _, ok := trackSet[identifier]; !ok { // prevent adding both explicit and non explicit track
 					trackSet[identifier] = struct{}{}
-					addTracks = append(addTracks, trackId)
+					if ok := IfExclude(user, trackName); !ok { // exclude remix and track if required
+						addTracks = append(addTracks, trackId)
+					}
 				}
 			}
 		}
@@ -231,4 +234,16 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 	}
 
 	return nil
+}
+
+func IfExclude(user UserInfo, trackName string) bool {
+	res := false
+	if user.IfRemixAdd == true && (strings.Contains(trackName, "Remix") || strings.Contains(trackName, "remix")) {
+		res = true
+	}
+	if user.IfAcousticAdd == true && (strings.Contains(trackName, "Acoustic") || strings.Contains(trackName, "acoustic")) {
+		res = true
+	}
+	return res 
+
 }
