@@ -13,6 +13,8 @@ CREATE TABLE User (
     refreshToken   VARCHAR(200) NOT NULL,
     expiry         DATETIME     NOT NULL,
     playlistId     VARCHAR(100) NOT NULL,
+    ifRemixAdd     BOOLEAN  DEFAULT TRUE,
+    ifAcousticAdd  BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (userId)
 );
 

@@ -15,6 +15,8 @@ type UserInfo struct {
 	RefreshToken	string 		`db:refreshToken`
 	Expiry			time.Time 	`db:expiry`
 	PlaylistId		string 		`db:playlistId`
+	IfRemixAdd		bool 		`db:ifRemixAdd`
+	IfAcousticAdd	bool 		`db:ifAcousticAdd`
 }
 
 // check if the user is in database
@@ -35,7 +37,7 @@ func (d *MyDbMap) InsertUser(userId, playlistId string, Token *oauth2.Token) err
 	}
 	if count == 0 {
 		//err = dbmap.Insert(&UserInfo{UserId: userId, AccessToken: Token.AccessToken, TokenType: Token.TokenType, RefreshToken: Token.RefreshToken, Expiry: Token.Expiry})
-		err = d.DbMap.Insert(&UserInfo{userId, Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, playlistId})
+		err = d.DbMap.Insert(&UserInfo{userId, Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, playlistId, true, true})
 	}
 	if err != nil {
 		return err
@@ -55,9 +57,17 @@ func (d *MyDbMap) GetAllUsers() ([]UserInfo, error) {
 
 // update user's auth information
 func (d *MyDbMap) UpdateUser(userId, playlistId string, Token *oauth2.Token) error {
-	user := UserInfo{userId, Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, playlistId}
+	user := UserInfo{userId, Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, playlistId, true, true}
 	if _, err := d.DbMap.Update(&user); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (d *MyDbMap) UpdateIfAdd(userId string, ifRemixAdd, ifAcousticAdd bool) error {
+	if _, err := dbmap.Exec("update User set ifRemixAdd = ?, ifAcousticAdd = ? where userId = ?", ifRemixAdd, ifAcousticAdd, userId); err != nil {
+		return err
+	}
+	return nil
+	
 }
