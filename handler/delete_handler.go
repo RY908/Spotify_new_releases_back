@@ -30,7 +30,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	// get user from cookie
 	exists, user, err := GetUser(r, mydbmap)
 	if err != nil {
-		response := UserResponse{400, "failed", []ArtistInfo{}}
+		response := DeleteResponse{400, "failed", []ArtistInfo{}}
 		res, err := json.Marshal(response)
 		fmt.Println(err)
 		w.Write(res)
