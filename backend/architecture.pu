@@ -1,0 +1,62 @@
+@startuml 
+participant user
+participant "server" as server
+participant "Spotify API" as spotify
+
+===Get recently played artist==
+
+loop every 50 minutes
+    server -> DB: get all access token
+    activate server  
+    activate DB
+    DB --> server: access token
+    server -> spotify: get recently played tracks
+    spotify --> server: tracks
+    server -> server: extract artist name
+    server -> DB: add artist name if not existed
+    deactivate server
+    deactivate DB
+
+end
+
+===Get artists recommendation===
+
+server -> user: Display user's followed artists
+activate user
+user -> server: Pick up artist
+server -> redis: Get_artist_id([]artistName)
+activate server
+activate redis
+redis --> server: Return artistId []
+deactivate redis
+server -> spotify: getRecommendedArtists
+activate spotify
+spotify --> server: Return recommended artists
+alt related artist is not stored or timestamp expired
+  server -> spotify: RelatedArtist()
+  spotify --> server: Return related artists
+  deactivate spotify
+  server -> DB: store (artist, related artists)
+  activate DB
+else stored in DB
+  server -> DB: GetRelatedArtists()
+  DB --> server: Return related artists
+end 
+
+server -> DB: store (artistName, relatedArtists)
+deactivate DB
+deactivate server
+server --> user: Display artist recommendation
+deactivate user
+
+===Get tracks recommendation===
+
+server -> user: Display user's followed artists
+user -> server: Pick up artist up to 5
+server -> DB: Get_artist_id([]artistName)
+DB --> server: Return []artistId
+server -> spotify: GetRecommendations
+spotify --> server: Return tracks
+server --> user: Display track recommendations
+
+@enduml
