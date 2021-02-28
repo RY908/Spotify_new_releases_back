@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	errURI = os.Getenv("ERR_URI")
-	sucURI = os.Getenv("SUC_URI")
+	errURI = os.Getenv("LOCAL_ERR_URI")
+	sucURI = os.Getenv("LOCAL_SUC_URI")
 )
 
 
@@ -68,5 +68,5 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	}
 	fmt.Println(w)
 	// http.Redirect(w, r, "http://localhost:8080/user/"+token.RefreshToken, 301)
-	http.Redirect(w, r, sucURI+token.AccessToken, 301)
+	http.Redirect(w, r, sucURI+"/"+token.AccessToken, 301)
 }

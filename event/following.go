@@ -26,7 +26,7 @@ func GetFollowingArtistsAndInsertRelations(dbmap *MyDbMap, userId string, token 
 		return err
 	}
 	timestamp := time.Now()
-	if err := dbmap.InsertRelations(artists, userId, timestamp, true); err != nil {
+	if err := dbmap.InsertRelations(artists, map[string]int{}, userId, timestamp, true); err != nil {
 		err = fmt.Errorf("unable to insert relations: %w", err)
 		return err
 	}
