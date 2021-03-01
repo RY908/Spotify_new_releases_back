@@ -47,7 +47,7 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 			if _, ok := artistsSet[artist.ID]; !ok {
 				fullArtist, _ := c.Client.GetArtist(spotify.ID(artist.ID))
 				artistsSet[artist.ID] = *fullArtist
-				artistsCount[string(artist.ID)] = 0
+				artistsCount[string(artist.ID)] = 1
 			} else {
 				artistsCount[string(artist.ID)] += 1
 			}
@@ -56,7 +56,7 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 
 	// get new token
 	token, _ := c.Client.Token()
-
+	fmt.Println(artistsSet, artistsCount)
 	return artistsSet, artistsCount, token
 
 }

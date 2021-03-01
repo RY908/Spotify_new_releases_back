@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	redirectURI = os.Getenv("REDIRECT_URI")
+	redirectURI = "https://newreleases.tk/api/callback" //os.Getenv("REDIRECT_URI")
 	clientID = os.Getenv("SPOTIFY_ID_3")
 	secretKey = os.Getenv("SPOTIFY_SECRET_3")
 	state = "abc123"

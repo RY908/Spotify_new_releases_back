@@ -2,7 +2,7 @@ package handler
 
 import (
 	"fmt"
-	"os"
+	//"os"
 	"net/http"
 	. "Spotify_new_releases/spotify"
 	//. "Spotify_new_releases/session"
@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	errURI = os.Getenv("LOCAL_ERR_URI")
-	sucURI = os.Getenv("LOCAL_SUC_URI")
+	errURI = "https://newreleases.tk" //os.Getenv("ERR_URI")
+	sucURI = "https://newreleases.tk/user" //os.Getenv("SUC_URI")
 )
 
 
@@ -25,7 +25,8 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	
 	// use the same state string here that you used to generate the URL
 	fmt.Println("redirect")
-
+	fmt.Println(sucURI)
+	fmt.Println("redirect")
 	// create client and get token
 	client, token, r, err := CreateMyClient(r)
 	
