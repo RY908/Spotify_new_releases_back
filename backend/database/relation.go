@@ -83,7 +83,7 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 			return err
 		}
 		if count == 0 {
-			if err := trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: 0, Timestamp:timestamp, IfFollowing: true}); err != nil {
+			if err := trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: 1000, Timestamp:timestamp, IfFollowing: true}); err != nil {
 				return err
 			}
 		} else {
@@ -105,7 +105,7 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 
 // delete following relation if the user unfollowrd artists
 func (d *MyDbMap) DeleteFollowingRelations(userId string, timestamp time.Time) error {
-	if _, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp <> ? and ifFollowing = true", userId, timestamp); err != nil {
+	if _, err := d.DbMap.Exec("delete from ListenTo where userId = ? and timestamp < ? and ifFollowing = true", userId, timestamp); err != nil {
 		return err
 	}
 

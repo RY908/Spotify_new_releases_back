@@ -36,6 +36,7 @@ func GetFollowingArtistsAndInsertRelations(dbmap *MyDbMap, userId string, token 
 
 // UpdateFollowingArtists is called regularly and update the relations between artists and users.
 func UpdateFollowingArtists(dbmap *MyDbMap) error {
+	fmt.Println("update following artists")
 
 	users, err := dbmap.GetAllUsers()
 
@@ -57,6 +58,12 @@ func UpdateFollowingArtists(dbmap *MyDbMap) error {
 			return err
 		}
 
+		if err := dbmap.InsertArtists(artists); err != nil {
+			err = fmt.Errorf("unable to insert artists: %w", err)
+			return err
+		}
+		// fmt.Println(artists)
+
 		timestamp := time.Now()
 
 		if err := dbmap.UpdateFollowingRelation(artists, userId, timestamp); err != nil {
@@ -69,5 +76,6 @@ func UpdateFollowingArtists(dbmap *MyDbMap) error {
 			return err
 		}
 	}
+	fmt.Println("updated following artists")
 	return nil
 }

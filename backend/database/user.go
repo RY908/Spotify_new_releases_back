@@ -57,15 +57,18 @@ func (d *MyDbMap) GetAllUsers() ([]UserInfo, error) {
 
 // update user's auth information
 func (d *MyDbMap) UpdateUser(userId, playlistId string, Token *oauth2.Token) error {
-	user := UserInfo{userId, Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, playlistId, true, true}
+	/*user := UserInfo{userId, Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, playlistId, true, true}
 	if _, err := d.DbMap.Update(&user); err != nil {
+		return err
+	}*/
+	if _, err := d.DbMap.Exec("update User set accessToken = ?, tokenType = ?, refreshToken = ?, expiry = ? where userId = ?", Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, userId); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (d *MyDbMap) UpdateIfAdd(userId string, ifRemixAdd, ifAcousticAdd bool) error {
-	if _, err := dbmap.Exec("update User set ifRemixAdd = ?, ifAcousticAdd = ? where userId = ?", ifRemixAdd, ifAcousticAdd, userId); err != nil {
+	if _, err := d.DbMap.Exec("update User set ifRemixAdd = ?, ifAcousticAdd = ? where userId = ?", ifRemixAdd, ifAcousticAdd, userId); err != nil {
 		return err
 	}
 	return nil
