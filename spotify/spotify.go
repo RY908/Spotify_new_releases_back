@@ -238,10 +238,10 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 
 func IfExclude(user UserInfo, trackName string) bool {
 	res := false
-	if user.IfRemixAdd == true && (strings.Contains(trackName, "Remix") || strings.Contains(trackName, "remix")) {
+	if user.IfRemixAdd == false && (strings.Contains(trackName, "Remix") || strings.Contains(trackName, "remix")) {
 		res = true
 	}
-	if user.IfAcousticAdd == true && (strings.Contains(trackName, "Acoustic") || strings.Contains(trackName, "acoustic")) {
+	if user.IfAcousticAdd == false && (strings.Contains(trackName, "Acoustic") || strings.Contains(trackName, "acoustic")) {
 		res = true
 	}
 	return res 
