@@ -1,0 +1,48 @@
+version: "3" # composeファイルのバージョン
+services:
+  app: # サービス名
+    build: ./backend/ # ①ビルドに使うDockerfileの場所
+    tty: true # ②コンテナの永続化
+    ports: # ホストOSのポートとコンテナのポートをつなげる
+        - "9990"
+    volumes:
+        - ./backend:/go/src/Spotify_new_releases # ③マウントディレクトリ
+    environment:
+      - REDIRECT_URI=$REDIRECT_URI
+      - SPOTIFY_ID_3=$SPOTIFY_ID_3
+      - SPOTIFY_SECRET_3=$SPOTIFY_SECRET_3
+      - ERR_URI=$ERR_URI
+      - SUC_URI=$SUC_URI
+      - LOCAL_ERR_URI=$LOCAL_ERR_URI
+      - LOCAL_SUC_URI=$LOCAL_SUC_URI
+      - SQL_PATH=$SQL_PATH
+      - VIRTUAL_HOST=newreleases.tk
+      - LETSENCRYPT_HOST=newreleases.tk
+      - LETSENCRYPT_EMAIL=$EMAIL
+    depends_on:
+        - mysql
+    networks:
+      - app1
+    command: bash -c "go run main.go"
+
+  mysql:
+    build: ./mysql/
+    volumes:
+        # 初期データを投入するSQLが格納されているdir
+        - ./mysql/init:/docker-entrypoint-initdb.d
+        # 永続化するときにマウントするdir
+        - db-store:/var/lib/mysql
+    environment:
+        - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+    ports:
+        - "3306:3306"
+    networks:
+        - app1
+
+volumes:
+  db-store:
+  letsencrypt:
+
+networks:
+  app1:
+    external: true
