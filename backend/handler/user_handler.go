@@ -16,10 +16,6 @@ type UserResponse struct {
 	Artists []ArtistInfo 	`json:"artists"`
 }
 
-var (
-	accessControlAllowOrigin = os.Getenv("ACCESS_CONTROL_ALLOW_ORIGIN")
-)
-
 func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	w.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)
 	w.Header().Set("Content-Type", "application/json")

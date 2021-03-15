@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"os"
 	"fmt"
 	"net/http"
 	"encoding/json"
@@ -18,10 +17,6 @@ type DeleteResponse struct {
 	Result 	string 			`json:"result"`
 	Artists []ArtistInfo 	`json:"artists"`
 }
-
-var (
-	accessControlAllowOrigin = os.Getenv("ACCESS_CONTROL_ALLOW_ORIGIN")
-)
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	w.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)

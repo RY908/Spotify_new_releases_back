@@ -14,7 +14,6 @@ import (
 var (
 	errURI = os.Getenv("ERR_URI")
 	sucURI = os.Getenv("SUC_URI")
-	accessControlAllowOrigin = os.Getenv("ACCESS_CONTROL_ALLOW_ORIGIN")
 )
 
 

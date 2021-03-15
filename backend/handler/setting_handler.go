@@ -27,10 +27,6 @@ type SettingEditResponse struct {
 	Result 			string 	`json:"result"`
 }
 
-var (
-	accessControlAllowOrigin = os.Getenv("ACCESS_CONTROL_ALLOW_ORIGIN")
-)
-
 func SettingHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	w.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)
 	w.Header().Set("Content-Type", "application/json")
