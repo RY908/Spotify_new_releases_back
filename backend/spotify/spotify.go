@@ -34,7 +34,7 @@ func (c *Client) CreatePlaylistForUser(userId string) (*spotify.FullPlaylist, er
 func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, map[string]int, *oauth2.Token) {
 	// get tracks which are played within 50 minutes 
 	t := time.Now().UTC() // present time
-	t = t.Add(-20 * time.Minute) // 50 minutes before present time 
+	t = t.Add(-20 * time.Minute) // 20 minutes before present time 
 	afterTime := t.UnixNano() / int64(time.Millisecond) // convert to milliseconds
 	recentlyPlayedItems, _ := c.Client.PlayerRecentlyPlayedOpt(&spotify.RecentlyPlayedOptions{Limit: 50, AfterEpochMs: afterTime}) // get recentlyPlayedItems
 
@@ -193,10 +193,11 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 
 		trackId := track.ID
 		
-		if _, ok := idSet[trackId]; !ok { // prevent dupulicate tracks
+		//TODO: make this part simpler
+		if _, ok := idSet[trackId]; !ok { // avoid dupulicate tracks
 			idSet[trackId] = struct{}{}
-			if _, ok := pastTrackSet[trackId]; !ok { // prevent adding tracks which were added last week
-				if _, ok := trackSet[identifier]; !ok { // prevent adding both explicit and non explicit track
+			if _, ok := pastTrackSet[trackId]; !ok { // prevent from adding tracks which were added last week
+				if _, ok := trackSet[identifier]; !ok { // prevent from adding both explicit and non explicit track
 					trackSet[identifier] = struct{}{}
 					if ok := IfExclude(user, trackName); !ok { // exclude remix and track if required
 						addTracks = append(addTracks, trackId)
@@ -238,10 +239,10 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 
 func IfExclude(user UserInfo, trackName string) bool {
 	res := false
-	if user.IfRemixAdd == true && (strings.Contains(trackName, "Remix") || strings.Contains(trackName, "remix")) {
+	if user.IfRemixAdd == false && (strings.Contains(trackName, "Remix") || strings.Contains(trackName, "remix")) {
 		res = true
 	}
-	if user.IfAcousticAdd == true && (strings.Contains(trackName, "Acoustic") || strings.Contains(trackName, "acoustic")) {
+	if user.IfAcousticAdd == false && (strings.Contains(trackName, "Acoustic") || strings.Contains(trackName, "acoustic")) {
 		res = true
 	}
 	return res 
