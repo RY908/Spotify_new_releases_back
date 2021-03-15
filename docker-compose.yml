@@ -16,9 +16,10 @@ services:
       - LOCAL_ERR_URI=$LOCAL_ERR_URI
       - LOCAL_SUC_URI=$LOCAL_SUC_URI
       - SQL_PATH=$SQL_PATH
-      - VIRTUAL_HOST=newreleases.tk
-      - LETSENCRYPT_HOST=newreleases.tk
+      - VIRTUAL_HOST=$HOST
+      - LETSENCRYPT_HOST=$HOST
       - LETSENCRYPT_EMAIL=$EMAIL
+      - ACCESS_CONTROL_ALLOW_ORIGIN=$ACCESS_CONTROL_ALLOW_ORIGIN
     depends_on:
         - mysql
     networks:
