@@ -14,24 +14,31 @@ var layout = "2006-01-02 15:04:05"
 // set oauth token in cookie
 func SetCookie(w http.ResponseWriter, token *oauth2.Token) (http.ResponseWriter, error) {
 	http.SetCookie(w, &http.Cookie{
-        Name: "token",
-        Value: token.AccessToken,
-     	Path: "/",
+        	Name: "token",
+        	Value: token.AccessToken,
+     		Path: "/",
+		Domain: ".newreleases.tk",
 	})
+
 	http.SetCookie(w, &http.Cookie{
 		Name: "tokenType",
 		Value: token.TokenType,
 		Path: "/",
+		Domain: ".newreleases.tk",
 	})
+
 	http.SetCookie(w, &http.Cookie{
 		Name: "refreshToken",
 		Value: token.RefreshToken,
 		Path: "/",
+		Domain: ".newreleases.tk",
 	})
+
 	http.SetCookie(w, &http.Cookie{
 		Name: "expiry",
 		Value: (token.Expiry).Format(layout),
 		Path: "/",
+		Domain: ".newreleases.tk",
 	})
 	return w, nil
 }
