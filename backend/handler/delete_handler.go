@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"os"
 	"fmt"
 	"net/http"
 	"encoding/json"
-	//. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/database"
 	. "Spotify_new_releases/cookie"
 )
@@ -19,8 +19,12 @@ type DeleteResponse struct {
 	Artists []ArtistInfo 	`json:"artists"`
 }
 
+var (
+	accessControlAllowOrigin = os.Getenv("ACCESS_CONTROL_ALLOW_ORIGIN")
+)
+
 func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	w.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
