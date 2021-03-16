@@ -119,12 +119,6 @@ Returns user's settings (if remix/acoustic songs will be added to playlist or no
 Set user's setting.
 
 #### Response
-```
-{
-    "ifRemixAdd": true or false,
-    "ifAcousticAdd: true or false
-}
-```
 | code | Description |
 | ---- | ---- |
 | 200 |  |
