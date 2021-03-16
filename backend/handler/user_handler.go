@@ -17,22 +17,26 @@ type UserResponse struct {
 }
 
 func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	w.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-
+	fmt.Println(r)
 	// check if the user is in database.
 	// if not, then set status as redirect
 	// if existed, then get all the artists and send them to frontend.
-	exists, user, err := GetUser(r, mydbmap)
+	token, err := GetToken(r)
+	// TODO: status 400
+	exists, user, err := GetUser(r, mydbmap, token)
 	if err != nil {
+		// TODO: status 500 
 		response := UserResponse{400, "failed", []ArtistInfo{}}
 		res, err := json.Marshal(response)
 		fmt.Println(err)
 		w.Write(res)
 	}
 	if exists == false {
+		// TODO: status 401 
 		response := UserResponse{200, "redirect", []ArtistInfo{}}
 		res, err := json.Marshal(response)
 		if err != nil {
@@ -51,5 +55,5 @@ func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 		}
 		w.Write(res)
 	}
-}	
+}
 

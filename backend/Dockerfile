@@ -17,10 +17,11 @@ ADD . /go/src/Spotify_new_releases
 
 RUN go mod download
 
-ENV GO111MODULE=off
-# RUN go get gopkg.in/urfave/cli.v2@master
-RUN go get github.com/oxequa/realize 
+# ENV GO111MODULE=off
+#RUN go get gopkg.in/urfave/cli.v2@master 
+#ENV GO11MODULE=off
+#RUN go get github.com/oxequa/realize 
 
-ENV GO111MODULE=on
+#ENV GO111MODULE=on
 
-# CMD ["realize", "start"]
+#CMD ["realize", "start"]

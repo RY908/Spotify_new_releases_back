@@ -1,9 +1,9 @@
 version: "3" # composeファイルのバージョン
-services: 
+services:
   app: # サービス名
     build: ./backend/ # ①ビルドに使うDockerfileの場所
     tty: true # ②コンテナの永続化
-    ports: # ホストOSのポートとコンテナのポートをつなげる 
+    ports: # ホストOSのポートとコンテナのポートをつなげる
         - "9990"
     volumes:
         - ./backend:/go/src/Spotify_new_releases # ③マウントディレクトリ
@@ -16,15 +16,14 @@ services:
       - LOCAL_ERR_URI=$LOCAL_ERR_URI
       - LOCAL_SUC_URI=$LOCAL_SUC_URI
       - SQL_PATH=$SQL_PATH
-      - VIRTUAL_HOST=newlreases.tk
-      - LETSENCRYPT_HOST=newlreases.tk
-      - LETSENCRYPT_EMAIL=@gmail.com
+      - VIRTUAL_HOST=$HOST
+      - LETSENCRYPT_HOST=$HOST
+      - LETSENCRYPT_EMAIL=$EMAIL
+      - ACCESS_CONTROL_ALLOW_ORIGIN=$ACCESS_CONTROL_ALLOW_ORIGIN
     depends_on:
         - mysql
-    networks: 
+    networks:
       - app1
-      # - default
-    # network_mode: "bridge"
     command: bash -c "go run main.go"
 
   mysql:
@@ -34,49 +33,18 @@ services:
         - ./mysql/init:/docker-entrypoint-initdb.d
         # 永続化するときにマウントするdir
         - db-store:/var/lib/mysql
-    environment: 
+    environment:
         - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
     ports:
         - "3306:3306"
-    # network_mode: "bridge"
-    networks: 
-      - app1
+    networks:
+        - app1
 
-  # nginx:
-  #   image: nginx
-  #   depends_on:
-  #    - app
-  #   container_name: app-nginx
-  #   environment:
-  #     - VIRTUAL_HOST: newlreases.tk
-  #     - LETSENCRYPT_HOST: newlreases.tk
-  #     - LETSENCRYPT_EMAIL: @gmail.com
-  #   restart: always
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-  #   network_mode: "bridge"
-    
 volumes:
   db-store:
+  letsencrypt:
 
-# networks:
-#   app1:
-#     driver: bridge
-
-# networks:
-#   default:
-#     external:
-#       name: app1
-
-networks: 
+networks:
   app1:
     external: true
-
-# networks:
-#   default:
-#    external:
-#     name: bridge
-#   app_net:
-#     name: app1
-
-
+>>>>>>> 44ea48f3b229e9149c3a205c1c724f2d8edc1ec6

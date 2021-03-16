@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"encoding/json"
-	//. "Spotify_new_releases/spotify"
 	. "Spotify_new_releases/database"
 	. "Spotify_new_releases/cookie"
 )
@@ -20,7 +19,7 @@ type DeleteResponse struct {
 }
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	w.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -28,8 +27,11 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	fmt.Println("delete")
 
 	// get user from cookie
-	exists, user, err := GetUser(r, mydbmap)
+	token, err := GetToken(r)
+	// TODO: status 400
+	exists, user, err := GetUser(r, mydbmap, token)
 	if err != nil {
+		// TODO: status 500
 		response := DeleteResponse{400, "failed", []ArtistInfo{}}
 		res, err := json.Marshal(response)
 		fmt.Println(err)
@@ -39,6 +41,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	// if the user is not in database then return response without artist information
 	// if the user is in database then delete the artists the user requests and return artists
 	if exists == false {
+		// Todo: status 401
 		response := DeleteResponse{200, "redirect", []ArtistInfo{}}
 		res, err := json.Marshal(response)
 		if err != nil {
@@ -51,16 +54,19 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 		artistIds := request.ArtistIds
 
 		if err := mydbmap.DeleteRelationFromRequest(user.UserId, artistIds); err != nil {
+			// TODO: w.write
 			fmt.Println(err)
 		}
 
 		artists, err := mydbmap.GetArtistsFromUserId(user.UserId)
 		if err != nil {
+			// TODO: w.write
 			fmt.Println(err)
 		}
 		response := DeleteResponse{200, "success", artists}
 		res, err := json.Marshal(response)
 		if err != nil {
+			// TODO: w.write
 			fmt.Println(err)
 		}
 		w.Write(res)
