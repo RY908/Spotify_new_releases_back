@@ -47,4 +47,3 @@ volumes:
 networks:
   app1:
     external: true
->>>>>>> 44ea48f3b229e9149c3a205c1c724f2d8edc1ec6
