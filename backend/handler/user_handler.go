@@ -11,8 +11,6 @@ import (
 )
 
 type UserResponse struct {
-	Status 	int 			`json:"status"`
-	Result 	string 			`json:"result"`
 	Artists []ArtistInfo 	`json:"artists"`
 }
 
@@ -26,32 +24,32 @@ func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	// if not, then set status as redirect
 	// if existed, then get all the artists and send them to frontend.
 	token, err := GetToken(r)
-	// TODO: status 400
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+	}
+
 	exists, user, err := GetUser(r, mydbmap, token)
 	if err != nil {
-		// TODO: status 500 
-		response := UserResponse{400, "failed", []ArtistInfo{}}
-		res, err := json.Marshal(response)
 		fmt.Println(err)
-		w.Write(res)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
 	}
+
 	if exists == false {
-		// TODO: status 401 
-		response := UserResponse{200, "redirect", []ArtistInfo{}}
-		res, err := json.Marshal(response)
-		if err != nil {
-			fmt.Println(err)
-		}
-		w.Write(res)
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+        return
 	} else {
 		artists, err := mydbmap.GetArtistsFromUserId(user.UserId)
 		if err != nil {
-			fmt.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		response := UserResponse{200, "success", artists}
+		response := UserResponse{artists}
 		res, err := json.Marshal(response)
 		if err != nil {
-			fmt.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		w.Write(res)
 	}
