@@ -77,11 +77,11 @@ func GetToken(r *http.Request) (oauth2.Token, error) {
 }
 
 // get access token and create client then check if the client is already in database
-func GetUser(r *http.Request, mydbmap *MyDbMap) (bool, UserInfo, error) {
-	token, err := GetToken(r)
-	if err != nil {
-		fmt.Println(err)
-	}
+func GetUser(r *http.Request, mydbmap *MyDbMap, token oauth2.Token) (bool, UserInfo, error) {
+	// token, err := GetToken(r)
+	// if err != nil {
+	// 	return false, UserInfo{}, err
+	// }
 	client := CreateMyClientFromToken(token)
 	userId, err := client.GetCurrentUserId()
 	if err != nil {
