@@ -35,8 +35,11 @@ func SettingHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 
 	fmt.Println("setting")
 
-	exists, user, err := GetUser(r, mydbmap)
+	token, err := GetToken(r)
+	// TODO: status 400
+	exists, user, err := GetUser(r, mydbmap, token)
 	if err != nil {
+		// TODO: status 500
 		response := SettingResponse{400, "failed", false, false}
 		res, err := json.Marshal(response)
 		fmt.Println(err)
@@ -44,6 +47,7 @@ func SettingHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	}
 
 	if exists == false {
+		// TODO: status 401
 		response := SettingResponse{200, "redirect", false, false}
 		res, err := json.Marshal(response)
 		if err != nil {
@@ -54,6 +58,7 @@ func SettingHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 		response := SettingResponse{200, "success", user.IfRemixAdd, user.IfAcousticAdd}
 		res, err := json.Marshal(response)
 		if err != nil {
+			// TODO: w.write
 			fmt.Println(err)
 		}
 		w.Write(res)
@@ -68,14 +73,18 @@ func SettingEditHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap
 	
 	fmt.Println("change setting")
 
-	exists, user, err := GetUser(r, mydbmap)
+	token, err := GetToken(r)
+	// TODO: status 400
+	exists, user, err := GetUser(r, mydbmap, token)
 	if err != nil {
+		// TODO: status 500
 		response := SettingEditResponse{500, "failed"}
 		res, err := json.Marshal(response)
 		fmt.Println(err)
 		w.Write(res)
 	}
 	if exists == false {
+		// TODO: status 401
 		response := SettingEditResponse{200, "redirect"}
 		res, err := json.Marshal(response)
 		if err != nil {
@@ -91,6 +100,7 @@ func SettingEditHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap
 
 		if err := mydbmap.UpdateIfAdd(user.UserId, ifRemixAdd, ifAcousticAdd); err != nil {
 			fmt.Println(err)
+			// TODO: status 500
 			response = SettingEditResponse{500, "failed"}
 		} else {
 			response = SettingEditResponse{200, "success"}
@@ -98,6 +108,7 @@ func SettingEditHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap
 		
 		res, err := json.Marshal(response)
 		if err != nil {
+			// TODO: w.write
 			fmt.Println(err)
 		}
 		w.Write(res)

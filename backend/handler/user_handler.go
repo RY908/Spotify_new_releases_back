@@ -25,14 +25,18 @@ func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	// check if the user is in database.
 	// if not, then set status as redirect
 	// if existed, then get all the artists and send them to frontend.
-	exists, user, err := GetUser(r, mydbmap)
+	token, err := GetToken(r)
+	// TODO: status 400
+	exists, user, err := GetUser(r, mydbmap, token)
 	if err != nil {
+		// TODO: status 500 
 		response := UserResponse{400, "failed", []ArtistInfo{}}
 		res, err := json.Marshal(response)
 		fmt.Println(err)
 		w.Write(res)
 	}
 	if exists == false {
+		// TODO: status 401 
 		response := UserResponse{200, "redirect", []ArtistInfo{}}
 		res, err := json.Marshal(response)
 		if err != nil {
