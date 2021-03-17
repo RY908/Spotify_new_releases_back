@@ -87,16 +87,12 @@ func SettingEditHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap
 		if err := mydbmap.UpdateIfAdd(user.UserId, ifRemixAdd, ifAcousticAdd); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
-		} //else {
-		// 	response = SettingEditResponse{200, "success"}
-		// }
-		
-		// res, err := json.Marshal(response)
+		}
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		// w.Write(res)
 	}
 }
