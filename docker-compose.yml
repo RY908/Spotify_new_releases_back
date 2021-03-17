@@ -20,6 +20,7 @@ services:
       - LETSENCRYPT_HOST=$HOST
       - LETSENCRYPT_EMAIL=$EMAIL
       - ACCESS_CONTROL_ALLOW_ORIGIN=$ACCESS_CONTROL_ALLOW_ORIGIN
+      - DOMAIN=$DOMAIN
     depends_on:
         - mysql
     networks:
