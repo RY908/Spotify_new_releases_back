@@ -27,7 +27,10 @@ func UpdateRelation(dbmap *MyDbMap) error {
 
 		client := CreateMyClientFromUserInfo(user)
 		// get recently played artists.
-		artists, counter, newToken := client.GetRecentlyPlayedArtists()
+		artists, counter, newToken, err := client.GetRecentlyPlayedArtists()
+		if err != nil {
+			return err
+		}
 		
 		timestamp := time.Now()
 
