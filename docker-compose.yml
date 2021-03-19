@@ -24,6 +24,7 @@ services:
         - mysql
     networks:
       - app1
+    restart: always
     command: bash -c "go run main.go"
 
   mysql:
