@@ -20,9 +20,11 @@ type Client struct {
 	Client *spotify.Client
 }
 
+// Create url for spotify accounts service
 func GetURL() string {
 	fmt.Println(redirectURI)
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, 
+		spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
 	auth.SetAuthInfo(clientID, secretKey)
 	url := auth.AuthURL(state)
 
@@ -32,7 +34,8 @@ func GetURL() string {
 // CreateMyClient creates a new client.
 // This is called when the user first logs in.
 func CreateMyClient(r *http.Request) (*Client, *oauth2.Token, *http.Request, error) {
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, 
+		spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
 	auth.SetAuthInfo(clientID, secretKey)
 	token, err := auth.Token(state, r)
 	if err != nil {
@@ -46,7 +49,8 @@ func CreateMyClient(r *http.Request) (*Client, *oauth2.Token, *http.Request, err
 
 // CreateMyClientFromUserInfo creates a new client from data in the database.
 func CreateMyClientFromUserInfo(user database.UserInfo) *Client {
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, 
+		spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
 	auth.SetAuthInfo(clientID, secretKey)
 
 	accessToken := user.AccessToken
@@ -54,10 +58,8 @@ func CreateMyClientFromUserInfo(user database.UserInfo) *Client {
 	refreshToken := user.RefreshToken
 	expiry := user.Expiry
 
-	// make token
 	token := oauth2.Token{AccessToken:accessToken, TokenType:tokenType, RefreshToken:refreshToken, Expiry:expiry}
 
-	// create new client
 	client := auth.NewClient(&token)
 
 	return &Client{Client: &client}
@@ -65,22 +67,11 @@ func CreateMyClientFromUserInfo(user database.UserInfo) *Client {
 
 // CreateMyClientFromToken creates a new client from oauth2 token.
 func CreateMyClientFromToken(token oauth2.Token) *Client {
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
+	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, 
+		spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
 	auth.SetAuthInfo(clientID, secretKey)
 	client := auth.NewClient(&token)
 
 	return &Client{Client: &client}
 }
 
-func CreateMyClientFromCode(r *http.Request) (*Client, *oauth2.Token, *http.Request, error) {
-	auth  := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate, spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
-	code := r.FormValue("code")
-	token, err := auth.Exchange(code)
-	if err != nil {
-		err = fmt.Errorf("unable to get token from code: %w", err)
-		return nil, nil, r, err
-	}
-	client := auth.NewClient(token)
-
-	return &Client{Client: &client}, token, r, nil
-}

@@ -47,27 +47,27 @@ func main() {
 	c.Start()
 	//defer c.Stop()
 
-	r.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		LoginHandler(w, r)
 	}).Methods("GET")
-	r.HandleFunc("/api/callback", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		RedirectHandler(w, r, mydbmap)
 	})
-	r.HandleFunc("/api/user", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
 		UserHandler(w, r, mydbmap)
 	}).Methods("GET")
-	r.HandleFunc("/api/delete", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
 		DeleteHandler(w, r, mydbmap)
 	}).Methods("POST")
-	r.HandleFunc("/api/setting", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/setting", func(w http.ResponseWriter, r *http.Request) {
 		SettingHandler(w, r, mydbmap)
 	}).Methods("GET")
-	r.HandleFunc("/api/setting/save", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/setting/save", func(w http.ResponseWriter, r *http.Request) {
 		SettingEditHandler(w, r, mydbmap)
 	}).Methods("POST")
-	r.HandleFunc("/api/update", func(w http.ResponseWriter, r *http.Request) {
-		UpdatePlaylist(mydbmap)
-	}).Methods("GET")
+	// r.HandleFunc("/update", func(w http.ResponseWriter, r *http.Request) {
+	// 	UpdatePlaylist(mydbmap)
+	// }).Methods("GET")
 
 	http.ListenAndServe(":9990", r)
 }

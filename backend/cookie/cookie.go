@@ -2,6 +2,7 @@ package cookie
 
 import (
 	"fmt"
+	"os"
 	"time"
 	"net/http"
 	"golang.org/x/oauth2"
@@ -9,36 +10,39 @@ import (
 	. "Spotify_new_releases/database"
 )
 
-var layout = "2006-01-02 15:04:05"
+var (
+	layout = "2006-01-02 15:04:05"
+	DOMAIN = os.Getenv("DOMAIN")
+)
 
 // set oauth token in cookie
 func SetCookie(w http.ResponseWriter, token *oauth2.Token) (http.ResponseWriter, error) {
 	http.SetCookie(w, &http.Cookie{
-        	Name: "token",
-        	Value: token.AccessToken,
-     		Path: "/",
-		Domain: ".newreleases.tk",
+		Name: "token",
+		Value: token.AccessToken,
+		Path: "/",
+		Domain: DOMAIN,
 	})
 
 	http.SetCookie(w, &http.Cookie{
 		Name: "tokenType",
 		Value: token.TokenType,
 		Path: "/",
-		Domain: ".newreleases.tk",
+		Domain: DOMAIN,
 	})
 
 	http.SetCookie(w, &http.Cookie{
 		Name: "refreshToken",
 		Value: token.RefreshToken,
 		Path: "/",
-		Domain: ".newreleases.tk",
+		Domain: DOMAIN,
 	})
 
 	http.SetCookie(w, &http.Cookie{
 		Name: "expiry",
 		Value: (token.Expiry).Format(layout),
 		Path: "/",
-		Domain: ".newreleases.tk",
+		Domain: DOMAIN,
 	})
 	return w, nil
 }

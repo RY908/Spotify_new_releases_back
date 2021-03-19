@@ -7,19 +7,6 @@ services:
         - "9990"
     volumes:
         - ./backend:/go/src/Spotify_new_releases # ③マウントディレクトリ
-    #environment:
-      #- REDIRECT_URI=$REDIRECT_URI
-      #- SPOTIFY_ID_3=$SPOTIFY_ID_3
-      #- SPOTIFY_SECRET_3=$SPOTIFY_SECRET_3
-      #- ERR_URI=$ERR_URI
-      #- SUC_URI=$SUC_URI
-      #- LOCAL_ERR_URI=$LOCAL_ERR_URI
-      #- LOCAL_SUC_URI=$LOCAL_SUC_URI
-      #- SQL_PATH=$SQL_PATH
-      #- VIRTUAL_HOST=$HOST
-      #- LETSENCRYPT_HOST=$HOST
-      #- LETSENCRYPT_EMAIL=$EMAIL
-      #- ACCESS_CONTROL_ALLOW_ORIGIN=$ACCESS_CONTROL_ALLOW_ORIGIN
     env_file:
         - backend_app.env
     depends_on:
