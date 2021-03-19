@@ -48,7 +48,7 @@ func UpdateRelation(dbmap *MyDbMap) error {
 			err = fmt.Errorf("unable to insert artists: %w", err)
 			return err
 		}
-		fmt.Pritnln("userId: ", userId)
+		fmt.Println("userId: ", userId)
 		fmt.Println("playlistId: ", playlistId)
 		fmt.Println("newToken: ", newToken)
 		if err := dbmap.UpdateUser(userId, playlistId, newToken); err != nil {
