@@ -11,7 +11,7 @@ import (
 )
 
 type UserResponse struct {
-	Artists []ArtistInfo 	`json:"artists"`
+	Artists []ArtistRes 	`json:"artists"`
 }
 
 func UserHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {

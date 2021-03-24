@@ -11,6 +11,14 @@ type ArtistInfo struct {
 	IconUrl		string 		`db:iconUrl 	json:"iconUrl"`
 }
 
+type ArtistRes struct {
+	ArtistId	string 		`json:"artistId"`
+	Name 		string 		`json:"name"`
+	Url 		string 		`json:"url"`
+	IconUrl		string 		`json:"iconUrl"`
+	IfFollowing bool		`json:"ifFollowing"`
+}
+
 // insert artist in database
 func (d *MyDbMap) InsertArtist(artistId, name, url, iconUrl string) error {
 	count, err := d.DbMap.SelectInt("select count(*) from Artist where artistId = ?", artistId) // check if artist already exists in database
@@ -57,9 +65,9 @@ func (d *MyDbMap) InsertArtists(artists []ArtistInfo) error {
 }
 
 // get artists that the user listened to or follows
-func (d *MyDbMap) GetArtistsFromUserId(userId string) ([]ArtistInfo, error) {
-	var artists []ArtistInfo
-	cmd := "select Artist.artistId, Artist.name, Artist.url, Artist.iconUrl from Artist inner join ListenTo on Artist.artistId = ListenTo.artistId where ListenTo.userId = ? and ListenTo.listenCount >= 2"
+func (d *MyDbMap) GetArtistsFromUserId(userId string) ([]ArtistRes, error) {
+	var artists []ArtistRes
+	cmd := "select Artist.artistId, Artist.name, Artist.url, Artist.iconUrl, ListenTo.ifFollowing from Artist inner join ListenTo on Artist.artistId = ListenTo.artistId where ListenTo.userId = ? and ListenTo.listenCount >= 2"
 	_, err := d.DbMap.Select(&artists, cmd, userId)
 	if err != nil {
 		return nil, err  
