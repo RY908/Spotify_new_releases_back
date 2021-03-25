@@ -14,11 +14,15 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-var (
-	mydbmap = DatabaseInit()
-)
+// var (
+// 	mydbmap = DatabaseInit()
+// )
 
 func main() {
+	dbmap, err := DatabaseInit()
+	if err != nil {
+		fmt.Println(err)
+	}
 	// セッション初期処理
 	gob.Register(UserSession{})
 	SessionInit()
@@ -30,17 +34,17 @@ func main() {
 	// cron
 	c := cron.New()
 	c.AddFunc("@every 20m", func() {
-		if err := UpdateRelation(mydbmap); err != nil {
+		if err := UpdateRelation(dbmap); err != nil {
 			fmt.Println(err)
 		}
 	})
 	c.AddFunc("10 00 * * 5", func() {
-		if err := UpdatePlaylist(mydbmap); err != nil {
+		if err := UpdatePlaylist(dbmap); err != nil {
 			fmt.Println(err)
 		}
 	})
 	c.AddFunc("@monthly", func() {
-		if err := UpdateFollowingArtists(mydbmap); err != nil {
+		if err := UpdateFollowingArtists(dbmap); err != nil {
 			fmt.Println(err)
 		}
 	})
@@ -51,19 +55,19 @@ func main() {
 		LoginHandler(w, r)
 	}).Methods("GET")
 	r.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
-		RedirectHandler(w, r, mydbmap)
+		RedirectHandler(w, r, dbmap)
 	})
 	r.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
-		UserHandler(w, r, mydbmap)
+		UserHandler(w, r, dbmap)
 	}).Methods("GET")
 	r.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
-		DeleteHandler(w, r, mydbmap)
+		DeleteHandler(w, r, dbmap)
 	}).Methods("POST")
 	r.HandleFunc("/setting", func(w http.ResponseWriter, r *http.Request) {
-		SettingHandler(w, r, mydbmap)
+		SettingHandler(w, r, dbmap)
 	}).Methods("GET")
 	r.HandleFunc("/setting/save", func(w http.ResponseWriter, r *http.Request) {
-		SettingEditHandler(w, r, mydbmap)
+		SettingEditHandler(w, r, dbmap)
 	}).Methods("POST")
 	// r.HandleFunc("/update", func(w http.ResponseWriter, r *http.Request) {
 	// 	UpdatePlaylist(mydbmap)
