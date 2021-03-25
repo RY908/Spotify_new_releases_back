@@ -22,7 +22,7 @@ type UserInfo struct {
 // check if the user is in database
 func (d *MyDbMap) ExistUser(userId string) (bool, UserInfo, error) {
 	var user UserInfo
-	err := dbmap.SelectOne(&user, "select * from User where userId=?", userId)
+	err := d.DbMap.SelectOne(&user, "select * from User where userId=?", userId)
 	if err != nil {
 		return false, user, err
 	}

@@ -51,7 +51,7 @@ func (d *MyDbMap) InsertRelations(artists []ArtistInfo, counter map[string]int, 
 				err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: int64(counter[artistId]), Timestamp:timestamp, IfFollowing: ifFollowing})
 			}
 		} else {
-			_, err = dbmap.Exec("update ListenTo set listenCount = listenCount+?, timestamp = ? where artistId = ? and userId = ?", counter[artistId], timestamp, artistId, userId)
+			_, err = d.DbMap.Exec("update ListenTo set listenCount = listenCount+?, timestamp = ? where artistId = ? and userId = ?", counter[artistId], timestamp, artistId, userId)
 		}
 		if err != nil {
 			return err
