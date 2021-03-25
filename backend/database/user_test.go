@@ -9,13 +9,14 @@ import (
 )
 
 func TestInsertUser(t *testing.T) {
-	dbmap, err := DatabaseInit()
+	dbmap, err := DatabaseTestInit()
 	if err != nil {
 		t.Fatal(err)
 	}
 	truncateTable(t, dbmap)
 
-	currentTime := time.Now().UTC()
+	// currentTime := time.Now().UTC()
+	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
 	
 	if err := dbmap.InsertUser(
 		"existing_user1", 
@@ -32,13 +33,14 @@ func TestInsertUser(t *testing.T) {
 }
 
 func TestExistUser(t *testing.T) {
-	dbmap, err := DatabaseInit()
+	dbmap, err := DatabaseTestInit()
 	if err != nil {
 		t.Fatal(err)
 	}
 	truncateTable(t, dbmap)
 
-	currentTime := time.Now().UTC()
+	// currentTime := time.Now().UTC()
+	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
 	
 	if err := dbmap.InsertUser(
 		"existing_user", 
@@ -70,7 +72,7 @@ func TestExistUser(t *testing.T) {
 				TokenType: 		"existing_tokenType",
 				RefreshToken: 	"existing_refreshToken",
 				Expiry: 		currentTime, 
-				PlaylistId: 	"existing_playlistId",
+				PlaylistId: 	"existing_playlist",
 				IfRemixAdd: 	true,
 				IfAcousticAdd: 	true,
 			},
@@ -105,13 +107,14 @@ func TestExistUser(t *testing.T) {
 }
 
 func TestGetAllUsers(t *testing.T) {
-	dbmap, err := DatabaseInit()
+	dbmap, err := DatabaseTestInit()
 	if err != nil {
 		t.Fatal(err)
 	}
 	truncateTable(t, dbmap)
-
-	currentTime := time.Now().UTC()
+	
+	// currentTime := time.Now().UTC()
+	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
 	
 	if err := dbmap.InsertUser(
 		"existing_user1", 
@@ -156,7 +159,7 @@ func TestGetAllUsers(t *testing.T) {
 					TokenType: 		"existing_tokenType1",
 					RefreshToken: 	"existing_refreshToken1",
 					Expiry: 		currentTime, 
-					PlaylistId: 	"existing_playlistId1",
+					PlaylistId: 	"existing_playlist1",
 					IfRemixAdd: 	true,
 					IfAcousticAdd: 	true,
 				},
@@ -166,7 +169,7 @@ func TestGetAllUsers(t *testing.T) {
 					TokenType: 		"existing_tokenType2",
 					RefreshToken: 	"existing_refreshToken2",
 					Expiry: 		currentTime, 
-					PlaylistId: 	"existing_playlistId2",
+					PlaylistId: 	"existing_playlist2",
 					IfRemixAdd: 	true,
 					IfAcousticAdd: 	true,
 				},
@@ -190,13 +193,14 @@ func TestGetAllUsers(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	dbmap, err := DatabaseInit()
+	dbmap, err := DatabaseTestInit()
 	if err != nil {
 		t.Fatal(err)
 	}
 	truncateTable(t, dbmap)
 
-	currentTime := time.Now().UTC()
+	// currentTime := time.Now().UTC()
+	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
 	
 	if err := dbmap.InsertUser(
 		"existing_user", 
@@ -217,7 +221,7 @@ func TestUpdateUser(t *testing.T) {
 		"existing_user",
 		"existing_playlist",
 		&oauth2.Token{
-			AccessToken:	"updaeted_accessToken",
+			AccessToken:	"updated_accessToken",
 			TokenType:		"updated_tokenType",
 			RefreshToken:	"updated_refreshToken",
 			Expiry:			updatedTime, 
@@ -243,7 +247,7 @@ func TestUpdateUser(t *testing.T) {
 				TokenType: 		"updated_tokenType",
 				RefreshToken: 	"updated_refreshToken",
 				Expiry: 		updatedTime, 
-				PlaylistId: 	"updated_playlistId",
+				PlaylistId: 	"existing_playlist",
 				IfRemixAdd: 	true,
 				IfAcousticAdd: 	true,
 			},
@@ -271,13 +275,15 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestUpdateIfAdd(t *testing.T) {
-	dbmap, err := DatabaseInit()
+	dbmap, err := DatabaseTestInit()
 	if err != nil {
 		t.Fatal(err)
 	}
 	truncateTable(t, dbmap)
 
-	currentTime := time.Now().UTC()
+	// currentTime := time.Now().UTC()
+	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
+
 	if err := dbmap.InsertUser(
 		"existing_user", 
 		"existing_playlist",
@@ -316,7 +322,7 @@ func TestUpdateIfAdd(t *testing.T) {
 				TokenType: 		"existing_tokenType",
 				RefreshToken: 	"existing_refreshToken",
 				Expiry: 		currentTime, 
-				PlaylistId: 	"existing_playlistId",
+				PlaylistId: 	"existing_playlist",
 				IfRemixAdd: 	false,
 				IfAcousticAdd: 	false,
 			},
@@ -341,3 +347,5 @@ func TestUpdateIfAdd(t *testing.T) {
 		})
 	}
 }
+
+// go test ./database/user_test.go ./database/user.go ./database/database_init.go ./database/helper_test.go ./database/artist.go ./database/relation.go
