@@ -13,7 +13,7 @@ type DeleteRequest struct {
 }
 
 type DeleteResponse struct {
-	Artists []ArtistInfo 	`json:"artists"`
+	Artists []ArtistRes 	`json:"artists"`
 }
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {

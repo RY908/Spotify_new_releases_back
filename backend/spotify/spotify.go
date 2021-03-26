@@ -67,7 +67,7 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 }
 
 // GetNewReleases returns new releases based on the user's interests.
-func (c *Client) GetNewReleases(artists []ArtistInfo, userId string) ([]spotify.SimpleAlbum, error) {
+func (c *Client) GetNewReleases(artists []ArtistRes, userId string) ([]spotify.SimpleAlbum, error) {
 	var newReleases []spotify.SimpleAlbum
 
 	now := time.Now().UTC()
