@@ -25,7 +25,7 @@ func TestInsertArtist(t *testing.T) {
 	}
 }
 
-func TestInsertArtists(t *testing.T) {
+func TestGetArtistsFromUserId(t *testing.T) {
 	dbmap, err := DatabaseInit()
 	if err != nil {
 		t.Fatal(err)
@@ -88,7 +88,7 @@ func TestInsertArtists(t *testing.T) {
 			},
 		},
 		map[string]int{"existing_artistId1": 1, "existing_artistId": 2},
-		"existing user",
+		"existing_user",
 		currentTime,
 		true,
 	); err != nil {
@@ -105,7 +105,7 @@ func TestInsertArtists(t *testing.T) {
 			},
 		},
 		map[string]int{"existing_artistId3": 3},
-		"existing user",
+		"existing_user",
 		currentTime,
 		false,
 	); err != nil {
@@ -119,9 +119,9 @@ func TestInsertArtists(t *testing.T) {
 		wantErr 	error
 	} {
 		{
-			name: "able to get artists",
+			name: 	"able to get artists",
 			userId: "existing_user",
-			want: []ArtistRes{
+			want: 	[]ArtistRes{
 				ArtistRes{
 					ArtistId: 	"existing_artistId1",
 					Name: 		"existing_artist1",
@@ -146,9 +146,12 @@ func TestInsertArtists(t *testing.T) {
 			},
 			wantErr: nil,
 		},
-		// {
-		// 	name: ""
-		// }
+		{
+			name: 		"able to return error for not existing user",
+			userId: 	"nonexisting_user",
+			want: 		[]ArtistRes{}, 
+			wantErr: 	nil,
+		},
 	}
 
 	for _, tt := range tests {

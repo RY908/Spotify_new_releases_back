@@ -78,13 +78,13 @@ func TestExistUser(t *testing.T) {
 			},
 			wantErr: nil,
 		},
-		// {
-		// 	name: "able to return false to nonexisting user", 
-		// 	userId: "nonexisting_user1",
-		// 	wantExists: false,
-		// 	want: UserInfo{},
-		// 	wantErr: nil, 
-		// },
+		{
+			name: "able to return false to nonexisting user", 
+			userId: "nonexisting_user",
+			wantExists: false,
+			want: UserInfo{},
+			wantErr: ErrUserNotFound, 
+		},
 	}
 
 	for _, tt := range tests {
@@ -230,6 +230,19 @@ func TestUpdateUser(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	if err := dbmap.UpdateUser(
+		"notexisting_user",
+		"notexisting_playlist",
+		&oauth2.Token{
+			AccessToken:	"notexisting_accessToken",
+			TokenType:		"notexisting_tokenType",
+			RefreshToken:	"notexisting_refreshToken",
+			Expiry:			updatedTime, 
+		},
+	); err != nil {
+		t.Fatal(err)
+	}
+
 	tests := []struct {
 		name 		string
 		userId 		string
@@ -299,6 +312,14 @@ func TestUpdateIfAdd(t *testing.T) {
 
 	if err := dbmap.UpdateIfAdd(
 		"existing_user", 
+		false,
+		false,
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := dbmap.UpdateIfAdd(
+		"notexisting_user",
 		false,
 		false,
 	); err != nil {
