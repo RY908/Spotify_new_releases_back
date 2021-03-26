@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -70,7 +71,7 @@ func (d *MyDbMap) GetArtistsFromUserId(userId string) ([]ArtistRes, error) {
 	cmd := "select Artist.artistId, Artist.name, Artist.url, Artist.iconUrl, ListenTo.ifFollowing from Artist inner join ListenTo on Artist.artistId = ListenTo.artistId where ListenTo.userId = ? and ListenTo.listenCount >= 2"
 	_, err := d.DbMap.Select(&artists, cmd, userId)
 	if err != nil {
-		return nil, err  
+		return nil, fmt.Errorf("get artists from userId: %w", err)
 	}
 	return artists, nil
 }

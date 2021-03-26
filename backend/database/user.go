@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	//"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	//"github.com/go-gorp/gorp"
@@ -24,7 +25,7 @@ func (d *MyDbMap) ExistUser(userId string) (bool, UserInfo, error) {
 	var user UserInfo
 	err := d.DbMap.SelectOne(&user, "select * from User where userId=?", userId)
 	if err != nil {
-		return false, user, err
+		return false, user, fmt.Errorf("select user: %w", ErrUserNotFound)
 	}
 	return true, user, nil
 }
@@ -40,7 +41,7 @@ func (d *MyDbMap) InsertUser(userId, playlistId string, Token *oauth2.Token) err
 		err = d.DbMap.Insert(&UserInfo{userId, Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, playlistId, true, true})
 	}
 	if err != nil {
-		return err
+		return fmt.Errorf("insert user: %w", ErrUserAlreadyExisted)
 	}
 	return nil
 }
@@ -49,7 +50,7 @@ func (d *MyDbMap) InsertUser(userId, playlistId string, Token *oauth2.Token) err
 func (d *MyDbMap) GetAllUsers() ([]UserInfo, error) {
 	var users []UserInfo
 	if _, err := d.DbMap.Select(&users, "select * from User"); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("select all users: %w", ErrUserNotFound)
 	}
 
 	return users, nil
@@ -62,14 +63,14 @@ func (d *MyDbMap) UpdateUser(userId, playlistId string, Token *oauth2.Token) err
 		return err
 	}*/
 	if _, err := d.DbMap.Exec("update User set accessToken = ?, tokenType = ?, refreshToken = ?, expiry = ? where userId = ?", Token.AccessToken, Token.TokenType, Token.RefreshToken, Token.Expiry, userId); err != nil {
-		return err
+		return fmt.Errorf("update user: %w", err)
 	}
 	return nil
 }
 
 func (d *MyDbMap) UpdateIfAdd(userId string, ifRemixAdd, ifAcousticAdd bool) error {
 	if _, err := d.DbMap.Exec("update User set ifRemixAdd = ?, ifAcousticAdd = ? where userId = ?", ifRemixAdd, ifAcousticAdd, userId); err != nil {
-		return err
+		return fmt.Errorf("update user: %w", err)
 	}
 	return nil
 	
