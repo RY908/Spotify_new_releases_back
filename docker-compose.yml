@@ -7,6 +7,8 @@ services:
         - "9990"
     volumes:
         - ./backend:/go/src/Spotify_new_releases # ③マウントディレクトリ
+    environment:
+      TZ: Asia/Tokyo
     env_file:
         - backend_app.env
     depends_on:

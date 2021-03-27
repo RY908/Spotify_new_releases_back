@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	errURI = os.Getenv("LOCAL_ERR_URI")
-	sucURI = os.Getenv("LOCAL_SUC_URI")
+	errURI = os.Getenv("ERR_URI")
+	sucURI = os.Getenv("SUC_URI")
 )
 
 
