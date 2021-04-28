@@ -10,14 +10,14 @@ import (
 )
 
 type UserInfo struct {
-	UserId			string 		`db:userId`
-	AccessToken		string 		`db:accessToken`
-	TokenType		string 		`db:tokenType`
-	RefreshToken	string 		`db:refreshToken`
-	Expiry			time.Time 	`db:expiry`
-	PlaylistId		string 		`db:playlistId`
-	IfRemixAdd		bool 		`db:ifRemixAdd`
-	IfAcousticAdd	bool 		`db:ifAcousticAdd`
+	UserId        string    `db:userId`
+	AccessToken   string    `db:accessToken`
+	TokenType     string    `db:tokenType`
+	RefreshToken  string    `db:refreshToken`
+	Expiry        time.Time `db:expiry`
+	PlaylistId    string    `db:playlistId`
+	IfRemixAdd    bool      `db:ifRemixAdd`
+	IfAcousticAdd bool      `db:ifAcousticAdd`
 }
 
 // check if the user is in database
@@ -73,5 +73,5 @@ func (d *MyDbMap) UpdateIfAdd(userId string, ifRemixAdd, ifAcousticAdd bool) err
 		return fmt.Errorf("update user: %w", err)
 	}
 	return nil
-	
+
 }

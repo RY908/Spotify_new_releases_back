@@ -1,13 +1,14 @@
-package cookie 
+package cookie
 
 import (
+	. "Spotify_new_releases/backend/database"
+	. "Spotify_new_releases/backend/spotify"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
-	"net/http"
+
 	"golang.org/x/oauth2"
-	. "Spotify_new_releases/spotify"
-	. "Spotify_new_releases/database"
 )
 
 var (
@@ -18,30 +19,30 @@ var (
 // set oauth token in cookie
 func SetCookie(w http.ResponseWriter, token *oauth2.Token) (http.ResponseWriter, error) {
 	http.SetCookie(w, &http.Cookie{
-		Name: "token",
-		Value: token.AccessToken,
-		Path: "/",
+		Name:   "token",
+		Value:  token.AccessToken,
+		Path:   "/",
 		Domain: DOMAIN,
 	})
 
 	http.SetCookie(w, &http.Cookie{
-		Name: "tokenType",
-		Value: token.TokenType,
-		Path: "/",
+		Name:   "tokenType",
+		Value:  token.TokenType,
+		Path:   "/",
 		Domain: DOMAIN,
 	})
 
 	http.SetCookie(w, &http.Cookie{
-		Name: "refreshToken",
-		Value: token.RefreshToken,
-		Path: "/",
+		Name:   "refreshToken",
+		Value:  token.RefreshToken,
+		Path:   "/",
 		Domain: DOMAIN,
 	})
 
 	http.SetCookie(w, &http.Cookie{
-		Name: "expiry",
-		Value: (token.Expiry).Format(layout),
-		Path: "/",
+		Name:   "expiry",
+		Value:  (token.Expiry).Format(layout),
+		Path:   "/",
 		Domain: DOMAIN,
 	})
 	return w, nil
@@ -60,7 +61,7 @@ func GetToken(r *http.Request) (oauth2.Token, error) {
 		return oauth2.Token{}, err
 	}
 	tokenTypeCookie, err := r.Cookie("tokenType")
-    if err != nil {
+	if err != nil {
 		err = fmt.Errorf("unable to get token type from cookie: %w", err)
 		return oauth2.Token{}, err
 	}
@@ -76,7 +77,7 @@ func GetToken(r *http.Request) (oauth2.Token, error) {
 	expiry, _ := time.Parse(layout, expiryString)
 
 	// get token, client and user id
-	token := oauth2.Token{AccessToken:accessToken, TokenType:tokenType, RefreshToken:refreshToken, Expiry:expiry}
+	token := oauth2.Token{AccessToken: accessToken, TokenType: tokenType, RefreshToken: refreshToken, Expiry: expiry}
 	return token, nil
 }
 

@@ -1,15 +1,15 @@
 package database
 
 import (
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-gorp/gorp"
-	"os"
 	"database/sql"
 	"fmt"
+	"github.com/go-gorp/gorp"
+	_ "github.com/go-sql-driver/mysql"
+	"os"
 )
 
 var (
-	sqlPath = os.Getenv("SQL_PATH")
+	sqlPath     = os.Getenv("SQL_PATH")
 	sqlPathTest = os.Getenv("SQL_PATH_TEST")
 )
 

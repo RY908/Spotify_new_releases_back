@@ -1,25 +1,25 @@
 package handler
 
 import (
+	. "Spotify_new_releases/backend/cookie"
+	. "Spotify_new_releases/backend/database"
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"encoding/json"
-	. "Spotify_new_releases/database"
-	. "Spotify_new_releases/cookie"
 )
 
 type DeleteRequest struct {
-	ArtistIds []string	`json:"artistsId"`
+	ArtistIds []string `json:"artistsId"`
 }
 
 type DeleteResponse struct {
-	Artists []ArtistRes 	`json:"artists"`
+	Artists []ArtistRes `json:"artists"`
 }
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	w.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	fmt.Println("delete")
@@ -28,19 +28,19 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	token, err := GetToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-        return
+		return
 	}
 	exists, user, err := GetUser(r, mydbmap, token)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
+		return
 	}
 
 	// if the user is not in database then return response without artist information
 	// if the user is in database then delete the artists the user requests and return artists
 	if exists == false {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
-        return
+		return
 	} else {
 		var request DeleteRequest
 		json.NewDecoder(r.Body).Decode(&request)

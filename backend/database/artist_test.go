@@ -2,10 +2,10 @@ package database
 
 import (
 	"errors"
+	"github.com/google/go-cmp/cmp"
+	"golang.org/x/oauth2"
 	"testing"
 	"time"
-	"golang.org/x/oauth2"
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestInsertArtist(t *testing.T) {
@@ -16,7 +16,7 @@ func TestInsertArtist(t *testing.T) {
 	truncateTable(t, dbmap)
 
 	if err := dbmap.InsertArtist(
-		"existing_artist", 
+		"existing_artist",
 		"existing_artistId",
 		"existing_url",
 		"existing_iconUrl",
@@ -37,22 +37,22 @@ func TestGetArtistsFromUserId(t *testing.T) {
 	if err := dbmap.InsertArtists(
 		[]ArtistInfo{
 			ArtistInfo{
-				ArtistId: 	"existing_artistId1",
-				Name: 		"existing_artist1",
-				Url: 		"existing_url1",
-				IconUrl:	"existing_iconUrl1",
+				ArtistId: "existing_artistId1",
+				Name:     "existing_artist1",
+				Url:      "existing_url1",
+				IconUrl:  "existing_iconUrl1",
 			},
 			ArtistInfo{
-				ArtistId: 	"existing_artistId2", 
-				Name:		"existing_artist2", 
-				Url:		"existing_url2",
-				IconUrl:	"existing_iconUrl2",
+				ArtistId: "existing_artistId2",
+				Name:     "existing_artist2",
+				Url:      "existing_url2",
+				IconUrl:  "existing_iconUrl2",
 			},
 			ArtistInfo{
-				ArtistId: 	"existing_artistId3", 
-				Name:		"existing_artist3", 
-				Url:		"existing_url3",
-				IconUrl:	"existing_iconUrl3",
+				ArtistId: "existing_artistId3",
+				Name:     "existing_artist3",
+				Url:      "existing_url3",
+				IconUrl:  "existing_iconUrl3",
 			},
 		},
 	); err != nil {
@@ -60,13 +60,13 @@ func TestGetArtistsFromUserId(t *testing.T) {
 	}
 
 	if err := dbmap.InsertUser(
-		"existing_user", 
+		"existing_user",
 		"existing_playlist",
 		&oauth2.Token{
-			AccessToken:	"existing_accessToken",
-			TokenType:		"existing_tokenType",
-			RefreshToken:	"existing_refreshToken",
-			Expiry:			currentTime, 
+			AccessToken:  "existing_accessToken",
+			TokenType:    "existing_tokenType",
+			RefreshToken: "existing_refreshToken",
+			Expiry:       currentTime,
 		},
 	); err != nil {
 		t.Fatal(err)
@@ -75,16 +75,16 @@ func TestGetArtistsFromUserId(t *testing.T) {
 	if err := dbmap.InsertRelations(
 		[]ArtistInfo{
 			ArtistInfo{
-				ArtistId: 	"existing_artistId1",
-				Name: 		"existing_artist1",
-				Url: 		"existing_url1",
-				IconUrl:	"existing_iconUrl1",
+				ArtistId: "existing_artistId1",
+				Name:     "existing_artist1",
+				Url:      "existing_url1",
+				IconUrl:  "existing_iconUrl1",
 			},
 			ArtistInfo{
-				ArtistId: 	"existing_artistId2", 
-				Name:		"existing_artist2", 
-				Url:		"existing_url2",
-				IconUrl:	"existing_iconUrl2",
+				ArtistId: "existing_artistId2",
+				Name:     "existing_artist2",
+				Url:      "existing_url2",
+				IconUrl:  "existing_iconUrl2",
 			},
 		},
 		map[string]int{"existing_artistId1": 1, "existing_artistId": 2},
@@ -98,10 +98,10 @@ func TestGetArtistsFromUserId(t *testing.T) {
 	if err := dbmap.InsertRelations(
 		[]ArtistInfo{
 			ArtistInfo{
-				ArtistId: 	"existing_artistId3",
-				Name: 		"existing_artist3",
-				Url: 		"existing_url3",
-				IconUrl:	"existing_iconUrl3",
+				ArtistId: "existing_artistId3",
+				Name:     "existing_artist3",
+				Url:      "existing_url3",
+				IconUrl:  "existing_iconUrl3",
 			},
 		},
 		map[string]int{"existing_artistId3": 3},
@@ -113,44 +113,44 @@ func TestGetArtistsFromUserId(t *testing.T) {
 	}
 
 	tests := []struct {
-		name 		string
-		userId 		string
-		want		[]ArtistRes
-		wantErr 	error
-	} {
+		name    string
+		userId  string
+		want    []ArtistRes
+		wantErr error
+	}{
 		{
-			name: 	"able to get artists",
+			name:   "able to get artists",
 			userId: "existing_user",
-			want: 	[]ArtistRes{
+			want: []ArtistRes{
 				ArtistRes{
-					ArtistId: 	"existing_artistId1",
-					Name: 		"existing_artist1",
-					Url: 		"existing_url1",
-					IconUrl:	"existing_iconUrl1",
+					ArtistId:    "existing_artistId1",
+					Name:        "existing_artist1",
+					Url:         "existing_url1",
+					IconUrl:     "existing_iconUrl1",
 					IfFollowing: true,
 				},
 				ArtistRes{
-					ArtistId: 	"existing_artistId2",
-					Name: 		"existing_artist2",
-					Url: 		"existing_url2",
-					IconUrl:	"existing_iconUrl2",
+					ArtistId:    "existing_artistId2",
+					Name:        "existing_artist2",
+					Url:         "existing_url2",
+					IconUrl:     "existing_iconUrl2",
 					IfFollowing: true,
 				},
 				ArtistRes{
-					ArtistId: 	"existing_artistId3",
-					Name: 		"existing_artist3",
-					Url: 		"existing_url3",
-					IconUrl:	"existing_iconUrl3",
+					ArtistId:    "existing_artistId3",
+					Name:        "existing_artist3",
+					Url:         "existing_url3",
+					IconUrl:     "existing_iconUrl3",
 					IfFollowing: false,
 				},
 			},
 			wantErr: nil,
 		},
 		{
-			name: 		"able to return error for not existing user",
-			userId: 	"nonexisting_user",
-			want: 		[]ArtistRes{}, 
-			wantErr: 	nil,
+			name:    "able to return error for not existing user",
+			userId:  "nonexisting_user",
+			want:    []ArtistRes{},
+			wantErr: nil,
 		},
 	}
 
@@ -167,4 +167,3 @@ func TestGetArtistsFromUserId(t *testing.T) {
 		})
 	}
 }
-

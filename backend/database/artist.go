@@ -6,18 +6,18 @@ import (
 )
 
 type ArtistInfo struct {
-    ArtistId	string 		`db:"artistId" 	json:"artistId"`
-	Name 		string 		`db:"name" 		json:"name"`
-	Url 		string 		`db:"url" 		json:"url"`
-	IconUrl		string 		`db:iconUrl 	json:"iconUrl"`
+	ArtistId string `db:"artistId" 	json:"artistId"`
+	Name     string `db:"name" 		json:"name"`
+	Url      string `db:"url" 		json:"url"`
+	IconUrl  string `db:iconUrl 	json:"iconUrl"`
 }
 
 type ArtistRes struct {
-	ArtistId	string 		`json:"artistId"`
-	Name 		string 		`json:"name"`
-	Url 		string 		`json:"url"`
-	IconUrl		string 		`json:"iconUrl"`
-	IfFollowing bool		`json:"ifFollowing"`
+	ArtistId    string `json:"artistId"`
+	Name        string `json:"name"`
+	Url         string `json:"url"`
+	IconUrl     string `json:"iconUrl"`
+	IfFollowing bool   `json:"ifFollowing"`
 }
 
 // insert artist in database
@@ -29,9 +29,9 @@ func (d *MyDbMap) InsertArtist(artistId, name, url, iconUrl string) error {
 
 	// if artist does not exist, then insert artist into database
 	if count == 0 {
-		err = d.DbMap.Insert(&ArtistInfo{ArtistId:artistId, Name:name, Url:url, IconUrl:iconUrl})
+		err = d.DbMap.Insert(&ArtistInfo{ArtistId: artistId, Name: name, Url: url, IconUrl: iconUrl})
 	}
-	
+
 	if err != nil {
 		return err
 	}
@@ -42,9 +42,9 @@ func (d *MyDbMap) InsertArtist(artistId, name, url, iconUrl string) error {
 func (d *MyDbMap) InsertArtists(artists []ArtistInfo) error {
 	trans, err := d.DbMap.Begin()
 	if err != nil {
-		return err	
+		return err
 	}
-	
+
 	for _, artist := range artists {
 		artistId := artist.ArtistId
 		count, err := trans.SelectInt("select count(*) from Artist where artistId = ?", artistId) // check if artist already exists in database
@@ -56,7 +56,7 @@ func (d *MyDbMap) InsertArtists(artists []ArtistInfo) error {
 		if count == 0 {
 			err = trans.Insert(&artist)
 		}
-		
+
 		if err != nil {
 			return err
 		}

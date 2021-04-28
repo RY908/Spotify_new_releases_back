@@ -2,10 +2,10 @@ package database
 
 import (
 	"errors"
+	"github.com/google/go-cmp/cmp"
+	"golang.org/x/oauth2"
 	"testing"
 	"time"
-	"golang.org/x/oauth2"
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestInsertUser(t *testing.T) {
@@ -17,15 +17,15 @@ func TestInsertUser(t *testing.T) {
 
 	// currentTime := time.Now().UTC()
 	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
-	
+
 	if err := dbmap.InsertUser(
-		"existing_user1", 
+		"existing_user1",
 		"existing_playlist1",
 		&oauth2.Token{
-			AccessToken:	"existing_accessToken1",
-			TokenType:		"existing_tokenType1",
-			RefreshToken:	"existing_refreshToken1",
-			Expiry:			currentTime, 
+			AccessToken:  "existing_accessToken1",
+			TokenType:    "existing_tokenType1",
+			RefreshToken: "existing_refreshToken1",
+			Expiry:       currentTime,
 		},
 	); err != nil {
 		t.Fatal(err)
@@ -41,49 +41,49 @@ func TestExistUser(t *testing.T) {
 
 	// currentTime := time.Now().UTC()
 	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
-	
+
 	if err := dbmap.InsertUser(
-		"existing_user", 
+		"existing_user",
 		"existing_playlist",
 		&oauth2.Token{
-			AccessToken:	"existing_accessToken",
-			TokenType:		"existing_tokenType",
-			RefreshToken:	"existing_refreshToken",
-			Expiry:			currentTime, 
+			AccessToken:  "existing_accessToken",
+			TokenType:    "existing_tokenType",
+			RefreshToken: "existing_refreshToken",
+			Expiry:       currentTime,
 		},
 	); err != nil {
 		t.Fatal(err)
 	}
 
 	tests := []struct {
-		name 		string
-		userId 		string
-		wantExists	bool
-		want		UserInfo
-		wantErr 	error
-	} {
+		name       string
+		userId     string
+		wantExists bool
+		want       UserInfo
+		wantErr    error
+	}{
 		{
-			name: "able to get existing user", 
-			userId: "existing_user",
+			name:       "able to get existing user",
+			userId:     "existing_user",
 			wantExists: true,
 			want: UserInfo{
-				UserId:			"existing_user",
-				AccessToken: 	"existing_accessToken",
-				TokenType: 		"existing_tokenType",
-				RefreshToken: 	"existing_refreshToken",
-				Expiry: 		currentTime, 
-				PlaylistId: 	"existing_playlist",
-				IfRemixAdd: 	true,
-				IfAcousticAdd: 	true,
+				UserId:        "existing_user",
+				AccessToken:   "existing_accessToken",
+				TokenType:     "existing_tokenType",
+				RefreshToken:  "existing_refreshToken",
+				Expiry:        currentTime,
+				PlaylistId:    "existing_playlist",
+				IfRemixAdd:    true,
+				IfAcousticAdd: true,
 			},
 			wantErr: nil,
 		},
 		{
-			name: "able to return false to nonexisting user", 
-			userId: "nonexisting_user",
+			name:       "able to return false to nonexisting user",
+			userId:     "nonexisting_user",
 			wantExists: false,
-			want: UserInfo{},
-			wantErr: ErrUserNotFound, 
+			want:       UserInfo{},
+			wantErr:    ErrUserNotFound,
 		},
 	}
 
@@ -112,66 +112,65 @@ func TestGetAllUsers(t *testing.T) {
 		t.Fatal(err)
 	}
 	truncateTable(t, dbmap)
-	
+
 	// currentTime := time.Now().UTC()
 	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
-	
+
 	if err := dbmap.InsertUser(
-		"existing_user1", 
+		"existing_user1",
 		"existing_playlist1",
 		&oauth2.Token{
-			AccessToken:	"existing_accessToken1",
-			TokenType:		"existing_tokenType1",
-			RefreshToken:	"existing_refreshToken1",
-			Expiry:			currentTime, 
+			AccessToken:  "existing_accessToken1",
+			TokenType:    "existing_tokenType1",
+			RefreshToken: "existing_refreshToken1",
+			Expiry:       currentTime,
 		},
 	); err != nil {
 		t.Fatal(err)
 	}
 
 	if err := dbmap.InsertUser(
-		"existing_user2", 
+		"existing_user2",
 		"existing_playlist2",
 		&oauth2.Token{
-			AccessToken:	"existing_accessToken2",
-			TokenType:		"existing_tokenType2",
-			RefreshToken:	"existing_refreshToken2",
-			Expiry:			currentTime, 
+			AccessToken:  "existing_accessToken2",
+			TokenType:    "existing_tokenType2",
+			RefreshToken: "existing_refreshToken2",
+			Expiry:       currentTime,
 		},
 	); err != nil {
 		t.Fatal(err)
 	}
 
-
 	tests := []struct {
-		name 		string
-		userId 		string
-		want		[]UserInfo
-		wantErr 	error
-	} {
+		name    string
+		userId  string
+		want    []UserInfo
+		wantErr error
+	}{
 		{
-			name: "able to get all existing user", 
+			name:   "able to get all existing user",
 			userId: "existing_user",
 			want: []UserInfo{
-				UserInfo{	
-					UserId:			"existing_user1",
-					AccessToken: 	"existing_accessToken1",
-					TokenType: 		"existing_tokenType1",
-					RefreshToken: 	"existing_refreshToken1",
-					Expiry: 		currentTime, 
-					PlaylistId: 	"existing_playlist1",
-					IfRemixAdd: 	true,
-					IfAcousticAdd: 	true,
+				UserInfo{
+					UserId:        "existing_user1",
+					AccessToken:   "existing_accessToken1",
+					TokenType:     "existing_tokenType1",
+					RefreshToken:  "existing_refreshToken1",
+					Expiry:        currentTime,
+					PlaylistId:    "existing_playlist1",
+					IfRemixAdd:    true,
+					IfAcousticAdd: true,
 				},
-				UserInfo{	
-					UserId:			"existing_user2",
-					AccessToken: 	"existing_accessToken2",
-					TokenType: 		"existing_tokenType2",
-					RefreshToken: 	"existing_refreshToken2",
-					Expiry: 		currentTime, 
-					PlaylistId: 	"existing_playlist2",
-					IfRemixAdd: 	true,
-					IfAcousticAdd: 	true,
+				UserInfo{
+					UserId:        "existing_user2",
+					AccessToken:   "existing_accessToken2",
+					TokenType:     "existing_tokenType2",
+					RefreshToken:  "existing_refreshToken2",
+					Expiry:        currentTime,
+					PlaylistId:    "existing_playlist2",
+					IfRemixAdd:    true,
+					IfAcousticAdd: true,
 				},
 			},
 			wantErr: nil,
@@ -201,15 +200,15 @@ func TestUpdateUser(t *testing.T) {
 
 	// currentTime := time.Now().UTC()
 	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
-	
+
 	if err := dbmap.InsertUser(
-		"existing_user", 
+		"existing_user",
 		"existing_playlist",
 		&oauth2.Token{
-			AccessToken:	"existing_accessToken",
-			TokenType:		"existing_tokenType",
-			RefreshToken:	"existing_refreshToken",
-			Expiry:			currentTime, 
+			AccessToken:  "existing_accessToken",
+			TokenType:    "existing_tokenType",
+			RefreshToken: "existing_refreshToken",
+			Expiry:       currentTime,
 		},
 	); err != nil {
 		t.Fatal(err)
@@ -221,10 +220,10 @@ func TestUpdateUser(t *testing.T) {
 		"existing_user",
 		"existing_playlist",
 		&oauth2.Token{
-			AccessToken:	"updated_accessToken",
-			TokenType:		"updated_tokenType",
-			RefreshToken:	"updated_refreshToken",
-			Expiry:			updatedTime, 
+			AccessToken:  "updated_accessToken",
+			TokenType:    "updated_tokenType",
+			RefreshToken: "updated_refreshToken",
+			Expiry:       updatedTime,
 		},
 	); err != nil {
 		t.Fatal(err)
@@ -234,35 +233,35 @@ func TestUpdateUser(t *testing.T) {
 		"notexisting_user",
 		"notexisting_playlist",
 		&oauth2.Token{
-			AccessToken:	"notexisting_accessToken",
-			TokenType:		"notexisting_tokenType",
-			RefreshToken:	"notexisting_refreshToken",
-			Expiry:			updatedTime, 
+			AccessToken:  "notexisting_accessToken",
+			TokenType:    "notexisting_tokenType",
+			RefreshToken: "notexisting_refreshToken",
+			Expiry:       updatedTime,
 		},
 	); err != nil {
 		t.Fatal(err)
 	}
 
 	tests := []struct {
-		name 		string
-		userId 		string
-		wantExists	bool
-		want		UserInfo
-		wantErr 	error
-	} {
+		name       string
+		userId     string
+		wantExists bool
+		want       UserInfo
+		wantErr    error
+	}{
 		{
-			name: "able to get updated user", 
-			userId: "existing_user",
+			name:       "able to get updated user",
+			userId:     "existing_user",
 			wantExists: true,
 			want: UserInfo{
-				UserId:			"existing_user",
-				AccessToken: 	"updated_accessToken",
-				TokenType: 		"updated_tokenType",
-				RefreshToken: 	"updated_refreshToken",
-				Expiry: 		updatedTime, 
-				PlaylistId: 	"existing_playlist",
-				IfRemixAdd: 	true,
-				IfAcousticAdd: 	true,
+				UserId:        "existing_user",
+				AccessToken:   "updated_accessToken",
+				TokenType:     "updated_tokenType",
+				RefreshToken:  "updated_refreshToken",
+				Expiry:        updatedTime,
+				PlaylistId:    "existing_playlist",
+				IfRemixAdd:    true,
+				IfAcousticAdd: true,
 			},
 			wantErr: nil,
 		},
@@ -298,20 +297,20 @@ func TestUpdateIfAdd(t *testing.T) {
 	currentTime := time.Date(2021, time.March, 25, 0, 0, 0, 0, time.UTC)
 
 	if err := dbmap.InsertUser(
-		"existing_user", 
+		"existing_user",
 		"existing_playlist",
 		&oauth2.Token{
-			AccessToken:	"existing_accessToken",
-			TokenType:		"existing_tokenType",
-			RefreshToken:	"existing_refreshToken",
-			Expiry:			currentTime, 
+			AccessToken:  "existing_accessToken",
+			TokenType:    "existing_tokenType",
+			RefreshToken: "existing_refreshToken",
+			Expiry:       currentTime,
 		},
 	); err != nil {
 		t.Fatal(err)
 	}
 
 	if err := dbmap.UpdateIfAdd(
-		"existing_user", 
+		"existing_user",
 		false,
 		false,
 	); err != nil {
@@ -327,25 +326,25 @@ func TestUpdateIfAdd(t *testing.T) {
 	}
 
 	tests := []struct {
-		name 		string
-		userId 		string
-		wantExists	bool
-		want		UserInfo
-		wantErr 	error
-	} {
+		name       string
+		userId     string
+		wantExists bool
+		want       UserInfo
+		wantErr    error
+	}{
 		{
-			name: "able to get updated user", 
-			userId: "existing_user",
+			name:       "able to get updated user",
+			userId:     "existing_user",
 			wantExists: true,
 			want: UserInfo{
-				UserId:			"existing_user",
-				AccessToken: 	"existing_accessToken",
-				TokenType: 		"existing_tokenType",
-				RefreshToken: 	"existing_refreshToken",
-				Expiry: 		currentTime, 
-				PlaylistId: 	"existing_playlist",
-				IfRemixAdd: 	false,
-				IfAcousticAdd: 	false,
+				UserId:        "existing_user",
+				AccessToken:   "existing_accessToken",
+				TokenType:     "existing_tokenType",
+				RefreshToken:  "existing_refreshToken",
+				Expiry:        currentTime,
+				PlaylistId:    "existing_playlist",
+				IfRemixAdd:    false,
+				IfAcousticAdd: false,
 			},
 			wantErr: nil,
 		},

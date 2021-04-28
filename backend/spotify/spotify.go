@@ -1,13 +1,14 @@
 package spotify
 
 import (
-	"github.com/zmb3/spotify"
-	"golang.org/x/oauth2"
-	"time"
+	. "Spotify_new_releases/backend/database"
 	"fmt"
 	"os"
 	"strings"
-	. "Spotify_new_releases/database"
+	"time"
+
+	"github.com/zmb3/spotify"
+	"golang.org/x/oauth2"
 )
 
 // GetCurrentUserId returns user id of the current client.
@@ -22,7 +23,7 @@ func (c *Client) GetCurrentUserId() (string, error) {
 }
 
 // CreatePlaylistForUser makes a new spotify playlist for a user.
-func (c *Client) CreatePlaylistForUser(userId string) (*spotify.FullPlaylist, error){
+func (c *Client) CreatePlaylistForUser(userId string) (*spotify.FullPlaylist, error) {
 	// create a new spotify playlist
 	playlist, err := c.Client.CreatePlaylistForUser(userId, "New Releases", "", true)
 	if err != nil {
@@ -34,8 +35,8 @@ func (c *Client) CreatePlaylistForUser(userId string) (*spotify.FullPlaylist, er
 
 // GetRecentlyPlayedArtists returns a list of artists who the user played recently.
 func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, map[string]int, *oauth2.Token, error) {
-	t := time.Now().UTC() 
-	t = t.Add(-20 * time.Minute) // 20 minutes before present time 
+	t := time.Now().UTC()
+	t = t.Add(-20 * time.Minute)                        // 20 minutes before present time
 	afterTime := t.UnixNano() / int64(time.Millisecond) // convert to milliseconds
 	recentlyPlayedItems, err := c.Client.PlayerRecentlyPlayedOpt(&spotify.RecentlyPlayedOptions{Limit: 50, AfterEpochMs: afterTime})
 	if err != nil {
@@ -44,8 +45,8 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 	}
 
 	artistsSet := make(map[spotify.ID]spotify.FullArtist) // set of artists
-	artistsCount := make(map[string]int) // counter
-	
+	artistsCount := make(map[string]int)                  // counter
+
 	// add an artist to artistsSet if the artist is not existed in artistsSet.
 	// if already in artistsSet, increment counter.
 	for _, item := range recentlyPlayedItems {
@@ -76,11 +77,11 @@ func (c *Client) GetNewReleases(artists []ArtistRes, userId string) ([]spotify.S
 	user, _ := c.Client.CurrentUser()
 
 	for _, artist := range artists {
-		artistId := artist.ArtistId 
+		artistId := artist.ArtistId
 		offset := 0
-		limit := 10 
-		
-		opt := spotify.Options{Country:&user.Country, Limit:&limit, Offset:&offset}
+		limit := 10
+
+		opt := spotify.Options{Country: &user.Country, Limit: &limit, Offset: &offset}
 		albums, err := c.Client.GetArtistAlbumsOpt(spotify.ID(artistId), &opt, 2) // get albums
 		if err != nil {
 			err = fmt.Errorf("unable to get artist albums: %w", err)
@@ -116,7 +117,7 @@ func (c *Client) GetFollowingArtists(userId string) ([]ArtistInfo, error) {
 			var name, artistId, url, iconUrl string
 			name, artistId, url, iconUrl = GetArtistInfo(following)
 			lastId = artistId
-			artists = append(artists, ArtistInfo{ArtistId: artistId, Name:name, Url:url, IconUrl:iconUrl})
+			artists = append(artists, ArtistInfo{ArtistId: artistId, Name: name, Url: url, IconUrl: iconUrl})
 		}
 
 		if len(following.Artists) < 50 {
@@ -141,7 +142,7 @@ func (c *Client) SetConfig(playlistId spotify.ID) error {
 	return nil
 
 }
- 
+
 // GetArtistInfo retrieves artist's name, id, url, iconUrl and returns them.
 func GetArtistInfo(artist spotify.FullArtist) (string, string, string, string) {
 	var name, artistId, url, iconUrl string
@@ -228,34 +229,34 @@ func ChangePlaylist(newReleases []spotify.SimpleAlbum, user UserInfo) error {
 		// exclude remix and track if required
 		if ok := IfExclude(user, trackName); !ok {
 			addTracks = append(addTracks, trackId)
-		} 
+		}
 
 		// time sleep is nessesary in order not to exceed spotify api limit
 		time.Sleep(time.Millisecond * 500)
-	}	
+	}
 	fmt.Println(len(addTracks))
 
 	// change the tracks in the playlist.
-	change_num := (len(addTracks)-1) / 100 
+	change_num := (len(addTracks) - 1) / 100
 	if change_num == 0 {
 		if err := client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks...); err != nil {
 			err = fmt.Errorf("unable to replace tracks in playlist: %w", err)
 			return err
 		}
-	}	else {
+	} else {
 		if err := client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks[0:100]...); err != nil {
 			err = fmt.Errorf("unable to replace tracks in playlist: %w", err)
 			return err
 		}
 	}
-	
+
 	for i := 0; i < change_num; i++ {
 		var add []spotify.ID
 		fmt.Println(i)
 		if i == change_num-1 {
 			add = addTracks[(i+1)*100:]
 		} else {
-			add = addTracks[(i+1)*100:(i+2)*100]
+			add = addTracks[(i+1)*100 : (i+2)*100]
 		}
 		if _, err := client.AddTracksToPlaylist(spotify.ID(playlistId), add...); err != nil {
 			err = fmt.Errorf("unable to add tracks to playlist: %w", err)
@@ -275,6 +276,6 @@ func IfExclude(user UserInfo, trackName string) bool {
 	if user.IfAcousticAdd == false && (strings.Contains(trackName, "Acoustic") || strings.Contains(trackName, "acoustic")) {
 		res = true
 	}
-	return res 
+	return res
 
 }

@@ -1,14 +1,15 @@
 package handler
 
 import (
+	. "Spotify_new_releases/backend/spotify"
 	"fmt"
-	"os"
 	"net/http"
-	. "Spotify_new_releases/spotify"
+	"os"
+
 	//. "Spotify_new_releases/session"
-	. "Spotify_new_releases/event"
-	. "Spotify_new_releases/database"
-	. "Spotify_new_releases/cookie"
+	. "Spotify_new_releases/backend/cookie"
+	. "Spotify_new_releases/backend/database"
+	. "Spotify_new_releases/backend/event"
 )
 
 var (
@@ -16,19 +17,18 @@ var (
 	sucURI = os.Getenv("SUC_URI")
 )
 
-
 func RedirectHandler(w http.ResponseWriter, r *http.Request, mydbmap *MyDbMap) {
 	w.Header().Set("Access-Control-Allow-Origin", accessControlAllowOrigin)
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	
+
 	// use the same state string here that you used to generate the URL
 	fmt.Println("redirect")
 
 	// create client and get token
 	client, token, r, err := CreateMyClient(r)
-	
+
 	// get user id from client
 	userId, err := client.GetCurrentUserId()
 	if err != nil {

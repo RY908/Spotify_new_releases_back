@@ -1,11 +1,12 @@
 package event
 
 import (
-	"golang.org/x/oauth2"
-	"time"
+	. "Spotify_new_releases/backend/database"
+	. "Spotify_new_releases/backend/spotify"
 	"fmt"
-	. "Spotify_new_releases/database"
-	. "Spotify_new_releases/spotify"
+	"time"
+
+	"golang.org/x/oauth2"
 )
 
 // GetFollowingArtistsAndInsertRelations get a user's following artists and insert them in the database.
@@ -32,7 +33,7 @@ func GetFollowingArtistsAndInsertRelations(dbmap *MyDbMap, userId string, token 
 	}
 
 	return nil
-}	
+}
 
 // UpdateFollowingArtists is called regularly and update the relations between artists and users.
 func UpdateFollowingArtists(dbmap *MyDbMap) error {
@@ -45,7 +46,7 @@ func UpdateFollowingArtists(dbmap *MyDbMap) error {
 		return err
 	}
 	for _, user := range users {
-		// get user info 
+		// get user info
 		userId := user.UserId
 
 		// create new client

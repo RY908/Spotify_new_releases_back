@@ -1,16 +1,19 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"net/http"
-	"encoding/gob"
-	"github.com/gorilla/mux"
+
 	_ "github.com/go-sql-driver/mysql"
-	. "Spotify_new_releases/database"
+	"github.com/gorilla/mux"
+
 	// . "Spotify_new_releases/spotify"
-	. "Spotify_new_releases/session"
-	. "Spotify_new_releases/event"
-	. "Spotify_new_releases/handler"
+	. "Spotify_new_releases/backend/database"
+	. "Spotify_new_releases/backend/event"
+	. "Spotify_new_releases/backend/handler"
+	. "Spotify_new_releases/backend/session"
+
 	"github.com/robfig/cron/v3"
 )
 
@@ -75,4 +78,3 @@ func main() {
 
 	http.ListenAndServe(":9990", r)
 }
-

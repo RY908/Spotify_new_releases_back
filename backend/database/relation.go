@@ -9,12 +9,12 @@ import (
 )
 
 type ListenTo struct {
-	ListenId	int64 		`db:listenId`
-	ArtistId	string 		`db:artistId`
-	UserId		string 		`db:userId`
-	ListenCount	int64 		`db:listenCount`
-	Timestamp	time.Time	`db:"timestamp"`
-	IfFollowing bool 		`db:"ifFollowing"`
+	ListenId    int64     `db:listenId`
+	ArtistId    string    `db:artistId`
+	UserId      string    `db:userId`
+	ListenCount int64     `db:listenCount`
+	Timestamp   time.Time `db:"timestamp"`
+	IfFollowing bool      `db:"ifFollowing"`
 }
 
 func (d *MyDbMap) GetAllRelations() ([]ListenTo, error) {
@@ -33,7 +33,7 @@ func (d *MyDbMap) InsertRelation(artistId, userId string, timestamp time.Time, i
 		return fmt.Errorf("insert relation select count: %w", err)
 	}
 	if count == 0 {
-		err = d.DbMap.Insert(&ListenTo{ArtistId:artistId, UserId: userId, Timestamp:timestamp, IfFollowing: ifFollowing})
+		err = d.DbMap.Insert(&ListenTo{ArtistId: artistId, UserId: userId, Timestamp: timestamp, IfFollowing: ifFollowing})
 	}
 	if err != nil {
 		return fmt.Errorf("insert relation: %w", err)
@@ -56,9 +56,9 @@ func (d *MyDbMap) InsertRelations(artists []ArtistInfo, counter map[string]int, 
 		}
 		if count == 0 {
 			if ifFollowing {
-				err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: 1000, Timestamp:timestamp, IfFollowing: ifFollowing})
+				err = trans.Insert(&ListenTo{ArtistId: artistId, UserId: userId, ListenCount: 1000, Timestamp: timestamp, IfFollowing: ifFollowing})
 			} else {
-				err = trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: int64(counter[artistId]), Timestamp:timestamp, IfFollowing: ifFollowing})
+				err = trans.Insert(&ListenTo{ArtistId: artistId, UserId: userId, ListenCount: int64(counter[artistId]), Timestamp: timestamp, IfFollowing: ifFollowing})
 			}
 		} else {
 			_, err = d.DbMap.Exec("update ListenTo set listenCount = listenCount+?, timestamp = ? where artistId = ? and userId = ?", counter[artistId], timestamp, artistId, userId)
@@ -98,7 +98,7 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 			return fmt.Errorf("update following relation select count: %w", err)
 		}
 		if count == 0 {
-			if err := trans.Insert(&ListenTo{ArtistId:artistId, UserId: userId, ListenCount: 1000, Timestamp:timestamp, IfFollowing: true}); err != nil {
+			if err := trans.Insert(&ListenTo{ArtistId: artistId, UserId: userId, ListenCount: 1000, Timestamp: timestamp, IfFollowing: true}); err != nil {
 				return fmt.Errorf("update following relation insert: %w", err)
 			}
 		} else {
