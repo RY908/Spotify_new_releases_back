@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.5.5
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1
-	github.com/robfig/cron/v3 v3.0.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/zmb3/spotify v0.0.0-20200814173021-9bec46940cc0
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 )
