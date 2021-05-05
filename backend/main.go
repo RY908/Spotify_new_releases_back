@@ -9,10 +9,11 @@ import (
 	"github.com/gorilla/mux"
 
 	// . "Spotify_new_releases/spotify"
-	. "Spotify_new_releases/backend/database"
-	. "Spotify_new_releases/backend/event"
-	. "Spotify_new_releases/backend/handler"
-	. "Spotify_new_releases/backend/session"
+	. "github.com/RY908/Spotify_new_releases_back/backend/event"
+	. "github.com/RY908/Spotify_new_releases_back/backend/handler"
+	. "github.com/RY908/Spotify_new_releases_back/backend/session"
+
+	. "github.com/RY908/Spotify_new_releases_back/backend/database"
 
 	"github.com/robfig/cron/v3"
 )

@@ -1,11 +1,12 @@
 package handler
 
 import (
-	. "Spotify_new_releases/backend/cookie"
-	. "Spotify_new_releases/backend/database"
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	. "github.com/RY908/Spotify_new_releases_back/backend/cookie"
+	. "github.com/RY908/Spotify_new_releases_back/backend/database"
 )
 
 type DeleteRequest struct {

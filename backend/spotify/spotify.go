@@ -1,11 +1,12 @@
 package spotify
 
 import (
-	. "Spotify_new_releases/backend/database"
 	"fmt"
 	"os"
 	"strings"
 	"time"
+
+	. "github.com/RY908/Spotify_new_releases_back/backend/database"
 
 	"github.com/zmb3/spotify"
 	"golang.org/x/oauth2"

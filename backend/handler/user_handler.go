@@ -7,8 +7,8 @@ import (
 
 	//. "Spotify_new_releases/spotify"
 	//. "Spotify_new_releases/session"
-	. "Spotify_new_releases/backend/cookie"
-	. "Spotify_new_releases/backend/database"
+	. "github.com/RY908/Spotify_new_releases_back/backend/cookie"
+	. "github.com/RY908/Spotify_new_releases_back/backend/database"
 )
 
 type UserResponse struct {

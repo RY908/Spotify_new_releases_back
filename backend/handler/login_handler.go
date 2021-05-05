@@ -1,10 +1,11 @@
 package handler
 
 import (
-	. "Spotify_new_releases/backend/spotify"
 	"fmt"
 	"net/http"
 	"os"
+
+	. "github.com/RY908/Spotify_new_releases_back/backend/spotify"
 )
 
 var (

@@ -1,12 +1,13 @@
 package cookie
 
 import (
-	. "Spotify_new_releases/backend/database"
-	. "Spotify_new_releases/backend/spotify"
 	"fmt"
 	"net/http"
 	"os"
 	"time"
+
+	. "github.com/RY908/Spotify_new_releases_back/backend/database"
+	. "github.com/RY908/Spotify_new_releases_back/backend/spotify"
 
 	"golang.org/x/oauth2"
 )

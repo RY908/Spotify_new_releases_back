@@ -1,15 +1,14 @@
 package handler
 
 import (
-	. "Spotify_new_releases/backend/spotify"
 	"fmt"
 	"net/http"
 	"os"
 
-	//. "Spotify_new_releases/session"
-	. "Spotify_new_releases/backend/cookie"
-	. "Spotify_new_releases/backend/database"
-	. "Spotify_new_releases/backend/event"
+	. "github.com/RY908/Spotify_new_releases_back/backend/cookie"
+	. "github.com/RY908/Spotify_new_releases_back/backend/database"
+	. "github.com/RY908/Spotify_new_releases_back/backend/event"
+	. "github.com/RY908/Spotify_new_releases_back/backend/spotify"
 )
 
 var (

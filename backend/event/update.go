@@ -3,10 +3,11 @@ package event
 import (
 	"github.com/zmb3/spotify"
 	//"golang.org/x/oauth2"
-	. "Spotify_new_releases/backend/database"
-	. "Spotify_new_releases/backend/spotify"
 	"fmt"
 	"time"
+
+	. "github.com/RY908/Spotify_new_releases_back/backend/database"
+	. "github.com/RY908/Spotify_new_releases_back/backend/spotify"
 )
 
 // This is called every 50-60 minutes to get the users recently played tracks and insert the data into the database.
