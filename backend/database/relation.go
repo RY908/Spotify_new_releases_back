@@ -93,7 +93,7 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 
 	for _, artist := range artists {
 		artistId := artist.ArtistId
-		count, err := trans.SelectInt("select count(*) from ListenTo where artistId = ? and userId = ? and ifFollowing = true", artistId, userId)
+		count, err := trans.SelectInt("select count(*) from ListenTo where artistId = ? and userId = ?", artistId, userId)
 		if err != nil {
 			return fmt.Errorf("update following relation select count: %w", err)
 		}
@@ -105,7 +105,7 @@ func (d *MyDbMap) UpdateFollowingRelation(artists []ArtistInfo, userId string, t
 			// if _, err := trans.Update(&ListenTo{ArtistId:artistId, UserId: userId, Timestamp:timestamp, IfFollowing: true}); err != nil {
 			// 	return err
 			// }
-			if _, err := trans.Exec("update ListenTo set timestamp = ? where artistId = ? and userId = ?", timestamp, artistId, userId); err != nil {
+			if _, err := trans.Exec("update ListenTo set timestamp = ?, ifFollowing = true where artistId = ? and userId = ?", timestamp, artistId, userId); err != nil {
 				return fmt.Errorf("update following relation update: %w", err)
 			}
 		}
