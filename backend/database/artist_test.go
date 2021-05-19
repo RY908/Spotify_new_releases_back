@@ -2,10 +2,11 @@ package database
 
 import (
 	"errors"
-	"github.com/google/go-cmp/cmp"
-	"golang.org/x/oauth2"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
+	"golang.org/x/oauth2"
 )
 
 func TestInsertArtist(t *testing.T) {
@@ -158,11 +159,11 @@ func TestGetArtistsFromUserId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := dbmap.GetArtistsFromUserId(tt.userId)
 			if !errors.Is(err, tt.wantErr) {
-				t.Errorf("ExistUser() error: %v, wantErr: %v", err, tt.wantErr)
+				t.Errorf("GetArtistsFromUserId() error: %v, wantErr: %v", err, tt.wantErr)
 				return
 			}
 			if !cmp.Equal(got, tt.want) {
-				t.Errorf("ExistUser() diff: %v", cmp.Diff(got, tt.want))
+				t.Errorf("GetArtistsFromUserId() diff: %v", cmp.Diff(got, tt.want))
 			}
 		})
 	}
