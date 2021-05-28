@@ -17,6 +17,7 @@ services:
       - app1
     restart: always
     command: "go run main.go"
+    container_name: "backend-container"
 
   mysql:
     build: ./mysql/
@@ -33,6 +34,7 @@ services:
         - "3306:3306"
     networks:
         - app1
+    container_name: "mysql-container"
 
 volumes:
   db-store:
