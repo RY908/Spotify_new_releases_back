@@ -17,12 +17,20 @@ func (u *user) InsertUser(user *schema.User) error {
 	return nil
 }
 
-func (u *user) GetUser(userId string) (*schema.User, error) {
+func (u *user) GetUser(userID string) (*schema.User, error) {
 	var user schema.User
-	if err := u.db.SelectOne(&user, "select * from User where userId=?", userId); err != nil {
+	if err := u.db.SelectOne(&user, "select * from User where userId=?", userID); err != nil {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (u *user) GetAllUsers() (*[]schema.User, error) {
+	var users []schema.User
+	if _, err := u.db.Select(&users, "select * from User"); err != nil {
+		return nil, err
+	}
+	return &users, nil
 }
 
 func (u *user) UpdateUser(user *schema.User) error {

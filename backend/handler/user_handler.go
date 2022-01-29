@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	//. "Spotify_new_releases/spotify"
+	//. "Spotify_new_releases/spotify_service"
 	//. "Spotify_new_releases/session"
 	. "github.com/RY908/Spotify_new_releases_back/backend/cookie"
 	. "github.com/RY908/Spotify_new_releases_back/backend/database"

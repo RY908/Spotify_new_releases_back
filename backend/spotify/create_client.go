@@ -22,7 +22,7 @@ type Client struct {
 	Client *spotify.Client
 }
 
-// Create url for spotify accounts service
+// Create url for spotify_service accounts service
 func GetURL() string {
 	fmt.Println(redirectURI)
 	auth := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate,

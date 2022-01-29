@@ -63,7 +63,7 @@ func UpdateRelation(dbmap *MyDbMap) error {
 	return nil
 }
 
-// UpdatePlaylist updates the relation in the database and change the spotify playlist.
+// UpdatePlaylist updates the relation in the database and change the spotify_service playlist.
 func UpdatePlaylist(dbmap *MyDbMap) error {
 	fmt.Println("Update Playlist!")
 	// get all the users' information from database.
@@ -74,7 +74,7 @@ func UpdatePlaylist(dbmap *MyDbMap) error {
 		return err
 	}
 
-	// for each user, get new releases and delete relations some time ago and change the spotify playlist.
+	// for each user, get new releases and delete relations some time ago and change the spotify_service playlist.
 	for _, user := range users {
 		newReleases, err := GetNewReleasesAndDeleteRelation(dbmap, user)
 		if err != nil {
