@@ -11,7 +11,7 @@ type artist struct {
 
 func (a *artist) InsertArtist(artist *schema.Artist) error {
 	if err := a.db.Insert(&schema.Artist{
-		Id:      artist.Id,
+		ID:      artist.ID,
 		Name:    artist.Name,
 		Url:     artist.Url,
 		IconUrl: artist.IconUrl}); err != nil {

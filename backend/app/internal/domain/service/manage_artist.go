@@ -19,7 +19,7 @@ type ArtistService struct {
 
 func (s *ArtistService) InsertArtist(factory dao.Factory, artistId, name, url, iconUrl string) error {
 	if err := s.repository.InsertArtist(factory, entity.Artist{
-		Id:      artistId,
+		ID:      artistId,
 		Name:    name,
 		Url:     url,
 		IconUrl: iconUrl,

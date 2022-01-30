@@ -9,45 +9,64 @@ import (
 
 func NewListeningHistoryService() *ListeningHistoryService {
 	listeningHistoryRepository := repository.NewListeningHistoryRepository()
+	userArtistsRepository := repository.NewUserArtistsRepository()
+
 	return &ListeningHistoryService{
 		listeningHistoryRepository: listeningHistoryRepository,
+		userArtistsRepository:      userArtistsRepository,
 	}
 }
 
 type ListeningHistoryService struct {
 	listeningHistoryRepository *repository.ListeningHistoryRepository
+	userArtistsRepository      *repository.UserArtistsRepository
 }
 
-func (r *ListeningHistoryService) InsertHistories(factory dao.Factory, histories []entity.ListeningHistory, counter map[string]int) error {
-	for _, history := range histories {
-		if err := r.listeningHistoryRepository.InsertOrUpdateListeningHistory(factory, history, counter[history.ArtistId]); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (r *ListeningHistoryService) UpdateIsFollowings(factory dao.Factory, artists []entity.Artist, userId string, timestamp time.Time) error {
+func (s *ListeningHistoryService) InsertHistories(factory dao.Factory, artists []entity.Artist, userID string, counter map[string]int, isFollowing bool) error {
 	for _, artist := range artists {
-		if err := r.listeningHistoryRepository.UpdateIsFollowing(factory, artist, userId, timestamp); err != nil {
+		if err := s.listeningHistoryRepository.InsertOrUpdateListeningHistory(factory,
+			entity.ListeningHistory{
+				ArtistID:    artist.ID,
+				UserID:      userID,
+				Timestamp:   time.Now(),
+				IsFollowing: isFollowing,
+			}, counter[artist.ID]); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (r *ListeningHistoryService) DeleteHistoriesByArtistIDs(factory dao.Factory, userID string, artistIDs []string) error {
+func (s *ListeningHistoryService) UpdateIsFollowings(factory dao.Factory, artists []entity.Artist, userId string, timestamp time.Time) error {
+	for _, artist := range artists {
+		if err := s.listeningHistoryRepository.UpdateIsFollowing(factory, artist, userId, timestamp); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *ListeningHistoryService) DeleteHistoriesByArtistIDs(factory dao.Factory, userID string, artistIDs []string) error {
 	for _, artistID := range artistIDs {
-		if err := r.listeningHistoryRepository.DeleteListeningHistoryByArtistID(factory, userID, artistID); err != nil {
+		if err := s.listeningHistoryRepository.DeleteListeningHistoryByArtistID(factory, userID, artistID); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (r *ListeningHistoryService) DeleteHistoriesByTimestamp(factory dao.Factory, userID string, timestamp time.Time) error {
-	if err := r.listeningHistoryRepository.DeleteListeningHistoryByTimestamp(factory, userID, timestamp); err != nil {
+func (s *ListeningHistoryService) DeleteHistoriesByTimestamp(factory dao.Factory, userID string, timestamp time.Time) error {
+	if err := s.listeningHistoryRepository.DeleteListeningHistoryByTimestamp(factory, userID, timestamp); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (s *ListeningHistoryService) GetArtistsByUserID(factory dao.Factory, userID string) (*[]entity.Artist, error) {
+	artists, err := s.userArtistsRepository.GetArtistsByUserID(factory, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return artists, nil
 }

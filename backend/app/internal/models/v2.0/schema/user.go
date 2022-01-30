@@ -3,7 +3,7 @@ package schema
 import "time"
 
 type User struct {
-	Id            string    `db:"userId"`
+	ID            string    `db:"userId"`
 	AccessToken   string    `db:"accessToken"`
 	TokenType     string    `db:"tokenType"`
 	RefreshToken  string    `db:"refreshToken"`

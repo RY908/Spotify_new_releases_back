@@ -17,6 +17,7 @@ type Factory interface {
 	ArtistDAO() Artist
 	ListeningHistoryDAO() ListeningHistory
 	UserDAO() User
+	UserArtistsDAO() UserArtists
 }
 
 type Artist interface {
@@ -38,4 +39,8 @@ type User interface {
 	GetUser(userId string) (*schema.User, error)
 	GetAllUsers() (*[]schema.User, error)
 	UpdateUser(user *schema.User) error
+}
+
+type UserArtists interface {
+	GetArtistsByUserID(userID string) (*[]schema.Artist, error)
 }

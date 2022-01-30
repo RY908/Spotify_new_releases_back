@@ -15,7 +15,7 @@ type ArtistRepository struct{}
 func (r *ArtistRepository) InsertArtist(factory dao.Factory, artist entity.Artist) error {
 	artistDAO := factory.ArtistDAO()
 	record := &schema.Artist{
-		Id:      artist.Id,
+		Id:      artist.ID,
 		Name:    artist.Name,
 		Url:     artist.Url,
 		IconUrl: artist.IconUrl,

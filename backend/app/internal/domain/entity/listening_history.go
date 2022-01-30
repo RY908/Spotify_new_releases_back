@@ -7,9 +7,9 @@ import (
 )
 
 type ListeningHistory struct {
-	Id          int64
-	ArtistId    string
-	UserId      string
+	ID          int64
+	ArtistID    string
+	UserID      string
 	ListenCount int64
 	Timestamp   time.Time
 	IsFollowing bool
@@ -17,8 +17,9 @@ type ListeningHistory struct {
 
 func NewListeningHistory(listeningHistory *schema.ListeningHistory) ListeningHistory {
 	return ListeningHistory{
-		ArtistId:    listeningHistory.ArtistId,
-		UserId:      listeningHistory.UserId,
+		ID:          listeningHistory.ID,
+		ArtistID:    listeningHistory.ArtistID,
+		UserID:      listeningHistory.UserID,
 		ListenCount: listeningHistory.ListenCount,
 		Timestamp:   listeningHistory.Timestamp,
 		IsFollowing: listeningHistory.IsFollowing,
