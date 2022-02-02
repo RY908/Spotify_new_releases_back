@@ -8,5 +8,5 @@ type ListeningHistory struct {
 	UserID      string    `db:"userId"`
 	ListenCount int64     `db:"listenCount"`
 	Timestamp   time.Time `db:"timestamp"`
-	IsFollowing bool      `db:"isFollowing"`
+	IsFollowing bool      `db:"ifFollowing"`
 }

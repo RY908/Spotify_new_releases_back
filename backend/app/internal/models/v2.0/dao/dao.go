@@ -1,16 +1,24 @@
 package dao
 
 import (
-	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao/mysql"
+	"errors"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/schema"
 	"github.com/go-gorp/gorp"
 	"time"
 )
 
-func NewDBManager(db *gorp.DbMap) mysql.DB {
-	return mysql.DB{
-		DB: db,
+var factoryFunc func(db *gorp.DbMap) Factory
+
+func RegisterFactory(f func(db *gorp.DbMap) Factory) {
+	factoryFunc = f
+}
+
+func NewDBManager(db *gorp.DbMap) (Factory, error) {
+	if factoryFunc == nil {
+		return nil, errors.New("no factory found, register it by importing implementation of dao.TxManager")
 	}
+
+	return factoryFunc(db), nil
 }
 
 type Factory interface {

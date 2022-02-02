@@ -5,11 +5,11 @@ import (
 	"github.com/go-gorp/gorp"
 )
 
-type userListeningHistory struct {
+type userArtists struct {
 	db *gorp.DbMap
 }
 
-func (u *userListeningHistory) GetArtistsByUserID(userID string) (*[]schema.Artist, error) {
+func (u *userArtists) GetArtistsByUserID(userID string) (*[]schema.Artist, error) {
 	var artists []schema.Artist
 	cmd := "select Artist.artistId, Artist.name, Artist.url, Artist.iconUrl, ListenTo.ifFollowing from Artist inner join ListenTo on Artist.artistId = ListenTo.artistId where ListenTo.userId = ? and ListenTo.listenCount >= 2"
 	if _, err := u.db.Select(&artists, cmd, userID); err != nil {

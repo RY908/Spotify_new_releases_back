@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/schema"
 	"github.com/go-gorp/gorp"
@@ -22,12 +21,8 @@ func (l *listeningHistory) GetAllListeningHistory() ([]*schema.ListeningHistory,
 
 func (l *listeningHistory) GetListeningHistory(artistId, userId string) (*schema.ListeningHistory, error) {
 	var history *schema.ListeningHistory
-	count, err := l.db.SelectInt("select count(*) from ListenTo where artistId = ? and userId = ?", artistId, userId)
-	if err != nil {
+	if err := l.db.SelectOne(&history, "select * from ListenTo where artistId = ? and userID = ?", artistId, userId); err != nil {
 		return nil, err
-	}
-	if count == 0 {
-		return nil, sql.ErrNoRows
 	}
 	return history, nil
 }
@@ -40,7 +35,7 @@ func (l *listeningHistory) InsertHistory(history *schema.ListeningHistory) error
 }
 
 func (l *listeningHistory) UpdateHistory(artistId, userId string, count int64, isFollowing bool, timestamp time.Time) error {
-	if _, err := l.db.Exec("update ListenTo set listenCount = listenCount+?, timestamp = ?, isFollowing = ? where artistId = ? and userId = ?", count, timestamp, isFollowing, artistId, userId); err != nil {
+	if _, err := l.db.Exec("update ListenTo set listenCount = listenCount+?, timestamp = ?, ifFollowing = ? where artistId = ? and userId = ?", count, timestamp, isFollowing, artistId, userId); err != nil {
 		return err
 	}
 	return nil

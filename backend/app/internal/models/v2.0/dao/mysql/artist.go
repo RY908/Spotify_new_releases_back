@@ -21,14 +21,11 @@ func (a *artist) InsertArtist(artist *schema.Artist) error {
 }
 
 func (a *artist) InsertArtists(artists []*schema.Artist) error {
-	trans, err := a.db.Begin()
-	if err != nil {
-		return err
-	}
-
 	for _, artist := range artists {
-		trans.Insert(&artist)
+		if err := a.InsertArtist(artist); err != nil {
+			return err
+		}
 	}
 
-	return trans.Commit()
+	return nil
 }

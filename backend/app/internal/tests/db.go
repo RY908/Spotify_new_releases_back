@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/schema"
 	"github.com/go-gorp/gorp"
+	_ "github.com/go-sql-driver/mysql"
 	"os"
+	"testing"
 )
 
 var (
@@ -18,12 +20,26 @@ func DatabaseTestInit() (*gorp.DbMap, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{}}
-	dbmap.AddTableWithName(schema.Artist{}, "Artist").SetKeys(false, "ArtistId")
-	dbmap.AddTableWithName(schema.ListeningHistory{}, "ListenTo").SetKeys(true, "ListenId")
-	dbmap.AddTableWithName(schema.User{}, "User").SetKeys(false, "UserId")
+	dbmap.AddTableWithName(schema.Artist{}, "Artist").SetKeys(false, "ID")
+	dbmap.AddTableWithName(schema.ListeningHistory{}, "ListenTo").SetKeys(true, "ID")
+	dbmap.AddTableWithName(schema.User{}, "User").SetKeys(false, "ID")
 	//defer dbmap.Db.Close()
 	//defer db.Close()
 	//defer dbmap.Db.Close()
 
 	return dbmap, nil
+}
+
+func TruncateTable(t *testing.T, d *gorp.DbMap) {
+	t.Helper()
+
+	if _, err := d.Exec("set foreign_key_checks = 0"); err != nil {
+		t.Fatal(err)
+	}
+	if err := d.TruncateTables(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := d.Exec("set foreign_key_checks = 1"); err != nil {
+		t.Fatal(err)
+	}
 }
