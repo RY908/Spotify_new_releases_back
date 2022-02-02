@@ -30,8 +30,8 @@ func (u *UpdateListeningHistoryUsecase) UpdateListeningHistory() error {
 	if err != nil {
 		return err
 	}
-	for _, user := range *users {
-		client := spotify_service.CreateNewClientByUser(u.spotifyConfig, user)
+	for _, user := range users {
+		client := spotify_service.CreateNewClientByUser(u.spotifyConfig, *user)
 
 		artists, counter, newToken, err := client.GetRecentlyPlayedArtists()
 		if err != nil {

@@ -14,7 +14,6 @@ func NewUpdateFollowingArtistsUsecase(factory dao.Factory, config spotify_servic
 		artistService:           service.NewArtistService(),
 		userService:             service.NewUserService(),
 		listeningHistoryService: service.NewListeningHistoryService(),
-		spotifyService:          spotify_service.NewSpotifyService(&config),
 	}
 }
 
@@ -24,7 +23,6 @@ type UpdateFollowingArtistsUsecase struct {
 	artistService           *service.ArtistService
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService
-	spotifyService          *spotify_service.SpotifyService
 }
 
 func (u *UpdateFollowingArtistsUsecase) UpdateFollowingArtists() error {
@@ -32,8 +30,8 @@ func (u *UpdateFollowingArtistsUsecase) UpdateFollowingArtists() error {
 	if err != nil {
 		return err
 	}
-	for _, user := range *users {
-		client := spotify_service.CreateNewClientByUser(u.spotifyConfig, user)
+	for _, user := range users {
+		client := spotify_service.CreateNewClientByUser(u.spotifyConfig, *user)
 
 		artists, err := client.GetFollowingArtists(user.ID)
 		if err != nil {

@@ -15,8 +15,8 @@ type ListeningHistory struct {
 	IsFollowing bool
 }
 
-func NewListeningHistory(listeningHistory *schema.ListeningHistory) ListeningHistory {
-	return ListeningHistory{
+func NewListeningHistory(listeningHistory *schema.ListeningHistory) *ListeningHistory {
+	return &ListeningHistory{
 		ID:          listeningHistory.ID,
 		ArtistID:    listeningHistory.ArtistID,
 		UserID:      listeningHistory.UserID,

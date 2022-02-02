@@ -276,10 +276,10 @@ func Test_DeleteHistoryByTimestamp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := listeningHistoryDao.DeleteHistoryByTimestamp(testUser1.ID, currentTime); err != nil {
+	if err := listeningHistoryDao.DeleteHistoryByTimestamp(testUser1.ID, currentTime.Add(-1*time.Hour)); err != nil {
 		t.Fatal(err)
 	}
-	if err := listeningHistoryDao.DeleteHistoryByTimestamp(testUser2.ID, currentTime); err != nil {
+	if err := listeningHistoryDao.DeleteHistoryByTimestamp(testUser2.ID, currentTime.Add(-1*time.Hour)); err != nil {
 		t.Fatal(err)
 	}
 

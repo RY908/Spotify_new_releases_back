@@ -24,7 +24,7 @@ type GetFollowingArtistsUsecase struct {
 	listeningHistoryService *service.ListeningHistoryService
 }
 
-func (u *GetFollowingArtistsUsecase) GetFollowingArtists(token oauth2.Token, ifRemixAdd, ifAcousticAdd bool) ([]entity.Artist, error) {
+func (u *GetFollowingArtistsUsecase) GetFollowingArtists(token *oauth2.Token) ([]*entity.Artist, error) {
 	client := spotify_service.CreateNewClientByToken(u.spotifyConfig, token)
 
 	userID, err := client.GetCurrentUserId()

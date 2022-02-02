@@ -43,9 +43,9 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 }
 
 // GetFollowingArtists returns artists' information a user follows.
-func (c *Client) GetFollowingArtists(userId string) ([]entity.Artist, error) {
+func (c *Client) GetFollowingArtists(userId string) ([]*entity.Artist, error) {
 	lastId := ""
-	var artists []entity.Artist
+	var artists []*entity.Artist
 
 	// By specifying lastId, CurrentUsersFollowedArtistsOpt returns the next 50 artists the user follows.
 	for {
@@ -58,7 +58,7 @@ func (c *Client) GetFollowingArtists(userId string) ([]entity.Artist, error) {
 			var name, artistId, url, iconUrl string
 			name, artistId, url, iconUrl = GetArtistInfo(following)
 			lastId = artistId
-			artists = append(artists, entity.Artist{ID: artistId, Name: name, Url: url, IconUrl: iconUrl})
+			artists = append(artists, &entity.Artist{ID: artistId, Name: name, Url: url, IconUrl: iconUrl})
 		}
 
 		if len(following.Artists) < 50 {

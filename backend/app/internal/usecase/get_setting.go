@@ -23,7 +23,7 @@ type GetSettingUsecase struct {
 	listeningHistoryService *service.ListeningHistoryService
 }
 
-func (u *GetSettingUsecase) GetSetting(token oauth2.Token) (bool, bool, error) {
+func (u *GetSettingUsecase) GetSetting(token *oauth2.Token) (bool, bool, error) {
 	client := spotify_service.CreateNewClientByToken(u.spotifyConfig, token)
 
 	userID, err := client.GetCurrentUserId()

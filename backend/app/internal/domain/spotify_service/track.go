@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (c *Client) GetNewReleases(artists []entity.Artist, userId string) ([]spotify.SimpleAlbum, error) {
+func (c *Client) GetNewReleases(artists []*entity.UserArtist, userId string) ([]spotify.SimpleAlbum, error) {
 	var newReleases []spotify.SimpleAlbum
 
 	now := time.Now().UTC()
@@ -41,7 +41,7 @@ func (c *Client) GetNewReleases(artists []entity.Artist, userId string) ([]spoti
 }
 
 // IfExclude returns if the song should be excluded from the playlist or not.
-func IfExclude(user entity.User, trackName string) bool {
+func IfExclude(user *entity.User, trackName string) bool {
 	res := false
 	if user.IfRemixAdd == false && (strings.Contains(trackName, "Remix") || strings.Contains(trackName, "remix")) {
 		res = true

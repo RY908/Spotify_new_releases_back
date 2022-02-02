@@ -34,7 +34,7 @@ func (c *Client) SetConfig(playlistId spotify.ID) error {
 }
 
 // ChangePlaylist change tracks in the playlist "new releases".
-func (c *Client) ChangePlaylist(newReleases []spotify.SimpleAlbum, user entity.User) error {
+func (c *Client) ChangePlaylist(newReleases []spotify.SimpleAlbum, user *entity.User) error {
 	playlistId := user.PlaylistID
 	//client := CreateNewClientByUser(user).Client
 	idSet := make(map[spotify.ID]struct{})

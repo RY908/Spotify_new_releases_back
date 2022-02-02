@@ -45,10 +45,10 @@ type ListeningHistory interface {
 type User interface {
 	InsertUser(user *schema.User) error
 	GetUser(userId string) (*schema.User, error)
-	GetAllUsers() (*[]schema.User, error)
+	GetAllUsers() ([]*schema.User, error)
 	UpdateUser(user *schema.User) error
 }
 
 type UserArtists interface {
-	GetArtistsByUserID(userID string) (*[]schema.Artist, error)
+	GetArtistsByUserID(userID string) ([]*schema.UserArtist, error)
 }

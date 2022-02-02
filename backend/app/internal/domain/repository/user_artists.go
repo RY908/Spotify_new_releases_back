@@ -11,14 +11,14 @@ func NewUserArtistsRepository() *UserArtistsRepository {
 
 type UserArtistsRepository struct{}
 
-func (r *UserArtistsRepository) GetArtistsByUserID(factory dao.Factory, userID string) (*[]entity.Artist, error) {
+func (r *UserArtistsRepository) GetArtistsByUserID(factory dao.Factory, userID string) ([]*entity.UserArtist, error) {
 	userArtistsDAO := factory.UserArtistsDAO()
 	artists, err := userArtistsDAO.GetArtistsByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	artistsEntity := entity.NewArtists(*artists)
+	artistsEntity := entity.NewUserArtists(artists)
 
-	return &artistsEntity, nil
+	return artistsEntity, nil
 }

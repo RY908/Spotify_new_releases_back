@@ -15,7 +15,7 @@ type UserRepository struct{}
 func (r *UserRepository) InsertUser(factory dao.Factory, user entity.User) error {
 	userDAO := factory.UserDAO()
 	record := &schema.User{
-		Id:            user.ID,
+		ID:            user.ID,
 		AccessToken:   user.AccessToken,
 		TokenType:     user.TokenType,
 		RefreshToken:  user.RefreshToken,
@@ -73,7 +73,7 @@ func (r *UserRepository) GetUserByUID(factory dao.Factory, userId string) (*enti
 	return entity.NewUser(user), err
 }
 
-func (r *UserRepository) GetAllUsers(factory dao.Factory) (*[]entity.User, error) {
+func (r *UserRepository) GetAllUsers(factory dao.Factory) ([]*entity.User, error) {
 	userDAO := factory.UserDAO()
 
 	allUsers, err := userDAO.GetAllUsers()
@@ -81,9 +81,9 @@ func (r *UserRepository) GetAllUsers(factory dao.Factory) (*[]entity.User, error
 		return nil, err
 	}
 
-	var users []entity.User
-	for _, user := range *allUsers {
-		users = append(users, *entity.NewUser(&user))
+	var users []*entity.User
+	for _, user := range allUsers {
+		users = append(users, entity.NewUser(user))
 	}
-	return &users, nil
+	return users, nil
 }

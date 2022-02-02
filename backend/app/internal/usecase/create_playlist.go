@@ -24,7 +24,7 @@ type CreatePlaylistUsecase struct {
 	listeningHistoryService *service.ListeningHistoryService
 }
 
-func (u *CreatePlaylistUsecase) CreatePlaylist(token oauth2.Token) error {
+func (u *CreatePlaylistUsecase) CreatePlaylist(token *oauth2.Token) error {
 	client := spotify_service.CreateNewClientByToken(u.spotifyConfig, token)
 
 	userID, err := client.GetCurrentUserId()

@@ -62,7 +62,7 @@ func (s *ListeningHistoryService) DeleteHistoriesByTimestamp(factory dao.Factory
 	return nil
 }
 
-func (s *ListeningHistoryService) GetArtistsByUserID(factory dao.Factory, userID string) (*[]entity.Artist, error) {
+func (s *ListeningHistoryService) GetArtistsByUserID(factory dao.Factory, userID string) ([]*entity.UserArtist, error) {
 	artists, err := s.userArtistsRepository.GetArtistsByUserID(factory, userID)
 	if err != nil {
 		return nil, err

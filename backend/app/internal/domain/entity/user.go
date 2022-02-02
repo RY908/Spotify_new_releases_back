@@ -20,7 +20,7 @@ type User struct {
 
 func NewUser(user *schema.User) *User {
 	return &User{
-		ID:            user.Id,
+		ID:            user.ID,
 		AccessToken:   user.AccessToken,
 		TokenType:     user.TokenType,
 		RefreshToken:  user.RefreshToken,

@@ -23,7 +23,7 @@ type DeleteListeningHistoryUsecase struct {
 	listeningHistoryService *service.ListeningHistoryService
 }
 
-func (u *DeleteListeningHistoryUsecase) DeleteListeningHistory(token oauth2.Token, artistIDs []string) error {
+func (u *DeleteListeningHistoryUsecase) DeleteListeningHistory(token *oauth2.Token, artistIDs []string) error {
 	client := spotify_service.CreateNewClientByToken(u.spotifyConfig, token)
 
 	userID, err := client.GetCurrentUserId()

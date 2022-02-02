@@ -25,12 +25,12 @@ func (u *user) GetUser(userID string) (*schema.User, error) {
 	return &user, nil
 }
 
-func (u *user) GetAllUsers() (*[]schema.User, error) {
-	var users []schema.User
+func (u *user) GetAllUsers() ([]*schema.User, error) {
+	var users []*schema.User
 	if _, err := u.db.Select(&users, "select * from User"); err != nil {
 		return nil, err
 	}
-	return &users, nil
+	return users, nil
 }
 
 func (u *user) UpdateUser(user *schema.User) error {

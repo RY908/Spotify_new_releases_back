@@ -44,7 +44,7 @@ func (s *UserService) GetUser(factory dao.Factory, userID string) (*entity.User,
 	return user, nil
 }
 
-func (s *UserService) GetAllUsers(factory dao.Factory) (*[]entity.User, error) {
+func (s *UserService) GetAllUsers(factory dao.Factory) ([]*entity.User, error) {
 	users, err := s.repository.GetAllUsers(factory)
 	if err != nil {
 		return nil, err
