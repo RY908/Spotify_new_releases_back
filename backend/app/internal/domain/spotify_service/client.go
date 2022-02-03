@@ -53,7 +53,7 @@ func CreateSpotifyAccountServiceUrl(config Config) string {
 	return url
 }
 
-func CreateNewClientByUser(config Config, user entity.User) *Client {
+func CreateNewClientByUser(config Config, user *entity.User) *Client {
 	auth := spotify.NewAuthenticator(
 		config.RedirectURI,
 		spotify.ScopeUserReadRecentlyPlayed,

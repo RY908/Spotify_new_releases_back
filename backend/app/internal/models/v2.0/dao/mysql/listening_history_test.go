@@ -49,7 +49,7 @@ var (
 )
 
 func Test_GetAllListeningHistory(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -120,7 +120,7 @@ func Test_GetAllListeningHistory(t *testing.T) {
 }
 
 func Test_GetAllListeningHistories(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -172,7 +172,7 @@ func Test_GetAllListeningHistories(t *testing.T) {
 }
 
 func Test_UpdateHistory(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -253,7 +253,7 @@ func Test_UpdateHistory(t *testing.T) {
 }
 
 func Test_DeleteHistoryByTimestamp(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -313,7 +313,7 @@ func Test_DeleteHistoryByTimestamp(t *testing.T) {
 }
 
 func Test_DeleteHistoryByArtistId(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,14 +1,21 @@
 package handlers
 
 import (
+	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/cookie"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/entity"
-	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/spotify_service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/usecase"
 	"github.com/labstack/echo"
 	"net/http"
 )
 
-type userHandler struct {
+func NewUserHandler(deleteListeningHistoryUsecase *usecase.DeleteListeningHistoryUsecase, getArtistsByUserIDUsecase *usecase.GetArtistsByUserIDUsecase) *UserHandler {
+	return &UserHandler{
+		deleteListeningHistoryUsecase: deleteListeningHistoryUsecase,
+		getArtistsByUserIDUsecase:     getArtistsByUserIDUsecase,
+	}
+}
+
+type UserHandler struct {
 	deleteListeningHistoryUsecase *usecase.DeleteListeningHistoryUsecase
 	getArtistsByUserIDUsecase     *usecase.GetArtistsByUserIDUsecase
 }
@@ -21,13 +28,11 @@ type UserArtists struct {
 	Artists []*entity.UserArtist `json:"artists"`
 }
 
-func (h *userHandler) DeleteArtists(c echo.Context) error {
-	token, err := spotify_service.GetToken(c.Request())
+func (h *UserHandler) DeleteArtists(c echo.Context) error {
+	token, err := cookie.ReadCookie(c)
 	if err != nil {
 		return err
 	}
-
-	// TODO: cookie
 
 	artistsReq := new(Artists)
 	if err := c.Bind(artistsReq); err != nil {
@@ -45,13 +50,11 @@ func (h *userHandler) DeleteArtists(c echo.Context) error {
 	return c.JSON(http.StatusOK, UserArtists{Artists: artists})
 }
 
-func (h *userHandler) GetArtists(c echo.Context) error {
-	token, err := spotify_service.GetToken(c.Request())
+func (h *UserHandler) GetArtists(c echo.Context) error {
+	token, err := cookie.ReadCookie(c)
 	if err != nil {
 		return err
 	}
-
-	// TODO: cookie
 
 	artists, err := h.getArtistsByUserIDUsecase.GetArtistsByUserIDUsecase(token)
 	if err != nil {

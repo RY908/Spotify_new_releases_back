@@ -1,11 +1,18 @@
 package handlers
 
 import (
-	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/spotify_service"
+	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/cookie"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/usecase"
 	"github.com/labstack/echo"
 	"net/http"
 )
+
+func NewSettinHandler(getSettingUsecase *usecase.GetSettingUsecase, editSettingUsecase *usecase.EditSettingUsecase) *SettingHandler {
+	return &SettingHandler{
+		getSettingUsecase:  getSettingUsecase,
+		editSettingUsecase: editSettingUsecase,
+	}
+}
 
 type SettingHandler struct {
 	getSettingUsecase  *usecase.GetSettingUsecase
@@ -18,12 +25,10 @@ type UserPreference struct {
 }
 
 func (h *SettingHandler) GetSettings(c echo.Context) error {
-	token, err := spotify_service.GetToken(c.Request())
+	token, err := cookie.ReadCookie(c)
 	if err != nil {
 		return err
 	}
-
-	// TODO: cookie
 
 	ifRemixAdd, ifAcousticAdd, err := h.getSettingUsecase.GetSetting(token)
 	if err != nil {
@@ -33,12 +38,10 @@ func (h *SettingHandler) GetSettings(c echo.Context) error {
 }
 
 func (h *SettingHandler) EditSettings(c echo.Context) error {
-	token, err := spotify_service.GetToken(c.Request())
+	token, err := cookie.ReadCookie(c)
 	if err != nil {
 		return err
 	}
-
-	// TODO: cookie
 
 	userPreference := new(UserPreference)
 	if err := c.Bind(userPreference); err != nil {

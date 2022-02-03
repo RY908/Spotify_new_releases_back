@@ -15,7 +15,7 @@ func RegisterFactory(f func(db *gorp.DbMap) Factory) {
 
 func NewDBManager(db *gorp.DbMap) (Factory, error) {
 	if factoryFunc == nil {
-		return nil, errors.New("no factory found, register it by importing implementation of dao.TxManager")
+		return nil, errors.New("no factory found, register it by importing implementation of dao.Factory")
 	}
 
 	return factoryFunc(db), nil

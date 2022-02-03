@@ -10,7 +10,7 @@ import (
 )
 
 func Test_GetArtistsByUserID(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}

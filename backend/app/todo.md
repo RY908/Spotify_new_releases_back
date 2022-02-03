@@ -1,7 +1,5 @@
 ### TODO
 
-* config周り
-* session
 * cron
 * repoとserviceのすみわけ
-* 接続
+* timestampどこで管理するか

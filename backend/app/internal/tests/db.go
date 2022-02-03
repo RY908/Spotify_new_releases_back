@@ -14,7 +14,7 @@ var (
 	sqlPathTest = os.Getenv("SQL_PATH_TEST")
 )
 
-func DatabaseTestInit() (*gorp.DbMap, error) {
+func NewTestDB() (*gorp.DbMap, error) {
 	db, err := sql.Open("mysql", sqlPathTest)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)

@@ -35,7 +35,7 @@ var (
 )
 
 func Test_GetUser(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -86,7 +86,7 @@ func Test_GetUser(t *testing.T) {
 }
 
 func Test_GetAllUsers(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -130,7 +130,7 @@ func Test_GetAllUsers(t *testing.T) {
 }
 
 func Test_UpdateUser(t *testing.T) {
-	db, err := tests.DatabaseTestInit()
+	db, err := tests.NewTestDB()
 	if err != nil {
 		t.Fatal(err)
 	}

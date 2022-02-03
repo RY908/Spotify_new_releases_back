@@ -19,7 +19,10 @@ func (c *Client) CreatePlaylist(userId string) (*spotify.FullPlaylist, error) {
 
 // SetConfig set image and add description for a playlist.
 func (c *Client) SetConfig(playlistId spotify.ID) error {
-	img, _ := os.Open("./img/logo.png")
+	img, err := os.Open("./img/logo.png")
+	if err != nil {
+		return err
+	}
 	description := "playlist made by https://newreleases.tk"
 	if err := c.client.SetPlaylistImage(playlistId, img); err != nil {
 		err = fmt.Errorf("unable to set image: %w", err)

@@ -3,6 +3,7 @@ package usecase
 import (
 	"database/sql"
 	"errors"
+	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/entity"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/spotify_service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao"
@@ -45,7 +46,7 @@ func (u *CreatePlaylistUsecase) CreatePlaylist(token *oauth2.Token) error {
 				return err
 			}
 
-			user.PlaylistID = string(playlist.ID)
+			user = entity.NewUserCreation(userID, token, string(playlist.ID))
 			if err := u.userService.InsertUser(u.factory, *user); err != nil {
 				return err
 			}

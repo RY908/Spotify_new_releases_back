@@ -31,17 +31,17 @@ func (u *UpdateListeningHistoryUsecase) UpdateListeningHistory() error {
 		return err
 	}
 	for _, user := range users {
-		client := spotify_service.CreateNewClientByUser(u.spotifyConfig, *user)
+		client := spotify_service.CreateNewClientByUser(u.spotifyConfig, user)
 
 		artists, counter, newToken, err := client.GetRecentlyPlayedArtists()
 		if err != nil {
 			return err
 		}
 
-		var artistsToInsert []entity.Artist
+		var artistsToInsert []*entity.Artist
 		for _, artist := range artists {
 			name, artistID, url, iconUrl := spotify_service.GetArtistInfo(artist)
-			artistsToInsert = append(artistsToInsert, entity.Artist{
+			artistsToInsert = append(artistsToInsert, &entity.Artist{
 				ID:      artistID,
 				Name:    name,
 				Url:     url,

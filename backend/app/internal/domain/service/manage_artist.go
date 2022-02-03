@@ -18,7 +18,7 @@ type ArtistService struct {
 }
 
 func (s *ArtistService) InsertArtist(factory dao.Factory, artistId, name, url, iconUrl string) error {
-	if err := s.repository.InsertArtist(factory, entity.Artist{
+	if err := s.repository.InsertArtist(factory, &entity.Artist{
 		ID:      artistId,
 		Name:    name,
 		Url:     url,
@@ -29,7 +29,7 @@ func (s *ArtistService) InsertArtist(factory dao.Factory, artistId, name, url, i
 	return nil
 }
 
-func (s *ArtistService) InsertArtists(factory dao.Factory, artist []entity.Artist) error {
+func (s *ArtistService) InsertArtists(factory dao.Factory, artist []*entity.Artist) error {
 	for _, artist := range artist {
 		if err := s.repository.InsertArtist(factory, artist); err != nil {
 			return err

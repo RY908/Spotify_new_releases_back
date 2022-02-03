@@ -18,6 +18,19 @@ type User struct {
 	IfAcousticAdd bool
 }
 
+func NewUserCreation(ID string, token *oauth2.Token, playlistID string) *User {
+	return &User{
+		ID:            ID,
+		AccessToken:   token.AccessToken,
+		TokenType:     token.TokenType,
+		RefreshToken:  token.RefreshToken,
+		Expiry:        token.Expiry,
+		PlaylistID:    playlistID,
+		IfRemixAdd:    true,
+		IfAcousticAdd: true,
+	}
+}
+
 func NewUser(user *schema.User) *User {
 	return &User{
 		ID:            user.ID,

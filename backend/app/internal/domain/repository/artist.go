@@ -12,7 +12,7 @@ func NewArtistRepository() *ArtistRepository {
 
 type ArtistRepository struct{}
 
-func (r *ArtistRepository) InsertArtist(factory dao.Factory, artist entity.Artist) error {
+func (r *ArtistRepository) InsertArtist(factory dao.Factory, artist *entity.Artist) error {
 	artistDAO := factory.ArtistDAO()
 	record := &schema.Artist{
 		ID:      artist.ID,
