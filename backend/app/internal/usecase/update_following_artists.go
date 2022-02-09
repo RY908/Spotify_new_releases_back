@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func NewUpdateFollowingArtistsUsecase(factory dao.Factory, config spotify_service.Config) *UpdateFollowingArtistsUsecase {
+func NewUpdateFollowingArtistsUsecase(factory dao.Factory, config *spotify_service.Config) *UpdateFollowingArtistsUsecase {
 	return &UpdateFollowingArtistsUsecase{
 		factory:                 factory,
 		spotifyConfig:           config,
@@ -19,7 +19,7 @@ func NewUpdateFollowingArtistsUsecase(factory dao.Factory, config spotify_servic
 
 type UpdateFollowingArtistsUsecase struct {
 	factory                 dao.Factory
-	spotifyConfig           spotify_service.Config
+	spotifyConfig           *spotify_service.Config
 	artistService           *service.ArtistService
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService
@@ -42,12 +42,12 @@ func (u *UpdateFollowingArtistsUsecase) UpdateFollowingArtists() error {
 			return err
 		}
 
-		timestamp := time.Now()
+		timestamp := time.Now().UTC()
 		if err := u.listeningHistoryService.UpdateIsFollowings(u.factory, artists, user.ID, timestamp); err != nil {
 			return err
 		}
 
-		if err := u.listeningHistoryService.DeleteHistoriesByTimestamp(u.factory, user.ID, timestamp); err != nil {
+		if err := u.listeningHistoryService.DeleteHistoriesByTimestamp(u.factory, user.ID, timestamp.Add(-10*time.Minute)); err != nil {
 			return err
 		}
 	}

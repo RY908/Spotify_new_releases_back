@@ -7,7 +7,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func NewUserExistsUsecase(factory dao.Factory, config spotify_service.Config) *UserExistsUsecase {
+func NewUserExistsUsecase(factory dao.Factory, config *spotify_service.Config) *UserExistsUsecase {
 	return &UserExistsUsecase{
 		factory:                 factory,
 		spotifyConfig:           config,
@@ -19,7 +19,7 @@ func NewUserExistsUsecase(factory dao.Factory, config spotify_service.Config) *U
 
 type UserExistsUsecase struct {
 	factory                 dao.Factory
-	spotifyConfig           spotify_service.Config
+	spotifyConfig           *spotify_service.Config
 	artistService           *service.ArtistService
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService

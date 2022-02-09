@@ -3,6 +3,8 @@ package tests
 import (
 	"database/sql"
 	"fmt"
+	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao"
+	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao/mysql"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/schema"
 	"github.com/go-gorp/gorp"
 	_ "github.com/go-sql-driver/mysql"
@@ -42,4 +44,8 @@ func TruncateTable(t *testing.T, d *gorp.DbMap) {
 	if _, err := d.Exec("set foreign_key_checks = 1"); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func NewTestDBManager(db *gorp.DbMap) (dao.Factory, error) {
+	return &mysql.DB{db}, nil
 }

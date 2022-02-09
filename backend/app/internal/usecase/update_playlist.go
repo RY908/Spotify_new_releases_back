@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func NewUpdatePlaylistUsecase(factory dao.Factory, config spotify_service.Config) *UpdatePlaylistUsecase {
+func NewUpdatePlaylistUsecase(factory dao.Factory, config *spotify_service.Config) *UpdatePlaylistUsecase {
 	return &UpdatePlaylistUsecase{
 		factory:                 factory,
 		spotifyConfig:           config,
@@ -19,7 +19,7 @@ func NewUpdatePlaylistUsecase(factory dao.Factory, config spotify_service.Config
 
 type UpdatePlaylistUsecase struct {
 	factory                 dao.Factory
-	spotifyConfig           spotify_service.Config
+	spotifyConfig           *spotify_service.Config
 	artistService           *service.ArtistService
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService

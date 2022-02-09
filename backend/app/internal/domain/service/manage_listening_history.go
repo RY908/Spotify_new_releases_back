@@ -22,13 +22,13 @@ type ListeningHistoryService struct {
 	userArtistsRepository      *repository.UserArtistsRepository
 }
 
-func (s *ListeningHistoryService) InsertHistories(factory dao.Factory, artists []*entity.Artist, userID string, counter map[string]int, isFollowing bool) error {
+func (s *ListeningHistoryService) InsertHistories(factory dao.Factory, artists []*entity.Artist, userID string, counter map[string]int, isFollowing bool, timestamp time.Time) error {
 	for _, artist := range artists {
 		if err := s.listeningHistoryRepository.InsertOrUpdateListeningHistory(factory,
 			entity.ListeningHistory{
 				ArtistID:    artist.ID,
 				UserID:      userID,
-				Timestamp:   time.Now(),
+				Timestamp:   timestamp,
 				IsFollowing: isFollowing,
 			}, counter[artist.ID]); err != nil {
 			return err
@@ -39,7 +39,7 @@ func (s *ListeningHistoryService) InsertHistories(factory dao.Factory, artists [
 
 func (s *ListeningHistoryService) UpdateIsFollowings(factory dao.Factory, artists []*entity.Artist, userId string, timestamp time.Time) error {
 	for _, artist := range artists {
-		if err := s.listeningHistoryRepository.UpdateIsFollowing(factory, *artist, userId, timestamp); err != nil {
+		if err := s.listeningHistoryRepository.UpdateIsFollowing(factory, artist.ID, userId, timestamp); err != nil {
 			return err
 		}
 	}

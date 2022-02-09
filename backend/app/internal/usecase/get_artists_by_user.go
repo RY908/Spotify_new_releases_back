@@ -8,7 +8,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func NewGetArtistsByUserIDUsecase(factory dao.Factory, config spotify_service.Config) *GetArtistsByUserIDUsecase {
+func NewGetArtistsByUserIDUsecase(factory dao.Factory, config *spotify_service.Config) *GetArtistsByUserIDUsecase {
 	return &GetArtistsByUserIDUsecase{
 		factory:                 factory,
 		spotifyConfig:           config,
@@ -19,7 +19,7 @@ func NewGetArtistsByUserIDUsecase(factory dao.Factory, config spotify_service.Co
 
 type GetArtistsByUserIDUsecase struct {
 	factory                 dao.Factory
-	spotifyConfig           spotify_service.Config
+	spotifyConfig           *spotify_service.Config
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService
 }

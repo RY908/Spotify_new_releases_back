@@ -1,40 +1,39 @@
 package handlers
 
 import (
-	"fmt"
+	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/config"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/cookie"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/spotify_service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/usecase"
 	"github.com/labstack/echo"
+	"log"
 	"net/http"
-	"os"
 )
 
-var (
-	errURI = os.Getenv("ERR_URI")
-	sucURI = os.Getenv("SUC_URI")
-)
-
-func NewLoginHandler(createPlaylistUsecase *usecase.CreatePlaylistUsecase) *LoginHandler {
+func NewLoginHandler(logger *log.Logger, config *config.CallbackConfig, createPlaylistUsecase *usecase.CreatePlaylistUsecase) *LoginHandler {
 	return &LoginHandler{
+		logger:                logger,
+		config:                config,
 		createPlaylistUsecase: createPlaylistUsecase,
 	}
 }
 
 type LoginHandler struct {
+	logger                *log.Logger
+	config                *config.CallbackConfig
 	createPlaylistUsecase *usecase.CreatePlaylistUsecase
 }
 
 func (h *LoginHandler) Login(c echo.Context) error {
+	h.logger.Print("Login")
 	url := spotify_service.GetURL()
-	fmt.Println(url)
 	c.Redirect(http.StatusFound, url)
 	return nil
 }
 
 func (h *LoginHandler) Callback(c echo.Context) error {
+	h.logger.Print("Callback")
 	token, err := spotify_service.GetToken(c.Request())
-	fmt.Println(token, err)
 	if err != nil {
 		return err
 	}
@@ -42,10 +41,9 @@ func (h *LoginHandler) Callback(c echo.Context) error {
 	cookie.WriteCookie(c, token)
 
 	if err := h.createPlaylistUsecase.CreatePlaylist(token); err != nil {
-		fmt.Println(err)
 		return err
 	}
 
-	c.Redirect(http.StatusFound, sucURI+"/"+token.AccessToken)
+	c.Redirect(http.StatusFound, h.config.SuccessURI+"/"+token.AccessToken)
 	return nil
 }

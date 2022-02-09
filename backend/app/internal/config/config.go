@@ -6,8 +6,9 @@ import (
 )
 
 type Config struct {
-	DBConfig      DBConfig
-	SpotifyConfig spotify_service.Config
+	DBConfig       *DBConfig
+	SpotifyConfig  *spotify_service.Config
+	CallbackConfig *CallbackConfig
 }
 
 type DBConfig struct {
@@ -15,17 +16,26 @@ type DBConfig struct {
 	TestDBPath string
 }
 
-func LoadConfig() Config {
-	return Config{
-		DBConfig: DBConfig{
+type CallbackConfig struct {
+	SuccessURI string
+	ErrorURI   string
+}
+
+func LoadConfig() *Config {
+	return &Config{
+		DBConfig: &DBConfig{
 			DBPath:     os.Getenv("SQL_PATH"),
 			TestDBPath: os.Getenv("SQL_PATH_TEST"),
 		},
-		SpotifyConfig: spotify_service.Config{
+		SpotifyConfig: &spotify_service.Config{
 			RedirectURI: os.Getenv("REDIRECT_URI"),
 			ClientID:    os.Getenv("SPOTIFY_ID_3"),
 			SecretKey:   os.Getenv("SPOTIFY_SECRET_3"),
 			State:       "abc123",
+		},
+		CallbackConfig: &CallbackConfig{
+			SuccessURI: os.Getenv("SUC_URI"),
+			ErrorURI:   os.Getenv("ERR_URI"),
 		},
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func NewGetSettingUsecase(factory dao.Factory, config spotify_service.Config) *GetSettingUsecase {
+func NewGetSettingUsecase(factory dao.Factory, config *spotify_service.Config) *GetSettingUsecase {
 	return &GetSettingUsecase{
 		factory:                 factory,
 		spotifyConfig:           config,
@@ -18,7 +18,7 @@ func NewGetSettingUsecase(factory dao.Factory, config spotify_service.Config) *G
 
 type GetSettingUsecase struct {
 	factory                 dao.Factory
-	spotifyConfig           spotify_service.Config
+	spotifyConfig           *spotify_service.Config
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService
 }

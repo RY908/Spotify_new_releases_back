@@ -7,7 +7,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func NewDeleteListeningHistoryUsecase(factory dao.Factory, config spotify_service.Config) *DeleteListeningHistoryUsecase {
+func NewDeleteListeningHistoryUsecase(factory dao.Factory, config *spotify_service.Config) *DeleteListeningHistoryUsecase {
 	return &DeleteListeningHistoryUsecase{
 		factory:                 factory,
 		spotifyConfig:           config,
@@ -18,7 +18,7 @@ func NewDeleteListeningHistoryUsecase(factory dao.Factory, config spotify_servic
 
 type DeleteListeningHistoryUsecase struct {
 	factory                 dao.Factory
-	spotifyConfig           spotify_service.Config
+	spotifyConfig           *spotify_service.Config
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService
 }

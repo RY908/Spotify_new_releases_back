@@ -4,6 +4,7 @@ import (
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/entity"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/repository"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao"
+	"log"
 	"time"
 )
 
@@ -15,6 +16,7 @@ func NewUserService() *UserService {
 }
 
 type UserService struct {
+	logger     *log.Logger
 	repository *repository.UserRepository
 }
 

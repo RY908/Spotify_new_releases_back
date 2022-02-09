@@ -5,17 +5,20 @@ import (
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/entity"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/usecase"
 	"github.com/labstack/echo"
+	"log"
 	"net/http"
 )
 
-func NewUserHandler(deleteListeningHistoryUsecase *usecase.DeleteListeningHistoryUsecase, getArtistsByUserIDUsecase *usecase.GetArtistsByUserIDUsecase) *UserHandler {
+func NewUserHandler(logger *log.Logger, deleteListeningHistoryUsecase *usecase.DeleteListeningHistoryUsecase, getArtistsByUserIDUsecase *usecase.GetArtistsByUserIDUsecase) *UserHandler {
 	return &UserHandler{
+		logger:                        logger,
 		deleteListeningHistoryUsecase: deleteListeningHistoryUsecase,
 		getArtistsByUserIDUsecase:     getArtistsByUserIDUsecase,
 	}
 }
 
 type UserHandler struct {
+	logger                        *log.Logger
 	deleteListeningHistoryUsecase *usecase.DeleteListeningHistoryUsecase
 	getArtistsByUserIDUsecase     *usecase.GetArtistsByUserIDUsecase
 }
@@ -29,6 +32,8 @@ type UserArtists struct {
 }
 
 func (h *UserHandler) DeleteArtists(c echo.Context) error {
+	h.logger.Print("Delete Artists")
+
 	token, err := cookie.ReadCookie(c)
 	if err != nil {
 		return err
@@ -51,6 +56,8 @@ func (h *UserHandler) DeleteArtists(c echo.Context) error {
 }
 
 func (h *UserHandler) GetArtists(c echo.Context) error {
+	h.logger.Print("Get Artists")
+
 	token, err := cookie.ReadCookie(c)
 	if err != nil {
 		return err

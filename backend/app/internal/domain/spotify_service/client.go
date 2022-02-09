@@ -39,7 +39,7 @@ func GetToken(r *http.Request) (*oauth2.Token, error) {
 	return token, nil
 }
 
-func CreateSpotifyAccountServiceUrl(config Config) string {
+func CreateSpotifyAccountServiceUrl(config *Config) string {
 	auth := spotify.NewAuthenticator(
 		config.RedirectURI,
 		spotify.ScopeUserReadRecentlyPlayed,
@@ -53,7 +53,7 @@ func CreateSpotifyAccountServiceUrl(config Config) string {
 	return url
 }
 
-func CreateNewClientByUser(config Config, user *entity.User) *Client {
+func CreateNewClientByUser(config *Config, user *entity.User) *Client {
 	auth := spotify.NewAuthenticator(
 		config.RedirectURI,
 		spotify.ScopeUserReadRecentlyPlayed,
@@ -75,7 +75,7 @@ func CreateNewClientByUser(config Config, user *entity.User) *Client {
 	return &Client{client: &client}
 }
 
-func CreateNewClientByToken(config Config, token *oauth2.Token) *Client {
+func CreateNewClientByToken(config *Config, token *oauth2.Token) *Client {
 	auth := spotify.NewAuthenticator(
 		config.RedirectURI,
 		spotify.ScopeUserReadRecentlyPlayed,

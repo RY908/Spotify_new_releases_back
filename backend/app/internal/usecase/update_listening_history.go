@@ -5,9 +5,10 @@ import (
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/spotify_service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao"
+	"time"
 )
 
-func NewUpdateListeningHistoryUsecase(factory dao.Factory, config spotify_service.Config) *UpdateListeningHistoryUsecase {
+func NewUpdateListeningHistoryUsecase(factory dao.Factory, config *spotify_service.Config) *UpdateListeningHistoryUsecase {
 	return &UpdateListeningHistoryUsecase{
 		factory:                 factory,
 		spotifyConfig:           config,
@@ -19,7 +20,7 @@ func NewUpdateListeningHistoryUsecase(factory dao.Factory, config spotify_servic
 
 type UpdateListeningHistoryUsecase struct {
 	factory                 dao.Factory
-	spotifyConfig           spotify_service.Config
+	spotifyConfig           *spotify_service.Config
 	artistService           *service.ArtistService
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService
@@ -52,7 +53,9 @@ func (u *UpdateListeningHistoryUsecase) UpdateListeningHistory() error {
 		if err := u.artistService.InsertArtists(u.factory, artistsToInsert); err != nil {
 			return err
 		}
-		if err := u.listeningHistoryService.InsertHistories(u.factory, artistsToInsert, user.ID, counter, false); err != nil {
+
+		timestamp := time.Now().UTC()
+		if err := u.listeningHistoryService.InsertHistories(u.factory, artistsToInsert, user.ID, counter, false, timestamp); err != nil {
 			return err
 		}
 

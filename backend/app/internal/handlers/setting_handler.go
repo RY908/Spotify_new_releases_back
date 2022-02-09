@@ -4,17 +4,20 @@ import (
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/cookie"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/usecase"
 	"github.com/labstack/echo"
+	"log"
 	"net/http"
 )
 
-func NewSettinHandler(getSettingUsecase *usecase.GetSettingUsecase, editSettingUsecase *usecase.EditSettingUsecase) *SettingHandler {
+func NewSettinHandler(logger *log.Logger, getSettingUsecase *usecase.GetSettingUsecase, editSettingUsecase *usecase.EditSettingUsecase) *SettingHandler {
 	return &SettingHandler{
+		logger:             logger,
 		getSettingUsecase:  getSettingUsecase,
 		editSettingUsecase: editSettingUsecase,
 	}
 }
 
 type SettingHandler struct {
+	logger             *log.Logger
 	getSettingUsecase  *usecase.GetSettingUsecase
 	editSettingUsecase *usecase.EditSettingUsecase
 }
@@ -25,6 +28,8 @@ type UserPreference struct {
 }
 
 func (h *SettingHandler) GetSettings(c echo.Context) error {
+	h.logger.Print("Get Settings")
+
 	token, err := cookie.ReadCookie(c)
 	if err != nil {
 		return err
@@ -38,6 +43,8 @@ func (h *SettingHandler) GetSettings(c echo.Context) error {
 }
 
 func (h *SettingHandler) EditSettings(c echo.Context) error {
+	h.logger.Print("Edit Settings")
+
 	token, err := cookie.ReadCookie(c)
 	if err != nil {
 		return err

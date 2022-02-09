@@ -10,7 +10,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func NewCreatePlaylistUsecase(factory dao.Factory, config spotify_service.Config) *CreatePlaylistUsecase {
+func NewCreatePlaylistUsecase(factory dao.Factory, config *spotify_service.Config) *CreatePlaylistUsecase {
 	return &CreatePlaylistUsecase{
 		factory:                 factory,
 		userService:             service.NewUserService(),
@@ -20,7 +20,7 @@ func NewCreatePlaylistUsecase(factory dao.Factory, config spotify_service.Config
 
 type CreatePlaylistUsecase struct {
 	factory                 dao.Factory
-	spotifyConfig           spotify_service.Config
+	spotifyConfig           *spotify_service.Config
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService
 }
