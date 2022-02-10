@@ -5,63 +5,30 @@ import (
 	"github.com/zmb3/spotify"
 	"golang.org/x/oauth2"
 	"net/http"
-	"os"
-)
-
-var (
-	redirectURI = os.Getenv("REDIRECT_URI")
-	clientID    = os.Getenv("SPOTIFY_ID_3")
-	secretKey   = os.Getenv("SPOTIFY_SECRET_3")
-	state       = "abc123"
 )
 
 type Client struct {
 	client *spotify.Client
 }
 
-func GetURL() string {
-	auth := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate,
-		spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
-	auth.SetAuthInfo(clientID, secretKey)
-	url := auth.AuthURL(state)
+func GetURL(config *Config) string {
+	auth := newAuthenticator(config.RedirectURI, config.ClientID, config.SecretKey)
+	url := auth.AuthURL(config.State)
 
 	return url
 }
 
-func GetToken(r *http.Request) (*oauth2.Token, error) {
-	auth := spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadRecentlyPlayed, spotify.ScopeUserReadPrivate,
-		spotify.ScopePlaylistModifyPublic, spotify.ScopeUserFollowRead, spotify.ScopeImageUpload)
-	auth.SetAuthInfo(clientID, secretKey)
-	token, err := auth.Token(state, r)
+func GetToken(config *Config, r *http.Request) (*oauth2.Token, error) {
+	auth := newAuthenticator(config.RedirectURI, config.ClientID, config.SecretKey)
+	token, err := auth.Token(config.State, r)
 	if err != nil {
 		return nil, err
 	}
 	return token, nil
 }
 
-func CreateSpotifyAccountServiceUrl(config *Config) string {
-	auth := spotify.NewAuthenticator(
-		config.RedirectURI,
-		spotify.ScopeUserReadRecentlyPlayed,
-		spotify.ScopeUserReadPrivate,
-		spotify.ScopePlaylistModifyPublic,
-		spotify.ScopeUserFollowRead,
-		spotify.ScopeImageUpload)
-	auth.SetAuthInfo(config.ClientID, config.SecretKey)
-	url := auth.AuthURL(config.State)
-
-	return url
-}
-
 func CreateNewClientByUser(config *Config, user *entity.User) *Client {
-	auth := spotify.NewAuthenticator(
-		config.RedirectURI,
-		spotify.ScopeUserReadRecentlyPlayed,
-		spotify.ScopeUserReadPrivate,
-		spotify.ScopePlaylistModifyPublic,
-		spotify.ScopeUserFollowRead,
-		spotify.ScopeImageUpload)
-	auth.SetAuthInfo(config.ClientID, config.SecretKey)
+	auth := newAuthenticator(config.RedirectURI, config.ClientID, config.SecretKey)
 
 	token := oauth2.Token{
 		AccessToken:  user.AccessToken,
@@ -76,15 +43,20 @@ func CreateNewClientByUser(config *Config, user *entity.User) *Client {
 }
 
 func CreateNewClientByToken(config *Config, token *oauth2.Token) *Client {
+	auth := newAuthenticator(config.RedirectURI, config.ClientID, config.SecretKey)
+	client := auth.NewClient(token)
+
+	return &Client{client: &client}
+}
+
+func newAuthenticator(redirectURI, clientID, secretKey string) spotify.Authenticator {
 	auth := spotify.NewAuthenticator(
-		config.RedirectURI,
+		redirectURI,
 		spotify.ScopeUserReadRecentlyPlayed,
 		spotify.ScopeUserReadPrivate,
 		spotify.ScopePlaylistModifyPublic,
 		spotify.ScopeUserFollowRead,
 		spotify.ScopeImageUpload)
-	auth.SetAuthInfo(config.ClientID, config.SecretKey)
-	client := auth.NewClient(token)
-
-	return &Client{client: &client}
+	auth.SetAuthInfo(clientID, secretKey)
+	return auth
 }

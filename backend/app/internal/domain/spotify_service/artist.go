@@ -51,8 +51,7 @@ func (c *Client) GetFollowingArtists(userId string) ([]*entity.Artist, error) {
 	for {
 		following, err := c.client.CurrentUsersFollowedArtistsOpt(50, lastId)
 		if err != nil {
-			err = fmt.Errorf("unable to get following artists: %w", err)
-			return nil, err
+			return nil, fmt.Errorf("unable to get following artists: %w", err)
 		}
 		for _, following := range following.Artists {
 			var name, artistId, url, iconUrl string
@@ -71,15 +70,16 @@ func (c *Client) GetFollowingArtists(userId string) ([]*entity.Artist, error) {
 // GetArtistInfo retrieves artist's name, id, url, iconUrl and returns them.
 func GetArtistInfo(artist spotify.FullArtist) (string, string, string, string) {
 	//var name, artistId, url, iconUrl string
-	var iconUrl string
-	name := artist.SimpleArtist.Name
-	artistId := artist.SimpleArtist.ID.String()
-	url := artist.SimpleArtist.ExternalURLs["spotify_service"]
+	var name, artistID, url, iconUrl string
+	name = artist.SimpleArtist.Name
+	artistID = artist.SimpleArtist.ID.String()
+	url = artist.SimpleArtist.ExternalURLs["spotify_service"]
+
 	if len(artist.Images) > 0 {
 		iconUrl = artist.Images[0].URL
 	} else {
 		iconUrl = ""
 	}
 
-	return name, artistId, url, iconUrl
+	return name, artistID, url, iconUrl
 }

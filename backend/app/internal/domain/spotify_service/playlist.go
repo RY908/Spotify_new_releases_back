@@ -21,16 +21,14 @@ func (c *Client) CreatePlaylist(userId string) (*spotify.FullPlaylist, error) {
 func (c *Client) SetConfig(playlistId spotify.ID) error {
 	img, err := os.Open("./img/logo.png")
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to open image: %w", err)
 	}
 	description := "playlist made by https://newreleases.tk"
 	if err := c.client.SetPlaylistImage(playlistId, img); err != nil {
-		err = fmt.Errorf("unable to set image: %w", err)
-		return err
+		return fmt.Errorf("unable to set image: %w", err)
 	}
 	if err := c.client.ChangePlaylistDescription(playlistId, description); err != nil {
-		err = fmt.Errorf("unable to change description: %w", err)
-		return err
+		return fmt.Errorf("unable to change description: %w", err)
 	}
 	return nil
 
@@ -49,8 +47,7 @@ func (c *Client) ChangePlaylist(newReleases []spotify.SimpleAlbum, user *entity.
 	// get all the tracks in the playlist and put them in pastTrackSet
 	playlistTrackPage, err := c.client.GetPlaylistTracks(spotify.ID(playlistId))
 	if err != nil {
-		err = fmt.Errorf("unable to get playlist tracks: %w", err)
-		return err
+		return fmt.Errorf("unable to get playlist tracks: %w", err)
 	}
 
 	// keep records of the tracks already in the playlist and delete them all
@@ -60,8 +57,7 @@ func (c *Client) ChangePlaylist(newReleases []spotify.SimpleAlbum, user *entity.
 		pastTracks = append(pastTracks, track.Track.ID)
 	}
 	if _, err := c.client.RemoveTracksFromPlaylist(spotify.ID(playlistId), pastTracks...); err != nil {
-		err = fmt.Errorf("unable to remove tracks: %w", err)
-		return err
+		return fmt.Errorf("unable to remove tracks: %w", err)
 	}
 
 	// retrieves track ids from newReleases. If album type is album, the first song in the album will
@@ -70,10 +66,8 @@ func (c *Client) ChangePlaylist(newReleases []spotify.SimpleAlbum, user *entity.
 		albumId := album.ID
 		albumTracks, err := c.client.GetAlbumTracks(albumId)
 		if err != nil {
-			err = fmt.Errorf("unable to get album tracks: %w", err)
-			return err
+			return fmt.Errorf("unable to get album tracks: %w", err)
 		}
-		fmt.Println(albumTracks.Tracks)
 		track := albumTracks.Tracks[0]
 
 		artist := track.Artists[0].Name
@@ -112,33 +106,28 @@ func (c *Client) ChangePlaylist(newReleases []spotify.SimpleAlbum, user *entity.
 		// time sleep is nessesary in order not to exceed spotify_service api limit
 		time.Sleep(time.Millisecond * 500)
 	}
-	fmt.Println(len(addTracks))
 
 	// change the tracks in the playlist.
 	change_num := (len(addTracks) - 1) / 100
 	if change_num == 0 {
 		if err := c.client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks...); err != nil {
-			err = fmt.Errorf("unable to replace tracks in playlist: %w", err)
-			return err
+			return fmt.Errorf("unable to replace tracks in playlist: %w", err)
 		}
 	} else {
 		if err := c.client.ReplacePlaylistTracks(spotify.ID(playlistId), addTracks[0:100]...); err != nil {
-			err = fmt.Errorf("unable to replace tracks in playlist: %w", err)
-			return err
+			return fmt.Errorf("unable to replace tracks in playlist: %w", err)
 		}
 	}
 
 	for i := 0; i < change_num; i++ {
 		var add []spotify.ID
-		fmt.Println(i)
 		if i == change_num-1 {
 			add = addTracks[(i+1)*100:]
 		} else {
 			add = addTracks[(i+1)*100 : (i+2)*100]
 		}
 		if _, err := c.client.AddTracksToPlaylist(spotify.ID(playlistId), add...); err != nil {
-			err = fmt.Errorf("unable to add tracks to playlist: %w", err)
-			return err
+			return fmt.Errorf("unable to add tracks to playlist: %w", err)
 		}
 	}
 

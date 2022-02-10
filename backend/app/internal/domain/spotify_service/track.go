@@ -24,8 +24,7 @@ func (c *Client) GetNewReleases(artists []*entity.UserArtist, userId string) ([]
 		opt := spotify.Options{Country: &user.Country, Limit: &limit, Offset: &offset}
 		albums, err := c.client.GetArtistAlbumsOpt(spotify.ID(artistId), &opt, 2) // get albums
 		if err != nil {
-			err = fmt.Errorf("unable to get artist albums: %w", err)
-			return nil, err
+			return nil, fmt.Errorf("unable to get artist albums: %w", err)
 		}
 		// if the album or single is released this week, add the track to newReleases
 		for _, album := range albums.Albums {
