@@ -22,7 +22,9 @@ import (
 func main() {
 	config := config.LoadConfig()
 
-	dbmap, err := newDB(config.DBConfig)
+	appLogger, dbLogger, cronLogger := newLoggers()
+
+	dbmap, err := newDB(dbLogger, config.DBConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -31,19 +33,17 @@ func main() {
 		panic(err)
 	}
 
-	appLogger, dbLogger, cronLogger := newLoggers()
-
 	// usecases for handlers
-	createPlaylistUsecase := usecase.NewCreatePlaylistUsecase(dbManager, config.SpotifyConfig)
-	getSettingUsecase := usecase.NewGetSettingUsecase(dbManager, config.SpotifyConfig)
-	editSettingUsecase := usecase.NewEditSettingUsecase(dbManager, config.SpotifyConfig)
-	deleteListeningHistoryUsecase := usecase.NewDeleteListeningHistoryUsecase(dbManager, config.SpotifyConfig)
-	getArtistsByUserIDUsecase := usecase.NewGetArtistsByUserIDUsecase(dbManager, config.SpotifyConfig)
+	createPlaylistUsecase := usecase.NewCreatePlaylistUsecase(dbManager, appLogger, config.SpotifyConfig)
+	getSettingUsecase := usecase.NewGetSettingUsecase(dbManager, appLogger, config.SpotifyConfig)
+	editSettingUsecase := usecase.NewEditSettingUsecase(dbManager, appLogger, config.SpotifyConfig)
+	deleteListeningHistoryUsecase := usecase.NewDeleteListeningHistoryUsecase(dbManager, appLogger, config.SpotifyConfig)
+	getArtistsByUserIDUsecase := usecase.NewGetArtistsByUserIDUsecase(dbManager, appLogger, config.SpotifyConfig)
 
 	// usecases for cron
-	updateListeningHistoryUsecase := usecase.NewUpdateListeningHistoryUsecase(dbManager, config.SpotifyConfig)
-	updatePlaylistUsecase := usecase.NewUpdatePlaylistUsecase(dbManager, config.SpotifyConfig)
-	updateFollowingArtistsUsecase := usecase.NewUpdateFollowingArtistsUsecase(dbManager, config.SpotifyConfig)
+	updateListeningHistoryUsecase := usecase.NewUpdateListeningHistoryUsecase(dbManager, appLogger, config.SpotifyConfig)
+	updatePlaylistUsecase := usecase.NewUpdatePlaylistUsecase(dbManager, appLogger, config.SpotifyConfig)
+	updateFollowingArtistsUsecase := usecase.NewUpdateFollowingArtistsUsecase(dbManager, appLogger, config.SpotifyConfig)
 
 	s := newServer(
 		appLogger,
@@ -71,7 +71,7 @@ func newLoggers() (*log.Logger, *log.Logger, *log.Logger) {
 }
 
 func newServer(
-	appLogger *log.Logger,
+	logger *log.Logger,
 	config *config.CallbackConfig,
 	createPlaylistUsecase *usecase.CreatePlaylistUsecase,
 	getSettingUsecase *usecase.GetSettingUsecase,
@@ -87,9 +87,9 @@ func newServer(
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
 
-	loginHandler := handlers.NewLoginHandler(appLogger, config, createPlaylistUsecase)
-	userHandler := handlers.NewUserHandler(appLogger, deleteListeningHistoryUsecase, getArtistsByUserIDUsecase)
-	settingHandler := handlers.NewSettinHandler(appLogger, getSettingUsecase, editSettingUsecase)
+	loginHandler := handlers.NewLoginHandler(logger, config, createPlaylistUsecase)
+	userHandler := handlers.NewUserHandler(logger, deleteListeningHistoryUsecase, getArtistsByUserIDUsecase)
+	settingHandler := handlers.NewSettinHandler(logger, getSettingUsecase, editSettingUsecase)
 
 	e.GET("/login", loginHandler.Login)
 	e.GET("/callback", loginHandler.Callback)
@@ -101,11 +101,13 @@ func newServer(
 	return e
 }
 
-func newDB(config *config.DBConfig) (*gorp.DbMap, error) {
+func newDB(logger *log.Logger, config *config.DBConfig) (*gorp.DbMap, error) {
 	db, err := sql.Open("mysql", config.DBPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
+
+	logger.Print("Connect DB")
 
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{}}
 	dbmap.AddTableWithName(schema.Artist{}, "Artist").SetKeys(false, "ID")

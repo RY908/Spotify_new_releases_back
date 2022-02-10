@@ -8,11 +8,14 @@ import (
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/spotify_service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao"
 	"golang.org/x/oauth2"
+	"log"
 )
 
-func NewCreatePlaylistUsecase(factory dao.Factory, config *spotify_service.Config) *CreatePlaylistUsecase {
+func NewCreatePlaylistUsecase(factory dao.Factory, logger *log.Logger, config *spotify_service.Config) *CreatePlaylistUsecase {
 	return &CreatePlaylistUsecase{
 		factory:                 factory,
+		logger:                  logger,
+		spotifyConfig:           config,
 		userService:             service.NewUserService(),
 		listeningHistoryService: service.NewListeningHistoryService(),
 	}
@@ -20,6 +23,7 @@ func NewCreatePlaylistUsecase(factory dao.Factory, config *spotify_service.Confi
 
 type CreatePlaylistUsecase struct {
 	factory                 dao.Factory
+	logger                  *log.Logger
 	spotifyConfig           *spotify_service.Config
 	userService             *service.UserService
 	listeningHistoryService *service.ListeningHistoryService
@@ -30,6 +34,7 @@ func (u *CreatePlaylistUsecase) CreatePlaylist(token *oauth2.Token) error {
 
 	userID, err := client.GetCurrentUserId()
 	if err != nil {
+		u.logger.Print(err)
 		return err
 	}
 
@@ -40,17 +45,21 @@ func (u *CreatePlaylistUsecase) CreatePlaylist(token *oauth2.Token) error {
 			playlist, err := client.CreatePlaylist(userID)
 
 			if err != nil {
+				u.logger.Print(err)
 				return err
 			}
 			if err := client.SetConfig(playlist.ID); err != nil {
+				u.logger.Print(err)
 				return err
 			}
 
 			user = entity.NewUserCreation(userID, token, string(playlist.ID))
 			if err := u.userService.InsertUser(u.factory, *user); err != nil {
+				u.logger.Print(err)
 				return err
 			}
 		} else {
+			u.logger.Print(err)
 			return err
 		}
 	}

@@ -5,12 +5,14 @@ import (
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/spotify_service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao"
+	"log"
 	"time"
 )
 
-func NewUpdateListeningHistoryUsecase(factory dao.Factory, config *spotify_service.Config) *UpdateListeningHistoryUsecase {
+func NewUpdateListeningHistoryUsecase(factory dao.Factory, logger *log.Logger, config *spotify_service.Config) *UpdateListeningHistoryUsecase {
 	return &UpdateListeningHistoryUsecase{
 		factory:                 factory,
+		logger:                  logger,
 		spotifyConfig:           config,
 		artistService:           service.NewArtistService(),
 		userService:             service.NewUserService(),
@@ -20,6 +22,7 @@ func NewUpdateListeningHistoryUsecase(factory dao.Factory, config *spotify_servi
 
 type UpdateListeningHistoryUsecase struct {
 	factory                 dao.Factory
+	logger                  *log.Logger
 	spotifyConfig           *spotify_service.Config
 	artistService           *service.ArtistService
 	userService             *service.UserService
@@ -36,6 +39,7 @@ func (u *UpdateListeningHistoryUsecase) UpdateListeningHistory() error {
 
 		artists, counter, newToken, err := client.GetRecentlyPlayedArtists()
 		if err != nil {
+			u.logger.Print(err)
 			return err
 		}
 
@@ -51,16 +55,19 @@ func (u *UpdateListeningHistoryUsecase) UpdateListeningHistory() error {
 		}
 
 		if err := u.artistService.InsertArtists(u.factory, artistsToInsert); err != nil {
+			u.logger.Print(err)
 			return err
 		}
 
 		timestamp := time.Now().UTC()
 		if err := u.listeningHistoryService.InsertHistories(u.factory, artistsToInsert, user.ID, counter, false, timestamp); err != nil {
+			u.logger.Print(err)
 			return err
 		}
 
 		updatedUser := user.UpdateUserByToken(newToken)
 		if err := u.userService.UpdateUserToken(u.factory, *updatedUser); err != nil {
+			u.logger.Print(err)
 			return err
 		}
 	}

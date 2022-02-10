@@ -10,40 +10,47 @@ import (
 	"net/http"
 )
 
-func NewLoginHandler(logger *log.Logger, config *config.CallbackConfig, createPlaylistUsecase *usecase.CreatePlaylistUsecase) *LoginHandler {
+func NewLoginHandler(
+	logger *log.Logger,
+	callbackConfig *config.CallbackConfig,
+	spotifyConfig *spotify_service.Config,
+	createPlaylistUsecase *usecase.CreatePlaylistUsecase) *LoginHandler {
 	return &LoginHandler{
 		logger:                logger,
-		config:                config,
+		callbackConfig:        callbackConfig,
+		spotifyConfig:         spotifyConfig,
 		createPlaylistUsecase: createPlaylistUsecase,
 	}
 }
 
 type LoginHandler struct {
 	logger                *log.Logger
-	config                *config.CallbackConfig
+	callbackConfig        *config.CallbackConfig
+	spotifyConfig         *spotify_service.Config
 	createPlaylistUsecase *usecase.CreatePlaylistUsecase
 }
 
 func (h *LoginHandler) Login(c echo.Context) error {
 	h.logger.Print("Login")
-	url := spotify_service.GetURL()
+	url := spotify_service.GetURL(h.spotifyConfig)
 	c.Redirect(http.StatusFound, url)
 	return nil
 }
 
 func (h *LoginHandler) Callback(c echo.Context) error {
 	h.logger.Print("Callback")
-	token, err := spotify_service.GetToken(c.Request())
+	token, err := spotify_service.GetToken(h.spotifyConfig, c.Request())
 	if err != nil {
 		return err
 	}
 
+	// TODO: redirect to login page
 	cookie.WriteCookie(c, token)
 
 	if err := h.createPlaylistUsecase.CreatePlaylist(token); err != nil {
 		return err
 	}
 
-	c.Redirect(http.StatusFound, h.config.SuccessURI+"/"+token.AccessToken)
+	c.Redirect(http.StatusFound, h.callbackConfig.SuccessURI+"/"+token.AccessToken)
 	return nil
 }
