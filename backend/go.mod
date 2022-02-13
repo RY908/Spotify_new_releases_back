@@ -3,6 +3,7 @@ module github.com/RY908/Spotify_new_releases_back/backend
 go 1.14
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-gorp/gorp v2.2.0+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/go-cmp v0.5.5
