@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/config"
+	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/domain/spotify_service"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/handlers"
 	"github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao"
 	_ "github.com/RY908/Spotify_new_releases_back/backend/app/internal/models/v2.0/dao/mysql"
@@ -48,6 +49,7 @@ func main() {
 	s := newServer(
 		appLogger,
 		config.CallbackConfig,
+		config.SpotifyConfig,
 		createPlaylistUsecase,
 		getSettingUsecase,
 		editSettingUsecase,
@@ -72,7 +74,8 @@ func newLoggers() (*log.Logger, *log.Logger, *log.Logger) {
 
 func newServer(
 	logger *log.Logger,
-	config *config.CallbackConfig,
+	callbackConfig *config.CallbackConfig,
+	spotifyConfig *spotify_service.Config,
 	createPlaylistUsecase *usecase.CreatePlaylistUsecase,
 	getSettingUsecase *usecase.GetSettingUsecase,
 	editSettingUsecase *usecase.EditSettingUsecase,
@@ -87,7 +90,7 @@ func newServer(
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
 
-	loginHandler := handlers.NewLoginHandler(logger, config, createPlaylistUsecase)
+	loginHandler := handlers.NewLoginHandler(logger, callbackConfig, spotifyConfig, createPlaylistUsecase)
 	userHandler := handlers.NewUserHandler(logger, deleteListeningHistoryUsecase, getArtistsByUserIDUsecase)
 	settingHandler := handlers.NewSettinHandler(logger, getSettingUsecase, editSettingUsecase)
 

@@ -9,7 +9,10 @@ import (
 	"net/http"
 )
 
-func NewUserHandler(logger *log.Logger, deleteListeningHistoryUsecase *usecase.DeleteListeningHistoryUsecase, getArtistsByUserIDUsecase *usecase.GetArtistsByUserIDUsecase) *UserHandler {
+func NewUserHandler(
+	logger *log.Logger,
+	deleteListeningHistoryUsecase *usecase.DeleteListeningHistoryUsecase,
+	getArtistsByUserIDUsecase *usecase.GetArtistsByUserIDUsecase) *UserHandler {
 	return &UserHandler{
 		logger:                        logger,
 		deleteListeningHistoryUsecase: deleteListeningHistoryUsecase,
@@ -36,12 +39,12 @@ func (h *UserHandler) DeleteArtists(c echo.Context) error {
 
 	token, err := cookie.ReadCookie(c)
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid cookie: %w", err)
 	}
 
 	artistsReq := new(Artists)
 	if err := c.Bind(artistsReq); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid parameters: %w", err)
 	}
 
 	if err := h.deleteListeningHistoryUsecase.DeleteListeningHistory(token, artistsReq.IDs); err != nil {
@@ -60,7 +63,7 @@ func (h *UserHandler) GetArtists(c echo.Context) error {
 
 	token, err := cookie.ReadCookie(c)
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid cookie: %w", err)
 	}
 
 	artists, err := h.getArtistsByUserIDUsecase.GetArtistsByUserIDUsecase(token)

@@ -15,8 +15,7 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 
 	recentlyPlayedItems, err := c.client.PlayerRecentlyPlayedOpt(&spotify.RecentlyPlayedOptions{Limit: 50, AfterEpochMs: afterTime})
 	if err != nil {
-		err = fmt.Errorf("unable to get recently played tracks: %w", err)
-		return nil, nil, nil, err
+		return nil, nil, nil, fmt.Errorf("unable to get recently played tracks: %w", err)
 	}
 
 	artistsSet := make(map[spotify.ID]spotify.FullArtist) // set of artists
@@ -43,7 +42,7 @@ func (c *Client) GetRecentlyPlayedArtists() (map[spotify.ID]spotify.FullArtist, 
 }
 
 // GetFollowingArtists returns artists' information a user follows.
-func (c *Client) GetFollowingArtists(userId string) ([]*entity.Artist, error) {
+func (c *Client) GetFollowingArtists() ([]*entity.Artist, error) {
 	lastId := ""
 	var artists []*entity.Artist
 
@@ -69,7 +68,6 @@ func (c *Client) GetFollowingArtists(userId string) ([]*entity.Artist, error) {
 
 // GetArtistInfo retrieves artist's name, id, url, iconUrl and returns them.
 func GetArtistInfo(artist spotify.FullArtist) (string, string, string, string) {
-	//var name, artistId, url, iconUrl string
 	var name, artistID, url, iconUrl string
 	name = artist.SimpleArtist.Name
 	artistID = artist.SimpleArtist.ID.String()

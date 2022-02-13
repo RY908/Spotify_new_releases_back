@@ -42,7 +42,7 @@ func (u *GetFollowingArtistsUsecase) GetFollowingArtists(token *oauth2.Token) ([
 		return nil, err
 	}
 
-	artists, err := client.GetFollowingArtists(userID)
+	artists, err := client.GetFollowingArtists()
 	if err != nil {
 		u.logger.Print(err)
 		return nil, err

@@ -36,7 +36,7 @@ func (u *UpdateFollowingArtistsUsecase) UpdateFollowingArtists() error {
 	for _, user := range users {
 		client := spotify_service.CreateNewClientByUser(u.spotifyConfig, user)
 
-		artists, err := client.GetFollowingArtists(user.ID)
+		artists, err := client.GetFollowingArtists()
 		if err != nil {
 			u.logger.Print(err)
 			return err

@@ -44,10 +44,10 @@ func (h *LoginHandler) Callback(c echo.Context) error {
 		return err
 	}
 
-	// TODO: redirect to login page
 	cookie.WriteCookie(c, token)
 
 	if err := h.createPlaylistUsecase.CreatePlaylist(token); err != nil {
+		c.Redirect(http.StatusFound, h.callbackConfig.ErrorURI)
 		return err
 	}
 
