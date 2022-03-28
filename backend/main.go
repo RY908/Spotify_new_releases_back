@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 
-	// . "Spotify_new_releases/spotify"
+	// . "Spotify_new_releases/spotify_service"
 	. "github.com/RY908/Spotify_new_releases_back/backend/event"
 	. "github.com/RY908/Spotify_new_releases_back/backend/handler"
 	. "github.com/RY908/Spotify_new_releases_back/backend/session"

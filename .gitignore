@@ -6,4 +6,6 @@ conf.d/
 .DS_Store
 backend_app.env
 mysql.env
+.idea/
+
 
