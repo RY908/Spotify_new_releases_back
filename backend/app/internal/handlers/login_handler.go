@@ -41,16 +41,14 @@ func (h *LoginHandler) Callback(c echo.Context) error {
 	h.logger.Print("Callback")
 	token, err := spotify_service.GetToken(h.spotifyConfig, c.Request())
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid cookie: %w", err)
 	}
 
 	cookie.WriteCookie(c, token)
 
 	if err := h.createPlaylistUsecase.CreatePlaylist(token); err != nil {
-		c.Redirect(http.StatusFound, h.callbackConfig.ErrorURI)
-		return err
+		return c.Redirect(http.StatusFound, h.callbackConfig.ErrorURI)
 	}
 
-	c.Redirect(http.StatusFound, h.callbackConfig.SuccessURI+"/"+token.AccessToken)
-	return nil
+	return c.Redirect(http.StatusFound, h.callbackConfig.SuccessURI+"/"+token.AccessToken)
 }
