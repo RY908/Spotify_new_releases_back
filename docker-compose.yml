@@ -16,7 +16,7 @@ services:
     networks:
       - app1
     restart: always
-    command: "go run main.go"
+    command: "go run ./app/cmd/main.go"
     container_name: "backend-container"
 
   mysql:
