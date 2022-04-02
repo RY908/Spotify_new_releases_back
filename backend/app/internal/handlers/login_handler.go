@@ -14,20 +14,26 @@ func NewLoginHandler(
 	logger *log.Logger,
 	callbackConfig *config.CallbackConfig,
 	spotifyConfig *spotify_service.Config,
-	createPlaylistUsecase *usecase.CreatePlaylistUsecase) *LoginHandler {
+	initializePlaylistUsecase *usecase.InitializePlaylistUsecase,
+	initializeFollowingUsecase *usecase.InitializeFollowingUsecase,
+	userExistsUsecase *usecase.UserExistsUsecase) *LoginHandler {
 	return &LoginHandler{
-		logger:                logger,
-		callbackConfig:        callbackConfig,
-		spotifyConfig:         spotifyConfig,
-		createPlaylistUsecase: createPlaylistUsecase,
+		logger:                     logger,
+		callbackConfig:             callbackConfig,
+		spotifyConfig:              spotifyConfig,
+		initializePlaylistUsecase:  initializePlaylistUsecase,
+		initializeFollowingUsecase: initializeFollowingUsecase,
+		userExistsUsecase:          userExistsUsecase,
 	}
 }
 
 type LoginHandler struct {
-	logger                *log.Logger
-	callbackConfig        *config.CallbackConfig
-	spotifyConfig         *spotify_service.Config
-	createPlaylistUsecase *usecase.CreatePlaylistUsecase
+	logger                     *log.Logger
+	callbackConfig             *config.CallbackConfig
+	spotifyConfig              *spotify_service.Config
+	initializePlaylistUsecase  *usecase.InitializePlaylistUsecase
+	initializeFollowingUsecase *usecase.InitializeFollowingUsecase
+	userExistsUsecase          *usecase.UserExistsUsecase
 }
 
 func (h *LoginHandler) Login(c echo.Context) error {
@@ -46,8 +52,18 @@ func (h *LoginHandler) Callback(c echo.Context) error {
 
 	cookie.WriteCookie(c, token)
 
-	if err := h.createPlaylistUsecase.CreatePlaylist(token); err != nil {
-		return c.Redirect(http.StatusFound, h.callbackConfig.ErrorURI)
+	var ok = false
+	if ok, err = h.userExistsUsecase.IsUserExists(token); err != nil {
+		return err
+	}
+
+	if !ok {
+		if err := h.initializePlaylistUsecase.CreatePlaylist(token); err != nil {
+			return c.Redirect(http.StatusFound, h.callbackConfig.ErrorURI)
+		}
+		if err := h.initializeFollowingUsecase.InsertFollowingUsecase(token); err != nil {
+			return err
+		}
 	}
 
 	return c.Redirect(http.StatusFound, h.callbackConfig.SuccessURI+"/"+token.AccessToken)

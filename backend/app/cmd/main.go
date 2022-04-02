@@ -35,11 +35,13 @@ func main() {
 	}
 
 	// usecases for handlers
-	createPlaylistUsecase := usecase.NewCreatePlaylistUsecase(dbManager, appLogger, config.SpotifyConfig)
+	initializePlaylistUsecase := usecase.NewInitializePlaylistUsecase(dbManager, appLogger, config.SpotifyConfig)
+	initializeFollowingUsecase := usecase.NewInitializeFollowingUsecase(dbManager, appLogger, config.SpotifyConfig)
 	getSettingUsecase := usecase.NewGetSettingUsecase(dbManager, appLogger, config.SpotifyConfig)
 	editSettingUsecase := usecase.NewEditSettingUsecase(dbManager, appLogger, config.SpotifyConfig)
 	deleteListeningHistoryUsecase := usecase.NewDeleteListeningHistoryUsecase(dbManager, appLogger, config.SpotifyConfig)
 	getArtistsByUserIDUsecase := usecase.NewGetArtistsByUserIDUsecase(dbManager, appLogger, config.SpotifyConfig)
+	userExistsUsecase := usecase.NewUserExistsUsecase(dbManager, appLogger, config.SpotifyConfig)
 
 	// usecases for cron
 	updateListeningHistoryUsecase := usecase.NewUpdateListeningHistoryUsecase(dbManager, appLogger, config.SpotifyConfig)
@@ -50,11 +52,13 @@ func main() {
 		appLogger,
 		config.CallbackConfig,
 		config.SpotifyConfig,
-		createPlaylistUsecase,
+		initializePlaylistUsecase,
+		initializeFollowingUsecase,
 		getSettingUsecase,
 		editSettingUsecase,
 		deleteListeningHistoryUsecase,
-		getArtistsByUserIDUsecase)
+		getArtistsByUserIDUsecase,
+		userExistsUsecase)
 	s.Start(":9990")
 
 	c := newCron(
@@ -76,21 +80,23 @@ func newServer(
 	logger *log.Logger,
 	callbackConfig *config.CallbackConfig,
 	spotifyConfig *spotify_service.Config,
-	createPlaylistUsecase *usecase.CreatePlaylistUsecase,
+	initializePlaylistUsecase *usecase.InitializePlaylistUsecase,
+	initializeFollowingUsecase *usecase.InitializeFollowingUsecase,
 	getSettingUsecase *usecase.GetSettingUsecase,
 	editSettingUsecase *usecase.EditSettingUsecase,
 	deleteListeningHistoryUsecase *usecase.DeleteListeningHistoryUsecase,
-	getArtistsByUserIDUsecase *usecase.GetArtistsByUserIDUsecase) *echo.Echo {
+	getArtistsByUserIDUsecase *usecase.GetArtistsByUserIDUsecase,
+	userExistsUsecase *usecase.UserExistsUsecase) *echo.Echo {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"https://labstack.com", "https://labstack.net"},
+		AllowOrigins:     []string{"https://labstack.com", "https://labstack.net", "http://localhost:8080"},
 		AllowHeaders:     []string{"Content-Type"},
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
 
-	loginHandler := handlers.NewLoginHandler(logger, callbackConfig, spotifyConfig, createPlaylistUsecase)
+	loginHandler := handlers.NewLoginHandler(logger, callbackConfig, spotifyConfig, initializePlaylistUsecase, initializeFollowingUsecase, userExistsUsecase)
 	userHandler := handlers.NewUserHandler(logger, deleteListeningHistoryUsecase, getArtistsByUserIDUsecase)
 	settingHandler := handlers.NewSettinHandler(logger, getSettingUsecase, editSettingUsecase)
 

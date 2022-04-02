@@ -34,8 +34,8 @@ func LoadConfig() *Config {
 			State:       "abc123",
 		},
 		CallbackConfig: &CallbackConfig{
-			SuccessURI: os.Getenv("SUC_URI"),
-			ErrorURI:   os.Getenv("ERR_URI"),
+			SuccessURI: os.Getenv("LOCAL_SUC_URI"),
+			ErrorURI:   os.Getenv("LOCAL_ERR_URI"),
 		},
 	}
 }
