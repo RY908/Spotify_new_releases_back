@@ -55,8 +55,8 @@ func (h *SettingHandler) EditSettings(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid cookie: %w", err)
 	}
 
-	userPreference := new(UserPreference)
-	if err := c.Bind(userPreference); err != nil {
+	userPreference := UserPreference{}
+	if err := c.Bind(&userPreference); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid parameters: %w", err)
 	}
 

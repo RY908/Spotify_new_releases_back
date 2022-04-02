@@ -9,6 +9,7 @@ type Config struct {
 	DBConfig       *DBConfig
 	SpotifyConfig  *spotify_service.Config
 	CallbackConfig *CallbackConfig
+	APIConfig      *APIConfig
 }
 
 type DBConfig struct {
@@ -19,6 +20,10 @@ type DBConfig struct {
 type CallbackConfig struct {
 	SuccessURI string
 	ErrorURI   string
+}
+
+type APIConfig struct {
+	AccessControlAllowOrigin string
 }
 
 func LoadConfig() *Config {
@@ -36,6 +41,9 @@ func LoadConfig() *Config {
 		CallbackConfig: &CallbackConfig{
 			SuccessURI: os.Getenv("LOCAL_SUC_URI"),
 			ErrorURI:   os.Getenv("LOCAL_ERR_URI"),
+		},
+		APIConfig: &APIConfig{
+			AccessControlAllowOrigin: os.Getenv("ACCESS_CONTROL_ALLOW_ORIGIN"),
 		},
 	}
 }

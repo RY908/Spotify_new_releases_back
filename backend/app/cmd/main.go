@@ -50,6 +50,7 @@ func main() {
 
 	s := newServer(
 		appLogger,
+		config.APIConfig,
 		config.CallbackConfig,
 		config.SpotifyConfig,
 		initializePlaylistUsecase,
@@ -78,6 +79,7 @@ func newLoggers() (*log.Logger, *log.Logger, *log.Logger) {
 
 func newServer(
 	logger *log.Logger,
+	apiConfig *config.APIConfig,
 	callbackConfig *config.CallbackConfig,
 	spotifyConfig *spotify_service.Config,
 	initializePlaylistUsecase *usecase.InitializePlaylistUsecase,
@@ -90,7 +92,7 @@ func newServer(
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"https://labstack.com", "https://labstack.net", "http://localhost:8080"},
+		AllowOrigins:     []string{"https://labstack.com", "https://labstack.net", "http://localhost:8080", apiConfig.AccessControlAllowOrigin},
 		AllowHeaders:     []string{"Content-Type"},
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
