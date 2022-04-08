@@ -48,6 +48,13 @@ func main() {
 	updatePlaylistUsecase := usecase.NewUpdatePlaylistUsecase(dbManager, appLogger, config.SpotifyConfig)
 	updateFollowingArtistsUsecase := usecase.NewUpdateFollowingArtistsUsecase(dbManager, appLogger, config.SpotifyConfig)
 
+	c := newCron(
+		cronLogger,
+		updateListeningHistoryUsecase,
+		updatePlaylistUsecase,
+		updateFollowingArtistsUsecase)
+	c.Start()
+
 	s := newServer(
 		appLogger,
 		config.APIConfig,
@@ -61,13 +68,6 @@ func main() {
 		getArtistsByUserIDUsecase,
 		userExistsUsecase)
 	s.Start(":9990")
-
-	c := newCron(
-		cronLogger,
-		updateListeningHistoryUsecase,
-		updatePlaylistUsecase,
-		updateFollowingArtistsUsecase)
-	c.Start()
 }
 
 func newLoggers() (*log.Logger, *log.Logger, *log.Logger) {
@@ -134,6 +134,7 @@ func newCron(
 	updatePlaylistUsecase *usecase.UpdatePlaylistUsecase,
 	updateFollowingArtistsUsecase *usecase.UpdateFollowingArtistsUsecase) *cron.Cron {
 	c := cron.New()
+
 	c.AddFunc("@every 20m", func() {
 		if err := updateListeningHistoryUsecase.UpdateListeningHistory(); err != nil {
 			logger.Print(err)
@@ -149,5 +150,7 @@ func newCron(
 			logger.Print(err)
 		}
 	})
+
+	logger.Print("Initialized Cron")
 	return c
 }

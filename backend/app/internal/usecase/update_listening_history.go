@@ -30,6 +30,7 @@ type UpdateListeningHistoryUsecase struct {
 }
 
 func (u *UpdateListeningHistoryUsecase) UpdateListeningHistory() error {
+	u.logger.Print("Update Listening History")
 	users, err := u.userService.GetAllUsers(u.factory)
 	if err != nil {
 		return err
@@ -39,7 +40,6 @@ func (u *UpdateListeningHistoryUsecase) UpdateListeningHistory() error {
 
 		artists, counter, newToken, err := client.GetRecentlyPlayedArtists()
 		if err != nil {
-			u.logger.Print(err)
 			return err
 		}
 
@@ -55,19 +55,16 @@ func (u *UpdateListeningHistoryUsecase) UpdateListeningHistory() error {
 		}
 
 		if err := u.artistService.InsertArtists(u.factory, artistsToInsert); err != nil {
-			u.logger.Print(err)
 			return err
 		}
 
 		timestamp := time.Now().UTC()
 		if err := u.listeningHistoryService.InsertHistories(u.factory, artistsToInsert, user.ID, counter, false, timestamp); err != nil {
-			u.logger.Print(err)
 			return err
 		}
 
 		updatedUser := user.UpdateUserByToken(newToken)
 		if err := u.userService.UpdateUserToken(u.factory, *updatedUser); err != nil {
-			u.logger.Print(err)
 			return err
 		}
 	}

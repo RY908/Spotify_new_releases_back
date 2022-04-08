@@ -29,6 +29,7 @@ type UpdatePlaylistUsecase struct {
 }
 
 func (u *UpdatePlaylistUsecase) UpdatePlaylistHistory() error {
+	u.logger.Print("Update Playlist")
 	users, err := u.userService.GetAllUsers(u.factory)
 	if err != nil {
 		u.logger.Print(err)
