@@ -37,7 +37,7 @@ sequenceDiagram
 
 ## /setting
 
-```marmaid
+```mermaid
 sequenceDiagram
     new releases frontend ->> new releases backend: Delete user's artists
     new releases backend ->> new releases backend: Delete listening history in DB
@@ -46,7 +46,7 @@ sequenceDiagram
 
 ## /setting/save
 
-```marmaid
+```mermaid
 sequenceDiagram
 	new releases frontend ->> new releases backend: Delete user's artists
 	new releases backend ->> new releases backend: Delete listening history in DB
@@ -55,7 +55,7 @@ sequenceDiagram
 
 ## Update listening history
 
-```marmaid
+```mermaid
 sequenceDiagram
 	new releases backend ->> new releases backend: Get all users in DB
 	loop for each user
@@ -67,7 +67,7 @@ sequenceDiagram
 
 ## Update playlist
 
-```marmaid
+```mermaid
 sequenceDiagram
 	new releases backend ->> new releases backend: Get all users in DB
 	loop for each user
@@ -87,7 +87,7 @@ sequenceDiagram
 
 ## Update user's following
 
-```marmaid
+```mermaid
 sequenceDiagram
 	new releases backend ->> new releases backend: Get all users in DB
 	loop for each user
