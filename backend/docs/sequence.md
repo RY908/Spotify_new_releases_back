@@ -4,13 +4,21 @@
 
 ```mermaid
 sequenceDiagram
-	new releases backend ->> new releases backend: Get all users in DB
-	loop for each user
-		new releases backend ->> Spotify API: Request user's following artists
-		Spotify API -->> new releases backend: Return artists
-		new releases backend ->> new releases backend: Store artists in DB
-		new releases backend ->> new releases backend: Delete unfollowed artists in DB
+	user ->> new releases frontend: Login
+	new releases frontend ->> new releases backend: Login request
+	new releases backend ->> Spotify accounts service: Request authorization to access data
+	Spotify accounts service ->> user: Display scopes and prompt user to login
+	user ->> Spotify accounts service: Login and authorize access
+	Spotify accounts service ->> new releases backend: Callback
+	new releases backend ->> Spotify accounts service: Request access and refresh tokens
+	Spotify accounts service -->> new releases backend: Return access and refresh tokens
+	alt new user
+new releases backend ->> new releases backend: Store user in DB
+		new releases backend ->> Spotify API: Create a playlist and get user's following artists
+		Spotify API -->> new releases backend: Return user's following artists
+		new releases backend ->> new releases backend: Store user's following artists in DB
 	end
+	new releases backend -->> new releases frontend: Return artists
 ```
 
 ## /user
