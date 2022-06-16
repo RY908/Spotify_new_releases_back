@@ -13,7 +13,7 @@ type artist struct {
 
 func (a *artist) InsertArtist(artist *schema.Artist) error {
 	var insertedArtist schema.Artist
-	err := a.db.SelectOne(&insertedArtist, "select * from post where artistId=?", artist.ID)
+	err := a.db.SelectOne(&insertedArtist, "select * from Artist where artistId=?", artist.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			if err := a.db.Insert(&schema.Artist{
